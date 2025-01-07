@@ -2,11 +2,12 @@ import { Header } from "@/components/layout/header";
 import { AppSidebar } from "@/components/layout/sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
-export default function MainLayout({
+export default async  function MainLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    
     return (
         <SidebarProvider>
             <div className="flex w-full">

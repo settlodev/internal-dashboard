@@ -28,8 +28,8 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "user",
+          url: "/users",
         },
         {
           title: "Starred",
@@ -89,28 +89,21 @@ const data = {
       icon: Settings2,
       items: [
         {
-          title: "General",
-          url: "#",
+          title: "Roles",
+          url: "roles",
         },
         {
-          title: "Team",
+          title: "Permissions",
           url: "#",
         },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
+        
       ],
     },
   ],
  
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

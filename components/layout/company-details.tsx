@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/sidebar"
 
 export function CompanyDetail() {
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
