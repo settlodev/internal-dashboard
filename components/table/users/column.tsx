@@ -57,7 +57,6 @@ export const columns: ColumnDef<User>[] = [
 
     cell: ({ row }) => {
       const role = row.original.roles
-      console.log("The role of user",role)
       return (
         <div className="flex flex-col">
           <div className="font-medium">{role?.name}</div>

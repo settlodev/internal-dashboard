@@ -24,37 +24,27 @@ export const SignIn = async (
             return { error: error.message, status: 400 }
         }
         const user = data.user;
+        console.log("The user", user)
         const { data: profile, error: profileError } = await supabase
                                         .from('profiles')
-                                        .select('role')
+                                        .select(`role (name)`)
                                         .eq('id', user.id)
                                         .single();
-        // if (profileError) {
-            // console.log("The profile error", profileError)
-            // if(profileError.code === 'PGRST116'){
-            //     const { error: profileError } = await supabase
-            //     .from('profiles')
-            //     .insert([
-            //       {
-            //         id: user.id,  // Link the profile to the user ID
-            //         first_name: "PATRICK",
-            //         last_name: "KING",
-            //         phone: "+255694230173",
-            //         role:'cad2f085-ac72-498d-bb04-38598c851345'
-            //       },
-            //     ]); 
-            // }
-            // return { error: profileError.message, status: 400 }
-        // }
+        
+        if (profileError) {
+            console.log("The error", profileError)
+            return { error: profileError.message, status: 400 }
+        }
 
-        // const role = profile?.role
-        // if(role==='staff'){
-        //     return { redirectTo: "/users" };
-        // }else{
-        // return { redirectTo: "/dashboard" };
-        // }
-
+        const role = profile?.role[0]?.name
+        
+        if(role==='staff'){
+            return { redirectTo: "/users" };
+        }else{
         return { redirectTo: "/dashboard" };
+        }
+
+        // return { redirectTo: "/dashboard" };
 
     } catch (error) {
         console.log(error)
@@ -76,9 +66,7 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
       const { data, error } = await supabase.auth.admin.createUser({
         email,
         password,
-        phone,
-        email_confirm: false,
-      });
+      })
   
       if (error) {
         console.error("Sign up error:", error);
@@ -87,12 +75,11 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
   
       const user = data.user;
       if (user) {
-        // Insert additional fields into the profiles table
         const { error: profileError } = await supabase
           .from('profiles')
           .insert([
             {
-              id: user.id,  // Link the profile to the user ID
+              id: user.id, 
               first_name: firstName,
               last_name: lastName,
               phone,
@@ -105,7 +92,6 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
           return { error: "Profile creation failed" };
         }
   
-        // Insert role association (optional)
         await supabase.from('user_roles').insert([
           {
             user_id: user.id,
@@ -113,7 +99,6 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
           },
         ]);
   
-        // Redirect to the user list or dashboard
         return { redirectTo: "/users" };
       }
     } catch (error) {
@@ -131,8 +116,3 @@ export const signOut = async () => {
     redirect("/")
 }
 
-export const userSession = async () => {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    return user
-}

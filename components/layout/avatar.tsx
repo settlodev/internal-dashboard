@@ -6,12 +6,11 @@ import {
 } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { ChevronDown, LayoutDashboard, LogOut, User } from "lucide-react"
-import { signOut, userSession } from "@/lib/actions/auth/signIn"
+import { signOut} from "@/lib/actions/auth/signIn"
 import { useRouter } from "next/navigation"
 
 export function UserAvatar({user}: any) {
     const router = useRouter();
-    
 
     const handleLogout = async () => {
         await signOut()
@@ -44,7 +43,7 @@ export function UserAvatar({user}: any) {
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     Dashboard
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={ ()=> router.push("/profile")}>
                     <User className="mr-2 h-4 w-4" />
                     Profile
                 </DropdownMenuItem>

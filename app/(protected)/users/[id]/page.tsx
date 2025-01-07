@@ -1,35 +1,29 @@
-'use client'
-// import {ApiResponse} from "@/types/types";
 import {UUID} from "node:crypto";
-import {notFound} from "next/navigation";
-// import {isNotFoundError} from "next/dist/client/components/not-found";
-// import BreadcrumbsNav from "@/components/layouts/breadcrumbs-nav";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { UserForm } from "@/components/forms/user/user-form";
 import React from "react";
+import { User } from "@/types/users/type";
+import { get } from "node:http";
+import { fetchProfileDataById } from "@/lib/user-actions";
 
 
 
 export default async function UserPage({params}:{params:{id:string}}){
 
-    // const { id } = params; // Directly access params
-    const isNewItem =  "new";
-    // let item: <Addon> | null = null;
+    const isNewItem = params.id ===  "new";
+    let item: User | null = null
 
-    // if(!isNewItem){
-    //     try{
-    //         const item = await  (params.id as UUID);
-    //         if(item.totalElements == 0) notFound();
-    //     }
-    //     catch (error){
-    //         if(isNotFoundError(error)) throw error;
+    if(!isNewItem){
+        try{
+            item = await fetchProfileDataById(params.id as UUID);
+        }
+        catch (error){
+            throw new Error("Failed to load user details");
+        }
+    }
 
-    //         throw new Error("Failed to load addon details");
-    //     }
-    // }
-
-    const breadCrumbItems=[{title:"User",link:"/addons"},
+    const breadCrumbItems=[{title:"User",link:"/users"},
         {title: isNewItem ? "New":"Edit",link:""}]
 
     return(
@@ -39,14 +33,14 @@ export default async function UserPage({params}:{params:{id:string}}){
                     <BreadcrumbNav items={breadCrumbItems}/>
                 </div>
             </div>
-            <UserCard isNewItem={isNewItem}/>
+            <UserCard isNewItem={isNewItem} item={item}/>
         </div>
     )
 }
 
-const UserCard =({isNewItem}:{
+const UserCard =({isNewItem,item}:{
     isNewItem:boolean,
-    // item: Addon | null | undefined
+    item: User | null | undefined
 }) =>(
     <Card>
        <CardHeader>
@@ -58,7 +52,7 @@ const UserCard =({isNewItem}:{
            </CardDescription>
        </CardHeader>
         <CardContent>
-            <UserForm />
+            <UserForm  item={item} />
         </CardContent>
     </Card>
 )

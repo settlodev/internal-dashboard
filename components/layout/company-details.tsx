@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar"
 
 export function CompanyDetail() {
+  // console.log("The user logged in" ,user)
   return (
     <SidebarMenu>
       <SidebarMenuItem>

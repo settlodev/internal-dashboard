@@ -23,13 +23,24 @@ import { useCallback,useTransition } from "react"
 import { signUp } from "@/lib/actions/auth/signIn"
 import RoleSelect from "@/components/widgets/roleSelector"
 import { UserSchema } from "@/types/users/schema"
-export function UserForm() {
+import { User } from "@/types/users/type"
+export function UserForm({item}: {item: User | null | undefined}) {
+  console.log("The item is ",item)
   const [isPending, startTransition] = useTransition()
 
 
   const form = useForm<z.infer<typeof UserSchema>>({
     resolver: zodResolver(UserSchema),
-    defaultValues: {}
+    defaultValues: {
+      ...item,
+      first_name:item ? item?.first_name:"",
+      last_name:item ? item?.last_name :"",
+      email:item ? item?.email :"",
+      phone:item ? item?.phone :"",
+      password:item ? item?.password :"",
+      role:item ? item?.roles :"",
+    
+    }
   })
 
   const onInvalid = useCallback(
@@ -66,7 +77,7 @@ export function UserForm() {
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
-                      name="firstName"
+                      name="first_name"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>First Name</FormLabel>
@@ -85,7 +96,7 @@ export function UserForm() {
                     <div className="flex items-center">
                       <FormField
                         control={form.control}
-                        name="lastName"
+                        name="last_name"
                         render={({ field }) => (
                           <FormItem className="w-full">
                             <FormLabel>Last Name</FormLabel>
