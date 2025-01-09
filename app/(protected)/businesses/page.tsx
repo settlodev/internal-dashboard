@@ -49,6 +49,7 @@ export default function Dashboard() {
                     <DataTable 
                     columns={columns}
                     data={data}
+                    searchKey="name"
                     // pageSize={5}
                     />
                 </CardContent>

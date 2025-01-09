@@ -30,13 +30,18 @@ import { Input } from "../ui/input"
 
 
 interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    columns: ColumnDef<TData, TValue>[];
+    data: TData[];
+    searchKey:string;
+    searchParams?:{
+        [key:string]:string | string[] | undefined
+    };
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    // searchKey
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] =useState<SortingState>([])
     const [rowSelection, setRowSelection] = React.useState({})

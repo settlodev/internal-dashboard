@@ -1,6 +1,8 @@
 'use server'
 import { createClient } from "@/lib/supabase/server";
+import { parseStringify } from "@/lib/utils";
 import { signInSchema } from "@/types/auth/signInSchema";
+import { FormResponse } from "@/types/formResponse";
 import { UserSchema } from "@/types/users/schema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -8,11 +10,15 @@ import { z } from "zod";
 
 export const SignIn = async (
     credentials: z.infer<typeof signInSchema>
-): Promise<any> => {
+): Promise<FormResponse> => {
     const validCredentials = signInSchema.safeParse(credentials)
-
     if (!validCredentials.success) {
-        return { error: "Invalid credentials", status: 400 }
+        return parseStringify({
+          responseType:"error",
+          message:"Please fill all the fields before submitting",
+          error: new Error(validCredentials.error.message),
+          status:400
+        })
     }
     try {
         const supabase = await createClient()
@@ -21,7 +27,12 @@ export const SignIn = async (
         if (error) {
             console.log("The error", error)
 
-            return { error: error.message, status: 400 }
+            return parseStringify({
+                responseType:"error",
+                message:"Invalid email or password",
+                error: new Error(error.message),
+                status:400
+            })
         }
         const user = data.user;
         console.log("The user", user)
@@ -33,15 +44,24 @@ export const SignIn = async (
         
         if (profileError) {
             console.log("The error", profileError)
-            return { error: profileError.message, status: 400 }
+            return ({ 
+                responseType:"error", 
+                message:profileError.message, 
+                error: new Error(profileError.message), status: 400 })
         }
 
         const role = profile?.role[0]?.name
         
         if(role==='staff'){
-            return { redirectTo: "/users" };
+            return parseStringify({
+              responseType:"success",
+              message:"Signed in successfully", 
+              redirectTo: "/users" });
         }else{
-        return { redirectTo: "/dashboard" };
+        return parseStringify({ 
+            responseType:"success", 
+            message:"Signed in successfully", 
+            redirectTo: "/dashboard" });
         }
 
         // return { redirectTo: "/dashboard" };
@@ -60,7 +80,7 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
   
     try {
       const supabase = await createClient();
-      const { email, password, firstName, lastName, phone, role } = validatedData.data;
+      const { email, password, first_name, last_name, phone, role } = validatedData.data;
   
       // Sign up with email and password
       const { data, error } = await supabase.auth.admin.createUser({
@@ -80,8 +100,8 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
           .insert([
             {
               id: user.id, 
-              first_name: firstName,
-              last_name: lastName,
+              first_name: first_name,
+              last_name: last_name,
               phone,
               role,
             },

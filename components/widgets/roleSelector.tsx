@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react';
 import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
@@ -26,35 +24,18 @@ const RoleSelect: React.FC<RoleSelectProps>=({
   isRequired,
   value,
   isDisabled,
-  description,
   onChange
 
 })=> {
   const [roles, setRoles] = useState<Role[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
-//   useEffect(() => {
-//     const fetchRoles = async () => {
-//       const data = await fetchRoles()
-
-//       if (error) {
-//         setError('Failed to fetch roles');
-//         console.error('Error fetching roles:', error);
-//       } else {
-//         setRoles(data);
-//       }
-//     };
-
-//     fetchRoles();
-//   }, []);
-
 useEffect(() => {
   async function loadRoles() {
       try {
           setIsLoading(true);
           const fetchedRoles = await fetchAllRoles();
           setRoles(fetchedRoles);
-      } catch (error: any) {
+      } catch (error) {
           console.log("Error fetching roles:", error);
       } finally {
           setIsLoading(false);

@@ -3,7 +3,6 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -15,19 +14,19 @@ interface CardProps {
 }
 
 
-export default function CardComponent({title, description, amount}: CardProps) {
-  return (
-    <div>
-        <Card>
-                    <CardHeader>
-                        <CardTitle>{title}</CardTitle>
-                        <CardDescription>{description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p>{amount}</p>
-                    </CardContent>
+export default function CardComponent({ title, description, amount }: CardProps) {
+    return (
+        <div>
+            <Card>
+                <CardHeader>
+                    <CardTitle>{title}</CardTitle>
+                    <CardDescription>{description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p>{amount}</p>
+                </CardContent>
 
-                </Card>
-    </div>
-  )
+            </Card>
+        </div>
+    )
 }

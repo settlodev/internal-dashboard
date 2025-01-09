@@ -15,10 +15,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { useForm } from "react-hook-form"
+import { FieldErrors, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { signInSchema } from "@/types/auth/signInSchema"
 import { useCallback,useTransition } from "react"
 import { signUp } from "@/lib/actions/auth/signIn"
 import RoleSelect from "@/components/widgets/roleSelector"
@@ -38,13 +37,13 @@ export function UserForm({item}: {item: User | null | undefined}) {
       email:item ? item?.email :"",
       phone:item ? item?.phone :"",
       password:item ? item?.password :"",
-      role:item ? item?.roles :"",
+      role: item ? (typeof item.roles === 'string' ? item.roles : "") : "", 
     
     }
   })
 
   const onInvalid = useCallback(
-    (errors: any) => {
+    (errors: FieldErrors) => {
       console.log(errors)
     
   },[])

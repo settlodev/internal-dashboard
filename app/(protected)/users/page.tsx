@@ -1,5 +1,5 @@
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
-import { fetchAllUsers } from "@/lib/user-actions";
+import { searchUsers } from "@/lib/user-actions";
 import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { columns } from "@/components/table/users/column";
@@ -7,9 +7,21 @@ import { columns } from "@/components/table/users/column";
 const breadcrumbItems = [
     { title: "Users", link: "/locations" },
 ]
-export default async function Page() {
+type ParamsProps = {
+    searchParams: {
+        [key: string]: string | undefined;
+    }
+}
+export default async function Page({searchParams}:ParamsProps) {
+    const q = searchParams.search || "";
+    // const page = Number(searchParams.page) || 0;
+    // const pageLimit = Number(searchParams.pageLimit);
 
-    const users = await fetchAllUsers()
+    const data = await searchUsers(q);
+    // const totalPages = Math.ceil(data.length / pageLimit);
+
+
+    // const users = await fetchAllUsers()
     
     return (
             <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
@@ -19,7 +31,7 @@ export default async function Page() {
                 </div>
             </div>
             {
-                users?.length > 0 ? (
+                data?.length > 0 ? (
                     <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl">Users</CardTitle>
@@ -27,7 +39,8 @@ export default async function Page() {
                 <CardContent>
                     <DataTable 
                     columns={columns}
-                    data={users}
+                    data={data}
+                    searchKey="first_name"
                     />
                 </CardContent>
             </Card>

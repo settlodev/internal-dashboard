@@ -29,6 +29,7 @@ export default async function Dashboard() {
                     <DataTable 
                     columns={columns}
                     data={roles}
+                    searchKey="name"
                     // pageSize={5}
                     />
                 </CardContent>

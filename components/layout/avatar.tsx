@@ -9,7 +9,11 @@ import { ChevronDown, LayoutDashboard, LogOut, User } from "lucide-react"
 import { signOut} from "@/lib/actions/auth/signIn"
 import { useRouter } from "next/navigation"
 
-export function UserAvatar({user}: any) {
+interface userProps {
+    displayName?:string,
+    email?:string
+}
+export function UserAvatar({user}:{user: userProps}) {
     const router = useRouter();
 
     const handleLogout = async () => {

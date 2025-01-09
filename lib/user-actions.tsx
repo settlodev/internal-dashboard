@@ -23,8 +23,25 @@ export const fetchAllUsers = async (): Promise<User[]> => {
     return parseStringify(data)
 }
 
-
-
+export const searchUsers = async (q: string): Promise<User[]> => {
+    const supabase = await createClient()
+    
+     // Calculate start and end index based on page and pageLimit
+    //  const start = (page - 1) * pageLimit;
+    //  const end = start + pageLimit - 1;
+ 
+     const { data, error } = await supabase
+         .from('profiles')
+         .select()
+         .textSearch('first_name', `%${q}%`);
+ 
+     if (error) {
+         console.error(error);
+         return [];
+     }
+ 
+     return parseStringify(data);
+}
 
 export async function fetchProfileData(): Promise<ProfileData> {
   const supabase = await createClient();
