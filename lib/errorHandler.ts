@@ -11,18 +11,18 @@ export const errorHandler = async (error: AppError): Promise<void> => {
 
   switch (error?.code) {
     case 'email_not_confirmed':
-      toast('Your email is not confirmed. Please check your inbox.');
+      toast.error('Your email is not confirmed. Please check your inbox.');
       break;
     case 'invalid_login_credentials':
-      toast('Invalid email or password.');
+      toast.error('Invalid email or password.');
       break;
     case 'user_not_found':
-      toast('User not found.');
+      // toast('User not found.');
       break;
     case 'too_many_requests':
-      toast('Too many attempts. Please try again later.');
+      // toast('Too many attempts. Please try again later.');
       break;
     default:
-      toast(error.message || 'An unexpected error occurred.');
+      // toast(error.message || 'An unexpected error occurred.');
   }
 };

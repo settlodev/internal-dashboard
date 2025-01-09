@@ -4,8 +4,8 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { fetchProfileData } from '@/lib/user-actions';
 import { Business } from '@/types/users/type';
+import { fetchProfileData } from '@/lib/actions/user-actions';
 
 const ProfileSkeleton = () => (
   <div className="container mx-auto p-4 space-y-6">

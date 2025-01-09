@@ -10,7 +10,7 @@ import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { UserForm } from "@/components/forms/user/user-form";
 import React from "react";
 import { User } from "@/types/users/type";
-import { fetchProfileDataById } from "@/lib/user-actions";
+import { fetchProfileDataById } from "@/lib/actions/user-actions";
 
 interface UserPageParams {
   params: { id: string };

@@ -8,7 +8,7 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
-import { fetchAllRoles } from '@/lib/role-action';
+import { fetchAllRoles } from '@/lib/actions/role-action';
 
   interface RoleSelectProps {
     label?:string;

@@ -1,8 +1,8 @@
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
-import { fetchAllRoles } from "@/lib/role-action";
 import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { columns } from "@/components/table/roles/column";
+import { fetchAllRoles } from "@/lib/actions/role-action";
 
 const breadcrumbItems = [
     { title: "Roles", link: "/roles" },

@@ -2,7 +2,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { parseStringify } from "@/lib/utils";
 import { signInSchema } from "@/types/auth/signInSchema";
-import { FormResponse } from "@/types/formResponse";
+import { FormResponse } from "@/types/types";
 import { UserSchema } from "@/types/users/schema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";

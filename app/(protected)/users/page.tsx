@@ -1,8 +1,8 @@
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
-import { searchUsers } from "@/lib/user-actions";
 import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { columns } from "@/components/table/users/column";
+import { searchUsers } from "@/lib/actions/user-actions";
 
 const breadcrumbItems = [
     { title: "Users", link: "/locations" },

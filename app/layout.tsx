@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Footer } from "@/components/footer";
-import { Toaster } from 'react-hot-toast';
+// import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   title: "Settlo Internal Dashboard",
@@ -20,7 +20,7 @@ export default function RootLayout({
       <body
         className='antialiased'
       >
-        <Toaster position="top-right" reverseOrder={false}/>
+        {/* <Toaster position="top-right" reverseOrder={false}/> */}
         {children}
         <Footer />
       </body>

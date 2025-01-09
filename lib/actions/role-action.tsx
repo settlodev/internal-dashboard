@@ -1,8 +1,8 @@
 'use server'
 import { Role } from "@/types/role/type"
-import { createClient } from "./supabase/server"
-import { parseStringify } from "./utils"
 import { UUID } from "crypto"
+import { createClient } from "../supabase/server"
+import { parseStringify } from "../utils"
 
 export const fetchAllRoles = async (): Promise<Role[]> => {
     const supabase = await createClient()

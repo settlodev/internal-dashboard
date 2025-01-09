@@ -1,6 +1,6 @@
 import { ProfileData, User } from "@/types/users/type"
-import { createClient } from "./supabase/server"
-import { parseStringify } from "./utils"
+import { parseStringify } from "../utils"
+import { createClient } from "../supabase/server"
 
 export const userWithInSession = async () => {
     const supabase = await createClient()

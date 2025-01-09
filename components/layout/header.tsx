@@ -1,4 +1,4 @@
-import { userWithInSession } from "@/lib/user-actions";
+import { userWithInSession } from "@/lib/actions/user-actions";
 import { UserAvatar } from "./avatar";
 
 export  async function Header (){
