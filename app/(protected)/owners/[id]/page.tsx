@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Mail, Phone, Shield, Building, User } from 'lucide-react';
+import { MapPin, Mail, Phone, Shield, Building, User, Users, UserRound } from 'lucide-react';
 import { getBusinessOwner } from '@/lib/actions/business-owners';
 import { UUID } from 'crypto';
 import { BreadcrumbNav } from '@/components/layout/breadcrumbs';
@@ -109,8 +109,12 @@ const BusinessOwnerProfile = async ({params}:{params:{id:string}})=> {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
+                  <UserRound className="h-4 w-4 text-gray-500" />
+                  <span>Gender: {businessOwner.gender}</span>
+                </div>
+                <div className="flex items-center gap-2">
                   <Shield className="h-4 w-4 text-gray-500" />
-                  <span>ID: {businessOwner.identificationId}</span>
+                  <span>ID: {businessOwner.identificationId || 'N/A'}</span>
                 </div>
               </div>
             </div>

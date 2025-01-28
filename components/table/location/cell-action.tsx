@@ -1,14 +1,13 @@
 
-
 'use client';
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Business } from "@/types/business/types";
+import { Location } from "@/types/location/type";
 import { MoreHorizontal} from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Owner } from "@/types/owners/type";
-
 interface CellActionProps {
-    data: Owner;
+    data: Location;
 }
 
 export function CellAction({ data }: CellActionProps) {
@@ -23,19 +22,13 @@ export function CellAction({ data }: CellActionProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
             onClick={() => {
-                router.push(`/owners/${data?.id}`);
+                router.push(`/locations/${data?.id}`);
             }}
             >
-              View details
-            </DropdownMenuItem>
-            <DropdownMenuItem
-            onClick={() => {
-                router.push(`/owners/${data?.id}`);
-            }}
-            >
-              Delete
+              View Details
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

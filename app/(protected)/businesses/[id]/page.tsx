@@ -23,8 +23,6 @@ import { Location } from "@/types/location/type";
 
 const BusinessDetailPage =async ({params}:{params:{id:string}}) => {
     const business = await getBusiness(params.id as UUID)
-    console.log(business)
-
     const breadcrumbItems = [
         { title: "Businesses", link: "/businesses" },
         { title: business.name, link: "" },

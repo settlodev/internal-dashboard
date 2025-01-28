@@ -1,8 +1,20 @@
-import { BriefcaseBusiness, MapPin, Settings2, Users } from "lucide-react"
+import { BriefcaseBusiness, ChartColumn, MapPin, Settings2, Users } from "lucide-react"
 
 const data = {
 
     navMain: [
+      {
+        title: "Analytics",
+        url: "#",
+        icon: ChartColumn,
+        isActive: true,
+        items: [
+          {
+            title: "Statistics",
+            url: "/dashboard",
+          },
+        ]
+      },
       {
         title: "User Management",
         url: "#",
@@ -41,21 +53,10 @@ const data = {
         icon: MapPin,
         items: [
           {
-            title: "Introduction",
-            url: "#",
+            title: "Locations",
+            url: "/locations",
           },
-          {
-            title: "Get Started",
-            url: "#",
-          },
-          {
-            title: "Tutorials",
-            url: "#",
-          },
-          {
-            title: "Changelog",
-            url: "#",
-          },
+          
         ],
       },
       {

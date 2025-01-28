@@ -6,8 +6,8 @@ export declare interface SummaryResponse {
     totalLocations: number;
     totalSubscriptions: number;
     totalActiveSubscriptions: number;
-    totalUserWithActiveSubscription: number;
-    totalUserWithInActiveSubscription: number;
+    totalUsersWithActiveSubscriptions: number;
+    totalUsersWithInActiveSubscriptions: number;
     monthlyLocationsCreated:LocationCreated[];
     monthlyBusinessesCreated:BusinessCreated[];
     monthlyUsersCreated:UserCreated[];

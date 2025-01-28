@@ -17,8 +17,8 @@ export default function CardComponent({ title, amount }: CardProps) {
     return (
         <div className='mt-4'>
             <Card>
-                <CardHeader>
-                    <CardTitle>{title}</CardTitle>
+                <CardHeader className='w-full'>
+                    <CardTitle className='text-[14px]'>{title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p className='text-2xl'>{Intl.NumberFormat().format(amount ?? 0)}</p>

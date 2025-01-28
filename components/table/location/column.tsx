@@ -1,13 +1,13 @@
 "use client"
 import { ColumnDef } from "@tanstack/react-table"
+import { CellAction } from "./cell-action"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { CellAction } from "./cell-action"
-import { Owner } from "@/types/owners/type"
+import { Location } from "@/types/location/type"
 
 
-export const columns: ColumnDef<Owner>[] = [
+export const columns: ColumnDef<Location>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -31,36 +31,32 @@ export const columns: ColumnDef<Owner>[] = [
         enableHiding: false,
       },
     {
-        accessorKey: "firstName",
+        accessorKey: "name",
         header: ({ column }) => {
             return (
                   <Button
           variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    First Name
+                    Name
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
         }
     },
-    {
-        accessorKey: "lastName",
-        header: "Last Name",
-    },
+    
     {
         accessorKey: "email",
         header: "Email",
     },
     {
-        accessorKey: "phoneNumber",
-        header: "Phone Number",
+        accessorKey: "phone",
+        header: "Phone",
     },
     {
-        accessorKey: "gender",
-        header: "Gender"
+        accessorKey: "locationBusinessTypeName",
+        header: "Business Type",
     },
-   
     {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />,

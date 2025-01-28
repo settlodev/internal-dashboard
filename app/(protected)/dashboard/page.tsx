@@ -4,6 +4,7 @@ import CardComponent from "@/components/dashboard/card";
 import LocationBarChart from "@/components/dashboard/locationBarChart";
 import UseLineChart from "@/components/dashboard/userLineChart";
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
+import Loading from "@/components/widgets/loader";
 import { getDashboardSummaries } from "@/lib/actions/dashboard-actions";
 import { SummaryResponse } from "@/types/dashboard/type";
 import { useEffect, useState } from "react";
@@ -13,19 +14,33 @@ const breadcrumbItems = [
 ]
 export default function Dashboard() {
     const [stats, setStats] = useState<SummaryResponse>();
+    const [isLoading, setLoading] = useState(true);
     const getSummary = async () => {
         try {
             const data = await getDashboardSummaries();
-            console.log("The summary data", data);
+            console.log(data)
             setStats(data as SummaryResponse);
         } catch (error) {
             console.log("The error", error);
             throw error;
         }
+        finally{
+            setLoading(false)
+        }
     }
     useEffect(() => {
         getSummary();
     }, [])
+
+    if (isLoading) {
+        return (
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-lg">
+                <Loading />
+            </div>
+          </div>
+        );
+      }
     return (
         <div className='flex flex-col space-y-4 md:p-8 p-4 w-full'>
             <div className={`flex items-center justify-between mb-2`}>
@@ -38,6 +53,8 @@ export default function Dashboard() {
                 <CardComponent title="Total Users" amount={stats?.totalUsers} />
                 <CardComponent title="Total Business" amount={stats?.totalBusinesses} />
                 <CardComponent title="Total Locations" amount={stats?.totalLocations} />
+                <CardComponent title="Users with Active Subscription" amount={stats?.totalUsersWithActiveSubscriptions} />
+                <CardComponent title="InActive Subscription" amount={stats?.totalUsersWithInActiveSubscriptions} />
                 <CardComponent title="Total Subscription" amount={stats?.totalSubscriptions} />
             </div>
             <div>

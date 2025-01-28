@@ -28,4 +28,5 @@ export declare interface Owner  {
         isOwner:boolean
         businessComplete:boolean
         locationComplete:boolean
+        gender:string
     }

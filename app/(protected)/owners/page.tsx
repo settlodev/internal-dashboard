@@ -5,15 +5,17 @@ import { DataTable } from '@/components/table/data-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getBusinessTypes } from '@/lib/actions/business-types'
 import { BusinessType } from '@/types/business/types'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Owner } from '@/types/owners/type'
 import { fetchAllBusinessOwners } from '@/lib/actions/business-owners'
+import Loading from '@/components/widgets/loader'
 
 const breadcrumbItems = [
   { title: "Business owners", link: "/owners" },
 ]
 export default function page() {
-  const [businessOwners, setBusinessOwners] = React.useState<Owner[]>([])
+  const [businessOwners, setBusinessOwners] = useState<Owner[]>([])
+  const [isLoading, setIsLoading] = useState(true);
   
   const fetchBusinessOwners = async () => {
     try {
@@ -22,11 +24,23 @@ export default function page() {
     } catch (error) {
       throw error
     }
+    finally {
+      setIsLoading(false);
+    }
   
   }
   useEffect(() => {
     fetchBusinessOwners()
   },[])
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">
+            <Loading />
+        </div>
+      </div>
+    );
+  }
   return (
     <div className='flex-1 p-4 space-y-2 md:p-8'>
       <div className='flex items-center justify-between mb-3'>
