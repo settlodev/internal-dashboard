@@ -1,38 +1,30 @@
+'use client'
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
-import { Business, columns } from "@/components/table/business/column";
+import { columns } from "@/components/table/business/column";
 import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { fetchAllBusiness } from "@/lib/actions/business";
+import { Business } from "@/types/business/types";
+import { useEffect, useState } from "react";
 
 const breadcrumbItems = [
     { title: "Businesses", link: "/businesses" },
 ]
-const data: Business[] = [
-    {
-        id: 1,
-        name: "Settlo Test",
-        prefix: "1234",
-        country: "Tanzania",
-        totalLocations: 5,
-        businessType: "Retail",
-        email: "support@settlo.co.tz",
-        phone: "1234567890",
-        address: "123 Main St, Anytown, USA",
-        vdfRegistration:"true"
-    },
-    {
-        id: 2,
-        name: "Settlo Restaurant",
-        prefix: "1234",
-        country: "Tanzania",
-        totalLocations: 1,
-        businessType: "Hospitality",
-        email: "support@settlo.co.tz",
-        phone: "1234567890",
-        address: "Masakini, Kinondoni",
-        vdfRegistration:"true"
-    }
-]
+
 export default function Dashboard() {
+    const [businesses, setBusinesses] = useState<Business[]>([])
+const fetchBusinessTypes = async () => {
+  try {
+    const types = await fetchAllBusiness()
+    setBusinesses(types)
+  } catch (error) {
+    throw error
+  }
+
+}
+useEffect(() => {
+  fetchBusinessTypes()
+},[])
     return (
         <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
             <div className={`flex items-center justify-between mb-2`}>
@@ -48,7 +40,7 @@ export default function Dashboard() {
                 <CardContent>
                     <DataTable 
                     columns={columns}
-                    data={data}
+                    data={businesses}
                     searchKey="name"
                     // pageSize={5}
                     />

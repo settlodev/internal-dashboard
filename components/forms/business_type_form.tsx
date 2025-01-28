@@ -1,3 +1,4 @@
+'use client'
 import { useToast } from "@/hooks/use-toast";
 import { BusinessTypeSchema } from "@/types/business/schema";
 import { BusinessType } from "@/types/business/types";
@@ -5,10 +6,13 @@ import { FormResponse } from "@/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState, useTransition } from "react";
 import { FieldErrors, useForm } from "react-hook-form";
-
-import { set, z } from "zod";
+import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
+import { createBusinessType, updateBusinessType } from "@/lib/actions/business-types";
+import { Separator } from "../ui/separator";
+import SubmitButton from "../widgets/submit-button";
+import CancelButton from "../widgets/cancel-button";
 
 function BusinessTypeForm({ item }: { item: BusinessType | null | undefined }) {
     const [isPending, startTransition] = useTransition()
@@ -19,7 +23,7 @@ function BusinessTypeForm({ item }: { item: BusinessType | null | undefined }) {
         resolver: zodResolver(BusinessTypeSchema),
         defaultValues: {
             ...item,
-            status: item ? item.status : false
+            status: item ? item.status : true
         }
     })
 
@@ -53,7 +57,7 @@ function BusinessTypeForm({ item }: { item: BusinessType | null | undefined }) {
                 })
             }
         })
-    })
+    }, [])
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmitData, onInvalid)}>
@@ -72,7 +76,17 @@ function BusinessTypeForm({ item }: { item: BusinessType | null | undefined }) {
                         )}
                     />
                 </div>
+                <div className="flex h-5 items-center space-x-4 mt-10">
+            <CancelButton />
+            <Separator orientation="vertical" />
+            <SubmitButton
+              isPending={isPending}
+              label={item ? "Update business type" : "Add business type"}
+            />
+          </div>
             </form>
         </Form>
     )
 }
+
+export default BusinessTypeForm

@@ -10,16 +10,12 @@ const data = {
         isActive: true,
         items: [
           {
+            title: "owners",
+            url: "/owners",
+          },
+          {
             title: "user",
             url: "/users",
-          },
-          {
-            title: "Starred",
-            url: "#",
-          },
-          {
-            title: "Settings",
-            url: "#",
           },
         ],
       },

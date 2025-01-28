@@ -1,13 +1,13 @@
 "use client"
 import { ColumnDef } from "@tanstack/react-table"
-import { CellAction } from "./cell-action"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Business } from "@/types/business/types"
+import { CellAction } from "./cell-action"
+import { Owner } from "@/types/owners/type"
 
 
-export const columns: ColumnDef<Business>[] = [
+export const columns: ColumnDef<Owner>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -31,47 +31,32 @@ export const columns: ColumnDef<Business>[] = [
         enableHiding: false,
       },
     {
-        accessorKey: "name",
+        accessorKey: "firstName",
         header: ({ column }) => {
             return (
                   <Button
           variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Name
+                    First Name
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
         }
     },
     {
-        accessorKey: "prefix",
-        header: "Prefix",
+        accessorKey: "lastName",
+        header: "Last Name",
     },
     {
         accessorKey: "email",
         header: "Email",
     },
     {
-        accessorKey: "phone",
-        header: "Phone",
+        accessorKey: "phoneNumber",
+        header: "Phone Number",
     },
-    {
-        accessorKey: "businessTypeName",
-        header: "Business Type",
-    },
-    {
-        accessorKey: "totalLocations",
-        header: "Locations",
-    },
-    {
-        accessorKey: "countryName",
-        header: "Country",
-    },
-    {
-        accessorKey: "vfdRegistrationState",
-        header: "VDF Registration",
-    },
+   
     {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />,

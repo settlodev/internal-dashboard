@@ -7,10 +7,35 @@ export declare interface Business {
     email: string,
     phone: string,
     businessType: BusinessType[],
+    businessTypeName: string
     totalLocations: number,
     country: string,
-    vdfRegistration: string,
-    address: string
+    vfdRegistrationState: boolean,
+    identificationNumber: string
+    vrn:string
+    serial:string
+    uin:string
+    receiptPrefix:string
+    receiptSuffix:string
+    receiptImage:string
+    logo:string
+    slug:string
+    storeName:string
+    image:string
+    facebook: string
+    twitter: string
+    instagram: string
+    linkedin: string
+    certificateOfIncorporation: string
+    businessIdentificationDocument: string
+    businessLicense: string
+    memarts: string
+    notificationPhone: string
+    notificationEmailAddress: string
+    description: string
+    owner:UUID
+    countryName: string
+    allocations:Location[]
     status: boolean
     canDeleted: boolean
     isArchived:boolean
