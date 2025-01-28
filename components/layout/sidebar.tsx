@@ -2,12 +2,6 @@
 
 import * as React from "react"
 import {
-  BriefcaseBusiness,
-  MapPin,
-  Settings2,
-  Users,
-} from "lucide-react"
-import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -16,92 +10,7 @@ import {
 } from "@/components/ui/sidebar"
 import { NavMain } from "./nav-main"
 import { CompanyDetail } from "./company-details"
-
-const data = {
- 
-
-  navMain: [
-    {
-      title: "User Management",
-      url: "#",
-      icon: Users,
-      isActive: true,
-      items: [
-        {
-          title: "user",
-          url: "/users",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Business Management",
-      url: "#",
-      icon: BriefcaseBusiness,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Business Location",
-      url: "#",
-      icon: MapPin,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "Roles",
-          url: "roles",
-        },
-        {
-          title: "Permissions",
-          url: "#",
-        },
-        
-      ],
-    },
-  ],
- 
-}
+import data from "@/constants/menuItems"
 
 export function AppSidebar({...props }: React.ComponentProps<typeof Sidebar>) {
   

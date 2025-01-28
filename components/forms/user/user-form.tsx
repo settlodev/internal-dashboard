@@ -209,7 +209,7 @@ export function UserForm({item}: {item: User | null | undefined}) {
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={isPending}>
-                  {isPending ? "Update user" : "Add user"}
+                  {isPending ? "Update user" : "Add User"}
                 </Button>
               </div>
             </form>

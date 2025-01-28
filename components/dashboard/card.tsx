@@ -15,7 +15,7 @@ interface CardProps {
 
 export default function CardComponent({ title, amount }: CardProps) {
     return (
-        <div>
+        <div className='mt-4'>
             <Card>
                 <CardHeader>
                     <CardTitle>{title}</CardTitle>

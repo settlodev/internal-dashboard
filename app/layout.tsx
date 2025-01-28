@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Footer } from "@/components/footer";
+import { Toaster } from "@/components/ui/toaster";
 // import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
@@ -20,8 +21,8 @@ export default function RootLayout({
       <body
         className='antialiased'
       >
-        {/* <Toaster position="top-right" reverseOrder={false}/> */}
-        {children}
+       <main> {children}</main>
+       <Toaster />
         <Footer />
       </body>
       

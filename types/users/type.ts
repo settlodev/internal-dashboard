@@ -26,6 +26,7 @@ export interface Profile {
     role: { name: string };
     businesses_registered?: number;
     commission_earned?: number;
+    referral_code?: string;
     businesses?: Business[];
   }
   
@@ -33,6 +34,7 @@ export interface Profile {
     id: string;
     name: string;
     registered_on: string;
+    referred_by?: string;
   }
   
   export interface ProfileData {
