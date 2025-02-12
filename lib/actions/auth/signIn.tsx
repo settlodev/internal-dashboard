@@ -137,7 +137,7 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
   }
 };
 
-// First, create a function to request password reset
+//First, create a function to request password reset
 export const requestPasswordReset = async (email: string) => {
   try {
     const supabase = await createClient();
@@ -169,7 +169,7 @@ export const requestPasswordReset = async (email: string) => {
   }
 };
 
-// Then, update the password reset function to use the reset token
+//Then, update the password reset function to use the reset token
 export const resetPassword = async (password: z.infer<typeof resetPasswordSchema>) => {
   const validatedData = resetPasswordSchema.safeParse(password);
   if (!validatedData.success) {
