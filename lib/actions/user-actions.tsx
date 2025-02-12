@@ -1,3 +1,4 @@
+'use server'
 import { ProfileData, User } from "@/types/users/type"
 import { parseStringify } from "../utils"
 import { createClient } from "../supabase/server"
@@ -15,8 +16,10 @@ export const fetchAllUsers = async (): Promise<User[]> => {
         first_name,
         last_name,
         phone,
-        roles (name)
+        roles (name),
+        user_type
       `);
+      console.log(data)
     if (error) {
         console.log(error)
     }

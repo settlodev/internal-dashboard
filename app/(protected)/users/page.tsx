@@ -1,37 +1,60 @@
+'use client'
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { columns } from "@/components/table/users/column";
-import { searchUsers } from "@/lib/actions/user-actions";
+import { fetchAllUsers, searchUsers } from "@/lib/actions/user-actions";
+import { Profile, User } from "@/types/users/type";
+import { useEffect, useState } from "react";
+import Loading from "@/components/widgets/loader";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const breadcrumbItems = [
     { title: "Users", link: "/locations" },
 ]
-type ParamsProps = {
-    searchParams: {
-        [key: string]: string | undefined;
+
+export default function Page() {
+    const [userProfile, setUserProfile] = useState<User[]>([])
+    const [isLoading, setIsLoading] = useState(true);
+    
+    const fetchUserProfile = async () => {
+      try {
+        const users = await fetchAllUsers()
+        console.log(users)
+        setUserProfile(users)
+      } catch (error) {
+        throw error
+      }
+      finally {
+        setIsLoading(false);
+      }
+    
     }
-}
-export default async function Page({searchParams}:ParamsProps) {
-    const q = searchParams.search || "";
-    // const page = Number(searchParams.page) || 0;
-    // const pageLimit = Number(searchParams.pageLimit);
-
-    const data = await searchUsers(q);
-    // const totalPages = Math.ceil(data.length / pageLimit);
-
-
-    // const users = await fetchAllUsers()
+    useEffect(() => {
+      fetchUserProfile()
+    },[])
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-lg">
+              <Loading />
+          </div>
+        </div>
+      );
+    }
     
     return (
             <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
-            <div className={`flex items-center justify-between mb-2`}>
-                <div className={`relative flex-1 md:max-w-md`}>
-                    <BreadcrumbNav items={breadcrumbItems} />
-                </div>
-            </div>
-            {
-                data?.length > 0 ? (
+            <div className='flex items-center justify-between mb-3'>
+        <div className='relative'>
+        <BreadcrumbNav items={breadcrumbItems} />
+        </div>
+        <Button>
+          <Link href="/users/new">Add User</Link>
+        </Button>
+      </div>
+           
                     <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl">Users</CardTitle>
@@ -39,17 +62,12 @@ export default async function Page({searchParams}:ParamsProps) {
                 <CardContent>
                     <DataTable 
                     columns={columns}
-                    data={data}
+                    data={userProfile}
                     searchKey="first_name"
                     />
                 </CardContent>
             </Card>
-                ) : (
-                    <div className="flex items-center justify-center min-h-screen">
-                        <p>No user found</p>
-                    </div>
-                )
-            }
+           
             </div>
     );
 }

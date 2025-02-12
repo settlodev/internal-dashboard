@@ -12,7 +12,6 @@ interface CardProps {
     amount?: number;
 }
 
-
 export default function CardComponent({ title, amount }: CardProps) {
     return (
         <div className='mt-4'>

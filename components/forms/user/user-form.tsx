@@ -18,35 +18,34 @@ import {
 import { FieldErrors, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { useCallback,useTransition } from "react"
+import { useCallback, useTransition } from "react"
 import { signUp } from "@/lib/actions/auth/signIn"
 import RoleSelect from "@/components/widgets/roleSelector"
 import { UserSchema } from "@/types/users/schema"
 import { User } from "@/types/users/type"
-export function UserForm({item}: {item: User | null | undefined}) {
-  console.log("The item is ",item)
-  const [isPending, startTransition] = useTransition()
+import UserTypeSelect from "@/components/widgets/userTypeSelector"
 
+
+export function UserForm({item}: {item: User | null | undefined}) {
+  const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof UserSchema>>({
     resolver: zodResolver(UserSchema),
     defaultValues: {
       ...item,
-      first_name:item ? item?.first_name:"",
-      last_name:item ? item?.last_name :"",
-      email:item ? item?.email :"",
-      phone:item ? item?.phone :"",
-      password:item ? item?.password :"",
-      role: item ? (typeof item.roles === 'string' ? item.roles : "") : "", 
-    
+      first_name: item?.first_name || "",
+      last_name: item?.last_name || "",
+      email: item?.email || "",
+      phone: item?.phone || "",
+      password: item?.password || "",
+      role: item ? (typeof item.roles === 'string' ? item.roles : "") : "",
+      user_type: item?.user_type || "",
     }
   })
 
-  const onInvalid = useCallback(
-    (errors: FieldErrors) => {
-      console.log(errors)
-    
-  },[])
+  const onInvalid = useCallback((errors: FieldErrors) => {
+    console.log(errors)
+  }, [])
 
   const onSubmitData = useCallback((values: z.infer<typeof UserSchema>) => {
     console.log("The values passed are ", values)
@@ -57,21 +56,20 @@ export function UserForm({item}: {item: User | null | undefined}) {
         }
       })
     })
-  }, []
-  )
+  }, [])
 
   return (
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl"></CardTitle>
-          <CardDescription>
-          </CardDescription>
+          <CardDescription></CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmitData,onInvalid)}>
-              <div className="flex flex-col  gap-6">
+            <form onSubmit={form.handleSubmit(onSubmitData, onInvalid)}>
+              <div className="flex flex-col gap-6">
+                {/* First row */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="grid gap-2">
                     <FormField
@@ -83,8 +81,9 @@ export function UserForm({item}: {item: User | null | undefined}) {
                           <FormControl>
                             <Input
                               placeholder="Enter first name"
-                              type="firstName"
-                              {...field} />
+                              type="text"
+                              {...field} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -92,30 +91,27 @@ export function UserForm({item}: {item: User | null | undefined}) {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <FormField
-                        control={form.control}
-                        name="last_name"
-                        render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel>Last Name</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="text"
-                                {...field}
-                                placeholder="Enter last name"
-                              />
-                            </FormControl>
-
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-
+                    <FormField
+                      control={form.control}
+                      name="last_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Last Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              {...field}
+                              placeholder="Enter last name"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </div>
+
+                {/* Second row */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="grid gap-2">
                     <FormField
@@ -128,8 +124,8 @@ export function UserForm({item}: {item: User | null | undefined}) {
                             <Input
                               placeholder="Enter user email"
                               type="email"
-
-                              {...field} />
+                              {...field} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -137,77 +133,87 @@ export function UserForm({item}: {item: User | null | undefined}) {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel>Phone Number</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="text"
-                                {...field}
-                                placeholder="Enter phone number"
-                              />
-                            </FormControl>
-
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-
-
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              {...field}
+                              placeholder="Enter phone number"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+
+                {/* Third row */}
+                <div className="grid grid-cols-3 gap-2">
                   <div className="grid gap-2">
-                    <div className="flex items-center">
                     <FormField
                       control={form.control}
                       name="password"
                       render={({ field }) => (
-                        <FormItem className="w-full">
+                        <FormItem>
                           <FormLabel>Password</FormLabel>
                           <FormControl>
-                            <Input type="password" {...field}
-                              placeholder="Enter password" />
+                            <Input 
+                              type="password" 
+                              {...field}
+                              placeholder="Enter password" 
+                            />
                           </FormControl>
-                          
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    </div>
                   </div>
                   <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <FormField
-                        control={form.control}
-                        name="role"
-                        render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel>User Role</FormLabel>
-                            <FormControl>
-                              <RoleSelect
-                                {...field}
-                                placeholder="Select user role"
-                                label="User Role"
-                              />
-                            </FormControl>
-
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-
-
+                    <FormField
+                      control={form.control}
+                      name="role"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>User Role</FormLabel>
+                          <FormControl>
+                            <RoleSelect
+                              {...field}
+                              placeholder="Select user role"
+                              label="User Role"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <FormField
+                      control={form.control}
+                      name="user_type"  
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>User Type</FormLabel>
+                          <FormControl>
+                            <UserTypeSelect
+                              {...field}
+                              placeholder="Select user type"
+                              label="User Type"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </div>
+
                 <Button type="submit" className="w-full" disabled={isPending}>
                   {isPending ? "Update user" : "Add User"}
                 </Button>

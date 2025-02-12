@@ -11,6 +11,7 @@ export declare interface User{
     status:string,
     canDeleted:boolean,
     isArchived:boolean
+    user_type:string
 
 }
 interface role {

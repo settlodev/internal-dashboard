@@ -1,5 +1,4 @@
 import { UUID } from "crypto"
-import { boolean } from "zod"
 
 export declare interface Location{
     id: UUID,
@@ -47,4 +46,69 @@ export declare interface Settings{
     isArchived: boolean
        
          
+}
+
+export declare interface ActiveSubscription{
+    id:UUID,
+    startDate:Date,
+    endDate:Date,
+    subscriptionStatus:string,
+    location:UUID
+    active:boolean
+    isTrial:boolean
+    status:boolean
+    canDelete: boolean
+    isArchived: boolean
+    subscription:Subscription
+}
+
+export declare interface Subscription{
+    id:UUID,
+    amount:number,
+    discount:number,
+    packageName:string,
+    packageCode:string,
+    isDefault:boolean
+    status:boolean
+    canDelete: boolean
+    isArchived: boolean
+    subscriptionFeatures:SubscriptionFeature[]
+    includedSubscriptions:IncludedSubscriptions[]
+    extraFeatures:ExtraFeature[]
+}
+export declare interface SubscriptionFeature{
+    id:UUID,
+    name:string,
+    code:string
+    status:boolean
+    canDelete: boolean
+    isArchived: boolean
+}
+
+export declare interface IncludedSubscriptions{
+    packageName:string,
+    packageCode:string
+}
+
+export declare interface ExtraFeature{
+    id:UUID,
+    name:string,
+    code:string
+    status:boolean
+    canDelete: boolean
+    isArchived: boolean
+}
+export declare interface RequestSubscription{
+    id:UUID,
+    reference:string,
+    quantity:number,
+    description:string,
+    payment_type:string,
+    location:UUID
+    user_id:UUID
+    approved_by:UUID
+    status:string,
+    canDelete: boolean
+    isArchived: boolean,
+    created_at:string
 }

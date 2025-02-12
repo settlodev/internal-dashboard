@@ -60,6 +60,18 @@ const data = {
         ],
       },
       {
+        title: "Subscriptions",
+        url: "#",
+        icon: MapPin,
+        items: [
+          {
+            title: "Requests",
+            url: "/requests",
+          },
+          
+        ],
+      },
+      {
         title: "Settings",
         url: "#",
         icon: Settings2,

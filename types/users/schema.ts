@@ -8,4 +8,5 @@ export const UserSchema = object({
     password: string({message: "Password is required"}),
     role: string({message: "Role is required"}),
     // status: boolean().optional(),
+    user_type: string({message: "User type is required"}),
 })
