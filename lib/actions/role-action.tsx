@@ -6,7 +6,7 @@ import { parseStringify } from "../utils"
 
 export const fetchAllRoles = async (): Promise<Role[]> => {
     const supabase = await createClient()
-    const { data, error } = await supabase.from('roles').select('*').order('name', { ascending: true })
+    const { data, error } = await supabase.from('internal_roles').select('*').order('name', { ascending: true })
     if (error) {
         console.log(error)
     }
@@ -17,7 +17,7 @@ export const getRole = async (id:UUID): Promise<Role> =>{
     const supabase = await createClient()
 
 const {data,error} = await supabase
-                     .from('roles')
+                     .from('internal_roles')
                      .select('*')
                      .eq('uuid',id)
                      .single();

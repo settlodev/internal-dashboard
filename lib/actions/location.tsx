@@ -100,6 +100,7 @@ export const requestSubscription = async (
             description: validRequest.data.description,
             payment_type: validRequest.data.payment_type,
             location: validRequest.data.location,
+            location_name: validRequest.data.location_name,
             user_id: authUserId, // Use the authenticated user ID
             status: "pending",
         };
@@ -107,11 +108,11 @@ export const requestSubscription = async (
         console.log("The subscription data", subscriptionData)
         
         const { error } = await supabase
-        .from('location_subscriptions')
+        .from('internal_location_subscriptions')
         .insert([subscriptionData]);
 
         if (error) {
-            console.error("Request subscription error:", error);
+            console.error("Request subscription error:", error );
             return parseStringify({
                 responseType:"error",
                 message:"Subscription request failed",
@@ -133,7 +134,7 @@ export const requestSubscription = async (
 export const fetchAllRequestSubscription = async (): Promise<RequestSubscription[]> => {
     const supabase = await createClient();
     const { data, error } = await supabase
-        .from('location_subscriptions')
+        .from('internal_location_subscriptions')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -146,7 +147,7 @@ export const fetchAllRequestSubscription = async (): Promise<RequestSubscription
 export const getRequestSubscriptionById = async (id: string): Promise<RequestSubscription> => {
     const supabase = await createClient();
     const { data, error } = await supabase
-        .from('location_subscriptions')
+        .from('internal_location_subscriptions')
         .select('*')
         .eq('id', id)
         .single();
@@ -178,7 +179,7 @@ export const rejectSubscriptionRequest = async (id: string) => {
         .from('location_subscriptions')
         .update({ 
             status: 'rejected', 
-            approved_by: 'current-user-id' // Replace with actual user ID
+            approved_by: 'current-user-id' 
         })
         .eq('id', id);
 

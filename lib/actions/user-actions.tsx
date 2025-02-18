@@ -10,13 +10,13 @@ export const userWithInSession = async () => {
 }
 export const fetchAllUsers = async (): Promise<User[]> => {
     const supabase = await createClient()
-    const { data, error } = await supabase.from('profiles')  
+    const { data, error } = await supabase.from('internal_profiles')  
     .select(`
         id,
         first_name,
         last_name,
         phone,
-        roles (name),
+        role:internal_roles (name),
         user_type
       `);
       console.log(data)
@@ -34,7 +34,7 @@ export const searchUsers = async (q: string): Promise<User[]> => {
     //  const end = start + pageLimit - 1;
  
      const { data, error } = await supabase
-         .from('profiles')
+         .from('internal_profiles')
          .select()
          .textSearch('first_name', `%${q}%`);
  
@@ -58,10 +58,10 @@ export async function fetchProfileData(): Promise<ProfileData> {
     }
 
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
+      .from('internal_profiles')
       .select(`
         *,
-        role (name)
+        role:internal_roles(name)
       `)
       .eq('id', user.id)
       .single();
@@ -83,7 +83,7 @@ export async function fetchProfileDataById(id: string): Promise<User | undefined
 
   try {
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
+      .from('internal_profiles')
       .select('*')
       .eq('id', id)
       .single();

@@ -23,7 +23,7 @@ import { useCallback, useTransition } from "react"
 import { SignIn } from "@/lib/actions/auth/signIn"
 export function SignInForm() {
   const [isPending,startTransition] = useTransition()
-  
+
 
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -33,7 +33,7 @@ export function SignInForm() {
     }
   })
 
-  
+
 
   const onSubmitData = useCallback((values: z.infer<typeof signInSchema>) => {
     console.log("The values passed are ",values)
@@ -43,7 +43,7 @@ export function SignInForm() {
           window.location.href = data.redirectTo
         }
       })
-      
+
     })
   },[]
   )
@@ -54,7 +54,7 @@ export function SignInForm() {
         <CardHeader>
           <CardTitle className="text-2xl">Sign In</CardTitle>
           <CardDescription>
-            Enter your email below to signIn to your account
+            Enter your email below to sign in to your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -91,7 +91,7 @@ export function SignInForm() {
                           <FormControl>
                             <Input type="password" {...field} />
                           </FormControl>
-                          
+
                           <FormMessage />
                         </FormItem>
                       )}

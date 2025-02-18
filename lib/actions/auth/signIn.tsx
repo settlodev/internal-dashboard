@@ -37,13 +37,18 @@ export const SignIn = async (
       })
     }
     const user = data.user;
-    console.log("The user", user)
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select(`role (name)`)
+    // console.log("The user", user)
+    const { data: internal_profile, error: profileError } = await supabase
+      .from('internal_profiles')
+      .select(`
+        *,
+        role:internal_roles(name)
+      `)
       .eq('id', user.id)
       .single();
 
+ 
+      // console.log("The profile", internal_profile)
     if (profileError) {
       console.log("The error", profileError)
       return ({
@@ -53,7 +58,7 @@ export const SignIn = async (
       })
     }
 
-    const role = profile?.role[0]?.name
+    const role = internal_profile?.role?.name
 
     if (role === 'staff') {
       return parseStringify({
@@ -88,9 +93,10 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
     const { email, password, first_name, last_name, phone, role, user_type} = validatedData.data;
 
     // Sign up with email and password
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
+      email_confirm: true
     })
 
     if (error) {
@@ -103,7 +109,7 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
     console.log("The user code is", code)
     if (user) {
       const { error: profileError } = await supabase
-        .from('profiles')
+        .from('internal_profiles')
         .insert([
           {
             id: user.id,
@@ -118,10 +124,12 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
 
       if (profileError) {
         console.error("Error inserting profile:", profileError);
+        // delete the auth user if profile creation fails
+        await supabase.auth.admin.deleteUser(user.id);
         return { error: "Profile creation failed" };
       }
 
-      await supabase.from('user_roles').insert([
+      await supabase.from('internal_user_roles').insert([
         {
           user_id: user.id,
           role_id: role,
