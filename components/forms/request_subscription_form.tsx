@@ -1,8 +1,5 @@
 'use client'
-import { useToast } from "@/hooks/use-toast";
-import { BusinessTypeSchema } from "@/types/business/schema";
-import { BusinessType } from "@/types/business/types";
-import { FormResponse } from "@/types/types";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState, useTransition } from "react";
 import { FieldErrors, useForm } from "react-hook-form";
@@ -13,15 +10,17 @@ import { Separator } from "../ui/separator";
 import SubmitButton from "../widgets/submit-button";
 import CancelButton from "../widgets/cancel-button";
 import { RequestSubscriptionSchema } from "@/types/location/schema";
-import { PaymentMeans } from "../widgets/combobox";
 import { Textarea } from "../ui/textarea";
 import { requestSubscription } from "@/lib/actions/location";
 import { Location } from "@/types/location/type";
+import PaymentMeansSelector from "../widgets/select";
+import { Alert, AlertDescription } from "../ui/alert";
+import toast from "react-hot-toast";
 
 function RequestSubscriptionForm({location}:{location:Location}) {
     const [isPending, startTransition] = useTransition()
-    const [response, setResponse] =useState<FormResponse | undefined>()
-    const { toast } = useToast()
+    const [formError, setFormError] = useState<string | null>(null);
+
 
     console.log("The location requesting for subscription ", location)
 
@@ -29,40 +28,61 @@ function RequestSubscriptionForm({location}:{location:Location}) {
     const form = useForm<z.infer<typeof RequestSubscriptionSchema>>({
         resolver: zodResolver(RequestSubscriptionSchema),
         defaultValues: {
-            location:location.id
+            location:location.id,
+            location_name:location.name,
+            payment_type:""
         }
     })
 
     const onInvalid = useCallback(
         (errors: FieldErrors) => {
             console.log(errors);
-            toast({
-                variant: "destructive",
-                title: "Uh oh! something went wrong",
-                description: typeof errors.message === 'string' && errors.message
+            setFormError(
+                typeof errors.message === 'string' && errors.message
                     ? errors.message
-                    : "There was an issue submitting your form, please try later",
-            });
+                    : "Please correct the errors below before submitting."
+            );
         },
         []
     );
 
     const onSubmitData = useCallback((values: z.infer<typeof RequestSubscriptionSchema>) => {
     
-        // console.log("The update values passed are ", values)
-
+        setFormError(null);
         startTransition(() => {
-           
-                requestSubscription(values).then((data) => {
-                    if (data) setResponse(data)
-                }).catch((error: any) => {
-                    console.log(error)
+            requestSubscription(values)
+                .then((data) => {
+                    if (data?.error) {
+                        console.error('Request subscription error:', data.error);
+                        // Handle specific database error codes
+                        if (data.error instanceof Error && data.error.message.includes('23505') && data.error.message.includes('reference')) {
+                            setFormError("This reference number has already been used. Please enter a different reference number.");
+                        } else if (data.error instanceof Error && data.error.message) {
+                            // Use the error message if available
+                            setFormError(data.error.message);
+                        } else {
+                            setFormError("An error occurred while processing your request. Please try again.");
+                        }
+                    } else {
+                        toast.success("Subscription request submitted successfully")
+                    }
                 })
-            
-        })
-    }, [])
+                .catch((error) => {
+                    console.error('Unexpected error:', error);
+                    setFormError("An unexpected error occurred. Please try again later.");
+                });
+        });
+    }, [toast]);
     return (
         <Form {...form}>
+            <div className="w-full max-w-sm mx-auto">
+            {formError && (
+                    <Alert variant="destructive" className="mb-6">
+                        <AlertDescription className="text-center">
+                            {formError}
+                        </AlertDescription>
+                    </Alert>
+                )}
             <form onSubmit={form.handleSubmit(onSubmitData, onInvalid)}>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
                     <FormField
@@ -75,6 +95,7 @@ function RequestSubscriptionForm({location}:{location:Location}) {
                                     <Input placeholder="Enter reference number" {...field} />
                                 </FormControl>
                                 <FormMessage />
+                                <FormDescription>Optional for cash payments</FormDescription>
                             </FormItem>
                         )}
                     />
@@ -101,18 +122,19 @@ function RequestSubscriptionForm({location}:{location:Location}) {
                         )}
                     />
                    <FormField
-                    control={form.control}
-                    name="payment_type"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                        <FormLabel>Payment type</FormLabel>
-                        <FormControl>
-                            <PaymentMeans value={field.value} onChange={field.onChange} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
+    control={form.control}
+    name="payment_type"
+    render={({ field }) => (
+        <FormItem>
+            <FormLabel>Payment Type</FormLabel>
+            <FormControl>
+                <PaymentMeansSelector value={field.value} onChange={field.onChange} />
+            </FormControl>
+            <FormMessage />
+        </FormItem>
+    )}
+/>
+
 
                     <FormField
                         control={form.control}
@@ -137,6 +159,7 @@ function RequestSubscriptionForm({location}:{location:Location}) {
                 />
             </div>
             </form>
+            </div>
         </Form>
     )
 }

@@ -56,11 +56,12 @@ export const columns: ColumnDef<User>[] = [
     header: "User Type",
   },
   {
-    accessorKey: "role",
+    accessorKey: "role[0].name",
     header: "Role",
 
     cell: ({ row }) => {
-      const role = row.original.roles
+      const role = row.original.role
+      console.log(role)
       return (
         <div className="flex flex-col">
           <div className="font-medium">{role?.name}</div>

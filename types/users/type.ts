@@ -3,7 +3,7 @@ import { UUID } from "crypto";
 export declare interface User{
     id:UUID,
     email:string,
-    roles:role,
+    role:role,
     phone:string,
     first_name:string,
     last_name:string,

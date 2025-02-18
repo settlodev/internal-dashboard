@@ -24,9 +24,11 @@ import RoleSelect from "@/components/widgets/roleSelector"
 import { UserSchema } from "@/types/users/schema"
 import { User } from "@/types/users/type"
 import UserTypeSelect from "@/components/widgets/userTypeSelector"
+import toast from "react-hot-toast"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 
-export function UserForm({item}: {item: User | null | undefined}) {
+export function UserForm({ item }: { item: User | null | undefined }) {
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof UserSchema>>({
@@ -38,7 +40,7 @@ export function UserForm({item}: {item: User | null | undefined}) {
       email: item?.email || "",
       phone: item?.phone || "",
       password: item?.password || "",
-      role: item ? (typeof item.roles === 'string' ? item.roles : "") : "",
+      role: item ? (typeof item.role === 'string' ? item.role : "") : "",
       user_type: item?.user_type || "",
     }
   })
@@ -47,16 +49,32 @@ export function UserForm({item}: {item: User | null | undefined}) {
     console.log(errors)
   }, [])
 
-  const onSubmitData = useCallback((values: z.infer<typeof UserSchema>) => {
-    console.log("The values passed are ", values)
-    startTransition(() => {
-      signUp(values).then((data) => {
-        if (data?.redirectTo) {
-          window.location.href = data.redirectTo
+  const onSubmitData = useCallback(async (values: z.infer<typeof UserSchema>) => {
+    console.log("The values passed are ", values);
+
+    startTransition(async () => {
+      const result = await signUp(values);
+
+      if (result?.error) {
+        console.error("Sign-up error:", result.error);
+
+        if (result.status === 400) {
+          form.setError("root", { message: "Invalid data provided." });
+        } else if (result.status === 422) {
+          form.setError("email", { message: "Email already exists." });
+        } else {
+          form.setError("root", { message: result.error });
         }
-      })
-    })
-  }, [])
+
+        return;
+      }
+
+      if (result?.redirectTo) {
+        window.location.href = result.redirectTo;
+      }
+    });
+  }, []);
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -67,6 +85,14 @@ export function UserForm({item}: {item: User | null | undefined}) {
         </CardHeader>
         <CardContent>
           <Form {...form}>
+            {(form.formState.errors.root || Object.keys(form.formState.errors).length > 0) && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertDescription>
+                  {form.formState.errors.root?.message ||
+                    "Please correct the errors below before submitting."}
+                </AlertDescription>
+              </Alert>
+            )}
             <form onSubmit={form.handleSubmit(onSubmitData, onInvalid)}>
               <div className="flex flex-col gap-6">
                 {/* First row */}
@@ -82,7 +108,7 @@ export function UserForm({item}: {item: User | null | undefined}) {
                             <Input
                               placeholder="Enter first name"
                               type="text"
-                              {...field} 
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -124,7 +150,7 @@ export function UserForm({item}: {item: User | null | undefined}) {
                             <Input
                               placeholder="Enter user email"
                               type="email"
-                              {...field} 
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -163,10 +189,10 @@ export function UserForm({item}: {item: User | null | undefined}) {
                         <FormItem>
                           <FormLabel>Password</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="password" 
+                            <Input
+                              type="password"
                               {...field}
-                              placeholder="Enter password" 
+                              placeholder="Enter password"
                             />
                           </FormControl>
                           <FormMessage />
@@ -196,7 +222,7 @@ export function UserForm({item}: {item: User | null | undefined}) {
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
-                      name="user_type"  
+                      name="user_type"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>User Type</FormLabel>
@@ -214,9 +240,16 @@ export function UserForm({item}: {item: User | null | undefined}) {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isPending}>
-                  {isPending ? "Update user" : "Add User"}
-                </Button>
+                <div>
+                  <Button type="submit" className="w-full" disabled={isPending} onClick={() => toast.success("User added successfully")}>
+                    {isPending ? "Updating user..." : "Add User"}
+                  </Button>
+                  {/* {form.formState.errors.root && (
+    <p className="text-red-500 text-sm mt-2">{form.formState.errors.root.message}</p>
+  )} */}
+                </div>
+
+
               </div>
             </form>
           </Form>
