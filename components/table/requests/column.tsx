@@ -31,7 +31,7 @@ export const columns: ColumnDef<RequestSubscription>[] = [
         enableHiding: false,
       },
     {
-        accessorKey: "location",
+        accessorKey: "location_name",
         header: ({ column }) => {
             return (
                   <Button
