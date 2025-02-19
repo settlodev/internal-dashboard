@@ -1,4 +1,5 @@
 'use client'
+import { ProtectedComponent } from "@/components/auth/protectedComponent";
 import BusinessBarChart from "@/components/dashboard/businessBar";
 import CardComponent from "@/components/dashboard/card";
 import LocationBarChart from "@/components/dashboard/locationBarChart";
@@ -18,10 +19,10 @@ export default function Dashboard() {
     const getSummary = async () => {
         try {
             const data = await getDashboardSummaries();
-            console.log(data)
+            console.log(data )
             setStats(data as SummaryResponse);
         } catch (error) {
-            console.log("The error", error);
+            console.log("The error", error );
             throw error;
         }
         finally{
@@ -42,6 +43,7 @@ export default function Dashboard() {
         );
       }
     return (
+        <ProtectedComponent requiredPermission="view:analytics" fallback={<div>You are not allowed to view this page</div>}>
         <div className='flex flex-col space-y-4 md:p-8 p-4 w-full'>
             <div className={`flex items-center justify-between mb-2`}>
                 <div className={`relative flex-1 md:max-w-md`}>
@@ -65,5 +67,7 @@ export default function Dashboard() {
                 <LocationBarChart data={stats?.monthlyLocationsCreated ?? []} />
             </div>
         </div>
+        </ProtectedComponent>
+     
     );
 }

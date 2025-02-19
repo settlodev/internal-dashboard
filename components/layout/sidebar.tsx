@@ -11,19 +11,55 @@ import {
 import { NavMain } from "./nav-main"
 import { CompanyDetail } from "./company-details"
 import data from "@/constants/menuItems"
+import { checkUserPermissions } from "@/lib/actions/auth/signIn"
+import { NavUser } from "./nav-user"
+import Loading from "@/app/(auth)/loading"
 
-export function AppSidebar({...props }: React.ComponentProps<typeof Sidebar>) {
-  
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [permissions, setPermissions] = React.useState<string[]>([])
+  const [isLoading, setIsLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const fetchPermissions = async () => {
+      const { permissions, error } = await checkUserPermissions()
+      console.log("The permissions", permissions)
+      if (error) {
+        console.error("Permission error:", error)
+      }
+      setPermissions(permissions || [])
+      setIsLoading(false)
+    }
+
+    fetchPermissions()
+  }, [])
+
+  // Filter navigation items based on user permissions
+  const filteredNavItems = data.navMain
+    .map((category) => ({
+      ...category,
+      items: category.items.filter(
+        (item) => !item.requiredPermission || permissions.includes(item.requiredPermission)
+      ),
+    }))
+    .filter((category) => category.items.length > 0) // Remove empty categories
+
+    console.log(filteredNavItems)
+
+  if (isLoading) return <div>
+    <Loading />
+  </div>
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-         <CompanyDetail/>
+        <CompanyDetail />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={filteredNavItems} />
       </SidebarContent>
       <SidebarFooter>
-        {/* <NavUser user={data.user} /> */}
+        {/* Add footer content if needed */}
+        {/* <NavUser/> */}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
