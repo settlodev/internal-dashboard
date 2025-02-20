@@ -1,4 +1,4 @@
-"use client"
+// "use client"
 
 import * as React from "react"
 import { Plus } from "lucide-react"
@@ -14,7 +14,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
+
 export function CompanyDetail() {
+  // const { profile, error } = await fetchProfileData();
   // console.log("The user logged in" ,user)
   return (
     <SidebarMenu>

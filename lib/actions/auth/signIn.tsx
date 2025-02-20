@@ -291,7 +291,7 @@ export async function checkUserPermissions() {
       .eq('user_id', user.id);
   
 
-      console.log("The data has this role", data)
+      console.log("The data has this role", data )
 
     if (permError) {
       return { permissions: [], error: permError.message };

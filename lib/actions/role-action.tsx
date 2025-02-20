@@ -3,6 +3,8 @@ import { Role } from "@/types/role/type"
 import { UUID } from "crypto"
 import { createClient } from "../supabase/server"
 import { parseStringify } from "../utils"
+import { z } from "zod"
+import { RoleSchema } from "@/types/role/schema"
 
 export const fetchAllRoles = async (): Promise<Role[]> => {
     const supabase = await createClient()
@@ -29,46 +31,226 @@ const {data,error} = await supabase
     return parseStringify(data)
 }
 
-// export async function getUserPermissions(userId: string): Promise<string[]> {
+export const createRole = async (value:z.infer<typeof RoleSchema>)=> {
+    const validData = RoleSchema.safeParse(value);
+    if (!validData.success) {
+        return parseStringify({
+            responseType:"error",
+            message:"Please fill all the fields before submitting",
+            error: new Error(validData.error.message),
+            status:400
+        })
+    }
+    const role = {
+        name: validData.data.name.toLowerCase(),
+        description: validData.data.description
+    }
+    const supabase = await createClient()
+
+    try {
+        const { data, error } = await supabase.from('internal_roles').insert([role]).single()
+        if (error) {
+            console.log(error)
+        }
+        return parseStringify(data)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+
+export async function getRoleById(id: string): Promise<Role | undefined> {
+    const supabase = await createClient();
+  
+    try {
+      // First, get the role data
+      const { data: role, error: roleError } = await supabase
+        .from('internal_roles')
+        .select('*')
+        .eq('id', id)
+        .single();
+  
+      if (roleError) throw roleError;
+  
+      // Then, get all permissions with their modules
+      const { data: allPermissions, error: permError } = await supabase
+        .from('internal_permissions')
+        .select(`
+          id,
+          name,
+          slug,
+          module:internal_modules (
+            id,
+            name,
+            slug
+          )
+        `);
+  
+      if (permError) throw permError;
+  
+      // Get the role's permissions to know which ones are selected
+      const { data: rolePermissions, error: rolePermError } = await supabase
+        .from('internal_role_permissions')
+        .select('permission_id')
+        .eq('role_id', id);
+  
+        console.log(rolePermissions)
+      if (rolePermError) throw rolePermError;
+  
+      // Create a Set of permission IDs that are associated with the role
+      const selectedPermissionIds = new Set(rolePermissions.map(rp => rp.permission_id));
+  
+      // Transform the permissions to include a selected status
+      const formattedPermissions = allPermissions.map(permission => ({
+        permission: {
+          ...permission,
+          isSelected: selectedPermissionIds.has(permission.id)
+        }
+      }));
+    //   console.log(formattedPermissions)
+  
+      return parseStringify({
+        ...role,
+        permissions: formattedPermissions
+      });
+  
+    } catch (error) {
+      console.error('Error fetching role data:', error);
+    }
+  }
+
+//   export async function updateRolePermissions(
+//     roleId: UUID, 
+//     newPermissions: z.infer<typeof RoleSchema>
+//   ) {
+//     const validatedData = RoleSchema.safeParse(newPermissions);
+//     if (!validatedData.success) {
+//         return parseStringify({
+//             responseType:"error",
+//             message:"Please fill all the fields before submitting",
+//             error: new Error(validatedData.error.message),
+//             status:400
+//         })
+//     }
 //     const supabase = await createClient();
   
-//     const { data, error } = await supabase
-//       .from('internal_user_roles')
-//       .select(`
-//         role:internal_roles (
-//           id,
-//           name,
-//           permissions:internal_role_permissions (
-//             permission:internal_permissions (
-//               id,
-//               name,
-//               slug,
-//               module:internal_modules (
-//                 id,
-//                 name,
-//                 slug
-//               )
-//             )
-//           )
+//     try {
+//       // Start a transaction
+//       const { data: existingPerms, error: existingError } = await supabase
+//         .from('internal_role_permissions')
+//         .select('permission_id, is_default')
+//         .eq('role_id', roleId);
+  
+//       if (existingError) throw existingError;
+  
+//       // Create sets for easier comparison
+//       const existingPermSet = new Set(existingPerms.map(p => p.permission_id));
+//       const defaultPermSet = new Set(
+//         existingPerms
+//           .filter(p => p.is_default)
+//           .map(p => p.permission_id)
+//       );
+  
+//       // Determine permissions to add and remove
+//       const permissionsToAdd = Object.entries(newPermissions)
+//         .filter(([permId, isSelected]) => isSelected && !existingPermSet.has(permId))
+//         .map(([permId]) => ({
+//           role_id: roleId,
+//           permission_id: permId,
+//           is_default: false
+//         }));
+  
+//       const permissionsToRemove = Object.entries(newPermissions)
+//         .filter(([permId, isSelected]) => 
+//           !isSelected && 
+//           existingPermSet.has(permId) && 
+//           !defaultPermSet.has(permId)
 //         )
-//       `)
-//       .eq('user_id', userId)
+//         .map(([permId]) => permId);
   
-//     if (error) throw error
+//       // Perform updates in transaction
+//       const { error: updateError } = await supabase.rpc('update_role_permissions', {
+//         role_id: roleId,
+//         permissions_to_add: permissionsToAdd,
+//         permissions_to_remove: permissionsToRemove
+//       });
   
-//     // Flatten permissions from all roles
-//     const permissions = new Set<string>()
-//     data?.forEach(({ role }) => {
-//       role.permissions.forEach(({ permission }) => {
-//         permissions.add(permission.slug)
-//       })
-//     })
-    
-    
+//       if (updateError) throw updateError;
   
-//     return parseStringify(Array.from(permissions));
+//       return { success: true };
+  
+//     } catch (error) {
+//       console.error('Error updating role permissions:', error);
+//       return { 
+//         success: false, 
+//         error: 'Failed to update role permissions' 
+//       };
+//     }
 //   }
 
-//   export async function hasPermission(userPermissions: string[], requiredPermission: string) {
-//     return userPermissions.includes(requiredPermission)
-//   }
+export async function updateRolePermissions(
+    roleId: string, 
+    permissions: Record<string, boolean>  
+  ) {
+    const supabase = await createClient();
+  
+    try {
+      // Start a transaction
+      const { data: existingPerms, error: existingError } = await supabase
+        .from('internal_role_permissions')
+        .select('permission_id, is_default')
+        .eq('role_id', roleId);
+  
+      if (existingError) throw existingError;
+  
+      // Create sets for easier comparison
+      const existingPermSet = new Set(existingPerms.map(p => p.permission_id));
+      const defaultPermSet = new Set(
+        existingPerms
+          .filter(p => p.is_default)
+          .map(p => p.permission_id)
+      );
+  
+      // Determine permissions to add and remove
+      const permissionsToAdd = Object.entries(permissions)
+        .filter(([permId, isSelected]) => isSelected && !existingPermSet.has(permId))
+        .map(([permId]) => ({
+          permission_id: permId,
+          is_default: false
+        }));
+  
+      const permissionsToRemove = Object.entries(permissions)
+        .filter(([permId, isSelected]) => 
+          !isSelected && 
+          existingPermSet.has(permId) && 
+          !defaultPermSet.has(permId)
+        )
+        .map(([permId]) => permId);
+  
+        console.log("Sending to Supabase:", {
+            role_id_param: roleId,
+            permissions_to_add: JSON.stringify(permissionsToAdd), 
+            permissions_to_remove: permissionsToRemove,
+          });
+      // Perform updates in transaction
+        // const permissionsToAddArray = permissionsToAdd.length > 0 ? permissionsToAdd : []; // Ensure it's always an array
+
+        const { error: updateError } = await supabase.rpc('update_role_permissions', {
+        role_id_param: roleId,
+        permissions_to_add: JSON.stringify(permissionsToAdd),  // Ensure valid JSON array
+        permissions_to_remove: permissionsToRemove.length > 0 ? permissionsToRemove : [] // Ensure valid array
+        });
+
+      if (updateError) throw updateError;
+  
+      return { success: true };
+  
+    } catch (error) {
+      console.error('Error updating role permissions:', error);
+      return { 
+        success: false, 
+        error: 'Failed to update role permissions' 
+      };
+    }
+  }

@@ -12,7 +12,6 @@ import { NavMain } from "./nav-main"
 import { CompanyDetail } from "./company-details"
 import data from "@/constants/menuItems"
 import { checkUserPermissions } from "@/lib/actions/auth/signIn"
-import { NavUser } from "./nav-user"
 import Loading from "@/app/(auth)/loading"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -22,7 +21,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   React.useEffect(() => {
     const fetchPermissions = async () => {
       const { permissions, error } = await checkUserPermissions()
-      console.log("The permissions", permissions)
+      // console.log("The permissions", permissions)
       if (error) {
         console.error("Permission error:", error)
       }
@@ -43,7 +42,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }))
     .filter((category) => category.items.length > 0) // Remove empty categories
 
-    console.log(filteredNavItems)
+    // console.log(filteredNavItems)
 
   if (isLoading) return <div>
     <Loading />

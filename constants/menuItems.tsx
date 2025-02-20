@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, CalendarSync, ChartColumn, MapPin, Settings2, Users } from "lucide-react"
+import { BriefcaseBusiness, CalendarSync, ChartColumn, MapPin, Settings2, User, Users } from "lucide-react"
 
 const data = {
   navMain: [
@@ -87,13 +87,9 @@ const data = {
         {
           title: "Roles",
           url: "/roles",
-          requiredPermission: "manage_roles",
+          requiredPermission: "view:roles",
         },
-        {
-          title: "Permissions",
-          url: "/permissions",
-          requiredPermission: "manage_permissions",
-        },
+        
       ],
     },
   ],
