@@ -8,6 +8,7 @@ import { fetchAllRequestSubscription } from "@/lib/actions/location";
 import { Location, RequestSubscription } from "@/types/location/type";
 import { useEffect, useState } from "react";
 import Loading from "@/components/widgets/loader";
+import { ProtectedComponent } from "@/components/auth/protectedComponent";
 
 const breadcrumbItems = [
     { title: "Requests", link: "/requests" },
@@ -19,7 +20,6 @@ export default function Dashboard() {
 const fetchRequestSubscription = async () => {
   try {
     const requests = await fetchAllRequestSubscription()
-    console.log(requests)
     setRequest(requests)
   } catch (error) {
     throw error
@@ -43,6 +43,9 @@ if (isLoading) {
     );
   }
     return (
+      <ProtectedComponent 
+      requiredPermissions={['view:requests', 'approve:request']}
+      fallback={<div>Access denied</div>}>
         <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
             <div className={`flex items-center justify-between mb-2`}>
                 <div className={`relative flex-1 md:max-w-md`}>
@@ -64,5 +67,6 @@ if (isLoading) {
                 </CardContent>
             </Card>
         </div>
+        </ProtectedComponent>
     );
 }

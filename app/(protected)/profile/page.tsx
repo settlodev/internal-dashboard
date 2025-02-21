@@ -73,7 +73,13 @@ async function ProfilePage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-secondary/20 p-4 rounded-lg">
+              <p className="text-sm text-muted-foreground">Referral Code</p>
+              <p className="text-2xl font-semibold">
+                {profile.referral_code || 'N/A'}
+              </p>
+            </div>
             <div className="bg-secondary/20 p-4 rounded-lg">
               <p className="text-sm text-muted-foreground">Businesses Registered</p>
               <p className="text-2xl font-semibold">

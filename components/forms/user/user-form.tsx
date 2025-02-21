@@ -244,9 +244,7 @@ export function UserForm({ item }: { item: User | null | undefined }) {
                   <Button type="submit" className="w-full" disabled={isPending} onClick={() => toast.success("User added successfully")}>
                     {isPending ? "Updating user..." : "Add User"}
                   </Button>
-                  {/* {form.formState.errors.root && (
-    <p className="text-red-500 text-sm mt-2">{form.formState.errors.root.message}</p>
-  )} */}
+            
                 </div>
 
 

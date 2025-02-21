@@ -163,7 +163,7 @@ export const approveSubscriptionRequest = async (id: string) => {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase
-        .from('location_subscriptions')
+        .from('internal_location_subscriptions')
         .update({ 
             status: 'approved', 
             approved_by: user?.id 
@@ -185,4 +185,8 @@ export const rejectSubscriptionRequest = async (id: string) => {
 
     if (error) throw error;
 };
+
+const paySubscription = async (id: string) => {
+    
+} 
 

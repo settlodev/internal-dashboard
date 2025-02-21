@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { inviteStaff } from "../email/send";
 import { resetPasswordSchema } from "@/types/auth/resetPasswordSchema";
+import { cookies } from 'next/headers';
 
 export const SignIn = async (
   credentials: z.infer<typeof signInSchema>
@@ -64,7 +65,7 @@ export const SignIn = async (
       return parseStringify({
         responseType: "success",
         message: "Signed in successfully",
-        redirectTo: "/users"
+        redirectTo: "/profile"
       });
     } else {
       return parseStringify({
@@ -244,3 +245,69 @@ export const signOut = async () => {
   redirect("/")
 }
 
+
+
+
+export async function getCurrentUser() {
+  try {
+    const cookieStore = cookies();
+    const supabase = await createClient();
+    
+    const { data: { user }, error } = await supabase.auth.getUser();
+
+    console.log("The user", user)
+    
+    if (error || !user) {
+      return { user: null, error: error?.message };
+    }
+
+    return { user, error: null };
+  } catch (error) {
+    console.error('Error getting user:', error);
+    return { user: null, error: 'Failed to get user' };
+  }
+}
+
+export async function checkUserPermissions() {
+  try {
+    const { user, error } = await getCurrentUser();
+    
+    if (error || !user) {
+      return { permissions: [], error: error || 'No user found' };
+    }
+
+    const supabase = await createClient();
+    const { data, error: permError } = await supabase
+      .from('internal_user_roles')
+      .select(`
+        role:internal_roles (
+          permissions:internal_role_permissions (
+            permission:internal_permissions (
+              slug
+            )
+          )
+        )
+      `)
+      .eq('user_id', user.id);
+  
+
+      console.log("The data has this role", data )
+
+    if (permError) {
+      return { permissions: [], error: permError.message };
+    }
+
+    // Flatten permissions from all roles
+    const permissions = new Set<string>();
+    data?.forEach(({ role }:any) => {
+      role.permissions.forEach(({ permission }: { permission: { slug: string } }) => {
+        permissions.add(permission.slug);
+      });
+    });
+
+    return { permissions: Array.from(permissions), error: null };
+  } catch (error) {
+    console.error('Error checking permissions:', error);
+    return { permissions: [], error: 'Failed to check permissions' };
+  }
+}

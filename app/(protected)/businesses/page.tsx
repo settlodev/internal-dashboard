@@ -1,4 +1,5 @@
 'use client'
+import { ProtectedComponent } from "@/components/auth/protectedComponent";
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { columns } from "@/components/table/business/column";
 import { DataTable } from "@/components/table/data-table";
@@ -42,7 +43,16 @@ if (isLoading) {
     );
   }
     return (
-        <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
+       <ProtectedComponent 
+       requiredPermission="view:businesses"
+       loading={
+        <div className="flex items-center justify-center">
+          <Loading />
+        </div>
+      }
+       fallback={<div>You don't have permission to view businesses</div>}
+        >
+         <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
             <div className={`flex items-center justify-between mb-2`}>
                 <div className={`relative flex-1 md:max-w-md`}>
                     <BreadcrumbNav items={breadcrumbItems} />
@@ -63,5 +73,6 @@ if (isLoading) {
                 </CardContent>
             </Card>
         </div>
+       </ProtectedComponent>
     );
 }
