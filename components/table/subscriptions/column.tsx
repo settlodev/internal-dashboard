@@ -3,11 +3,10 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { CellAction } from "./cell-action"
-import { Owner } from "@/types/owners/type"
+import { Payment } from "@/types/location/type"
 
 
-export const columns: ColumnDef<Owner>[] = [
+export const columns: ColumnDef<Payment>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -31,42 +30,62 @@ export const columns: ColumnDef<Owner>[] = [
         enableHiding: false,
       },
     {
-        accessorKey: "firstName",
+        accessorKey: "locationName",
         header: ({ column }) => {
             return (
                   <Button
           variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    First Name
+                    Location
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
         }
     },
+    
     {
-        accessorKey: "lastName",
-        header: "Last Name",
+        accessorKey: "amount",
+        header: "Amount",
     },
     {
-        accessorKey: "email",
-        header: "Email",
+        accessorKey: "quantity",
+        header: "Month(s)",
     },
     {
-        accessorKey: "phoneNumber",
-        header: "Phone Number",
+        accessorKey: "subscriptionPackageName",
+        header: "Subscription Package",
     },
     {
-      accessorKey: "isMigrated",
-      header: "Migrated",
-  },
-    {
-        accessorKey: "gender",
-        header: "Gender"
+      accessorKey: "provider",
+      header: "Provider",
     },
-   
     {
-        id: "actions",
-        cell: ({ row }) => <CellAction data={row.original} />,
+      accessorKey: "dateCreated",
+      header: "Date",
+      cell: ({ row }) => {
+        const date = row.getValue("dateCreated") as string;
+        const formatted = Intl.DateTimeFormat('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric', 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }).format(new Date(date));
+        return <div>{formatted}</div>;
+      },
     },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("status");
+        return (
+          <div className={`py-1 px-2 text-white rounded-sm items-center ${status === "SUCCESS" ? "bg-emerald-500" : "bg-red-500"}`}>
+            {String(status)}
+          </div>
+        );
+      },
+    },
+  
 ]

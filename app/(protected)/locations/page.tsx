@@ -20,6 +20,7 @@ export default function Dashboard() {
 const fetchBusinessLocations = async () => {
   try {
     const location = await fetchAllLocation()
+    // console.log('The locations are', location)
     setLocations(location)
   } catch (error) {
     throw error
@@ -69,6 +70,18 @@ if (isLoading) {
                     columns={columns}
                     data={locations}
                     searchKey="name"
+                    filters={[
+                      {
+                        key: "locationBusinessTypeName",
+                        label: "Business Type",
+                        options: [
+                          {label: "Retail",value: "Retail"},
+                          {label: "Hospitality",value: "Hospitality"}
+                        ]
+                      },
+                      
+                      // Add more filters as needed
+                    ]}
                     // pageSize={5}
                     />
                 </CardContent>

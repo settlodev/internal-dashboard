@@ -10,16 +10,16 @@ import { z } from "zod";
 import { FormResponse } from "@/types/types";
 import { createClient } from "../supabase/server";
 
-interface Profiles {
-    id: string;
-    email: string;
-    first_name?: string;
-    last_name?: string;
-    phone?: string;
-}
-interface RequestSubscriptionWithUser extends RequestSubscription {
-    profile: Profiles;
-}
+// interface Profiles {
+//     id: string;
+//     email: string;
+//     first_name?: string;
+//     last_name?: string;
+//     phone?: string;
+// }
+// interface RequestSubscriptionWithUser extends RequestSubscription {
+//     profile: Profiles;
+// }
 export const fetchAllLocation = async (): Promise<Location[]> => {
     try {
         const apiClient = new ApiClient();
@@ -58,6 +58,7 @@ export const getLocationSubscriptionPayments = async (id: string) => {
     try {
         const apiClient = new ApiClient();
         const data = await apiClient.post(`/api/subscription-payments/${id}`, {});
+        console.log("The subscription records basing on the location", data)
         return parseStringify(data);
     } catch (error) {
         throw error;
