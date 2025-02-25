@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../ui/pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { Badge, Calendar, Check, CreditCard, X } from "lucide-react";
+import { Badge, Calendar,CreditCard} from "lucide-react";
 import { Payment } from "@/types/location/type";
 import { Card, CardContent, CardHeader } from "../ui/card";
 

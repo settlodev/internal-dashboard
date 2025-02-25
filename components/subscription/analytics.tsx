@@ -178,7 +178,7 @@ const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) 
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Revenue By Package Type */}
-        <Card className="col-span-1">
+        {/* <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Revenue by Package Type</CardTitle>
             <CardDescription>Distribution of revenue across subscription packages</CardDescription>
@@ -205,7 +205,57 @@ const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) 
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
-        </Card>
+        </Card> */}
+
+<Card className="col-span-1">
+  <CardHeader>
+    <CardTitle>Revenue by Package Type</CardTitle>
+    <CardDescription>Distribution of revenue across subscription packages</CardDescription>
+  </CardHeader>
+  <CardContent className="h-80">
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
+        <Pie
+          data={subscriptionTypeChartData}
+          cx="50%"
+          cy="50%"
+          outerRadius={80}
+          fill="#8884d8"
+          dataKey="revenue"
+          nameKey="name"
+          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+        >
+          {subscriptionTypeChartData.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip formatter={(value) => `${value.toLocaleString()} TZS`} />
+        {/* <Legend /> */}
+      </PieChart>
+    </ResponsiveContainer>
+  </CardContent>
+  {/* Custom detailed legend */}
+  <div className="px-6 pb-6">
+    <div className="mt-2 space-y-2">
+      {subscriptionTypeChartData.map((entry, index) => (
+        <div key={`legend-${index}`} className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div 
+              className="w-4 h-4 rounded-sm" 
+              style={{ backgroundColor: COLORS[index % COLORS.length] }}
+            ></div>
+            <span className="font-medium">{entry.name}</span>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">{entry.count}</span> subscriptions
+            <span className="mx-1">•</span>
+            <span className="font-medium text-foreground">{entry.revenue.toLocaleString()}</span> TZS
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</Card>
         
         {/* Subscriptions Over Time */}
         <Card className="col-span-1">
@@ -213,7 +263,7 @@ const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) 
             <CardTitle>Subscriptions Over Time</CardTitle>
             <CardDescription>Trend of subscription activity</CardDescription>
           </CardHeader>
-          <CardContent className="h-80">
+          <CardContent className="h-90">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={timeSeriesChartData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -286,7 +336,7 @@ const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) 
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Total Quantity</p>
+                <p className="text-sm font-medium text-gray-500">Total Quantity of Subscriptions</p>
                 <h3 className="text-2xl font-bold">{totalQuantity}</h3>
               </div>
               <div className="bg-amber-100 p-3 rounded-full">
@@ -300,7 +350,7 @@ const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) 
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Unique Businesses</p>
+                <p className="text-sm font-medium text-gray-500">Unique Businesses count</p>
                 <h3 className="text-2xl font-bold">{uniqueBusinesses}</h3>
               </div>
               <div className="bg-emerald-100 p-3 rounded-full">
@@ -314,7 +364,7 @@ const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) 
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Unique Locations</p>
+                <p className="text-sm font-medium text-gray-500">Unique Locations count</p>
                 <h3 className="text-2xl font-bold">{uniqueLocations}</h3>
               </div>
               <div className="bg-red-100 p-3 rounded-full">
