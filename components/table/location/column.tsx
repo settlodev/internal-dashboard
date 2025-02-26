@@ -58,6 +58,10 @@ export const columns: ColumnDef<Location>[] = [
         header: "Business Type",
     },
     {
+      accessorKey:"subscriptionStatus",
+      header:"Subscription Status"
+    },
+    {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />,
     },

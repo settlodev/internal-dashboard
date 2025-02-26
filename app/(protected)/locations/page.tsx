@@ -79,6 +79,14 @@ if (isLoading) {
                           {label: "Hospitality",value: "Hospitality"}
                         ]
                       },
+                      {
+                        key: "subscriptionStatus",
+                        label: "Subscription Status",
+                        options: [
+                          {label: "Trial",value: "TRIAL"},
+                          // {label: "Hospitality",value: "Hospitality"}
+                        ]
+                      },
                       
                       // Add more filters as needed
                     ]}

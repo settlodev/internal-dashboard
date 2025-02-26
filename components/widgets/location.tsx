@@ -51,7 +51,7 @@ const LocationDetailClient = ({ location, payments, activeSubscription }: { loca
         { title: location.name, link: "" },
     ];
 
-    console.log("The subscription payments are", payments)
+    console.log("The subscription payments are", location)
 
     const handleRequestSubscription = () => {
         setIsModalOpen(true); 
@@ -91,7 +91,7 @@ const LocationDetailClient = ({ location, payments, activeSubscription }: { loca
                                 <CardTitle className="text-2xl">Subscription status</CardTitle>
                                 <div className="flex gap-2 mt-2">
                                     <Badge variant={location.subscriptionStatus ? "default" : "destructive"}>
-                                        {location.subscriptionStatus ? "Active" : "Inactive"}
+                                        {location.subscriptionStatus === 'OK' ? 'ACTIVE':location.subscriptionStatus }
                                     </Badge>
                                     <Badge variant="secondary">{Intl.NumberFormat().format(activeSubscription.subscription.amount)}</Badge>
                                     <Badge variant="outline">{activeSubscription.subscription.packageName}</Badge>
