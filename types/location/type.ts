@@ -112,3 +112,25 @@ export declare interface RequestSubscription{
     isArchived: boolean,
     created_at:string
 }
+
+export declare interface Payment {
+    id: string;
+    amount: number;
+    quantity: number;
+    subscriptionDiscount: number | null;
+    phone: string;
+    email: string;
+    provider: string;
+    location: string;
+    locationName: string;
+    subscriptionPackageName: string;
+    business: string;
+    subscription: string;
+    user: string | null;
+    status: string;
+    narrative: string | null;
+    response: string | null;
+    externalReference: string | null;
+    externalTransactionId: string | null;
+    dateCreated: string; 
+  }

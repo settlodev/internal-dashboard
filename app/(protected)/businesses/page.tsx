@@ -19,6 +19,7 @@ export default function Dashboard() {
 const fetchBusinessTypes = async () => {
   try {
     const types = await fetchAllBusiness()
+    // console.log(types)
     setBusinesses(types)
     
   } catch (error) {
@@ -68,7 +69,18 @@ if (isLoading) {
                     columns={columns}
                     data={businesses}
                     searchKey="name"
-                    // pageSize={5}
+                    filters={[
+                      {
+                        key: "businessTypeName",
+                        label: "Business Type",
+                        options: [
+                          { label: "Retail", value: "Retail" },
+                          { label: "Hospitality", value: "Hospitality" },
+                        ]
+                      },
+                      
+                      // Add more filters as needed
+                    ]}
                     />
                 </CardContent>
             </Card>

@@ -27,6 +27,7 @@ import {
 import { ActiveSubscription } from "@/types/location/type";
 import { useState } from "react";
 import { SubscriptionDialog } from "./dialog";
+import { LocationSubscriptions } from "./subscriptionPaymentsTable";
 
 const FeatureItem = ({ enabled, title, icon: Icon }: { enabled: boolean; title: string; icon: any }) => (
   <div className="flex items-center gap-2 text-sm">
@@ -44,16 +45,22 @@ const FeatureItem = ({ enabled, title, icon: Icon }: { enabled: boolean; title: 
 
 const LocationDetailClient = ({ location, payments, activeSubscription }: { location: any; payments: any; activeSubscription: ActiveSubscription }) => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [currentPage, setCurrentPage] = useState(0);
     const breadcrumbItems = [
         { title: "locations", link: "/locations" },
         { title: location.name, link: "" },
     ];
 
-    // console.log("The active subscription", activeSubscription)
+    console.log("The subscription payments are", location)
 
     const handleRequestSubscription = () => {
         setIsModalOpen(true); 
     }
+    const handlePageChange = async (page: number) => {
+        setCurrentPage(page);
+        // Here you would typically fetch new data for the page
+        // For example: await fetchPayments(location.id, page, 10);
+    };
 
     return (
         <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
@@ -84,7 +91,7 @@ const LocationDetailClient = ({ location, payments, activeSubscription }: { loca
                                 <CardTitle className="text-2xl">Subscription status</CardTitle>
                                 <div className="flex gap-2 mt-2">
                                     <Badge variant={location.subscriptionStatus ? "default" : "destructive"}>
-                                        {location.subscriptionStatus ? "Active" : "Inactive"}
+                                        {location.subscriptionStatus === 'OK' ? 'ACTIVE':location.subscriptionStatus }
                                     </Badge>
                                     <Badge variant="secondary">{Intl.NumberFormat().format(activeSubscription.subscription.amount)}</Badge>
                                     <Badge variant="outline">{activeSubscription.subscription.packageName}</Badge>
@@ -178,14 +185,15 @@ const LocationDetailClient = ({ location, payments, activeSubscription }: { loca
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    {/* <Card>
                         <CardHeader>
                             <h3 className="font-semibold">Location Subscriptions</h3>
                         </CardHeader>
                         <CardContent>
-                            {/* Add your subscription content here */}
+                            
                         </CardContent>
-                    </Card>
+                    </Card> */}
+                    <LocationSubscriptions payments={payments} onPageChange={handlePageChange} />
                 </CardContent>
             </Card>
            

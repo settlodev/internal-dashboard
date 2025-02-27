@@ -27,29 +27,70 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 import React, { useState } from "react"
 import { Input } from "../ui/input"
+import { useRouter, useSearchParams } from "next/navigation"
 
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    searchKey:string;
-    searchParams?:{
-        [key:string]:string | string[] | undefined
+    searchKey: string;
+    searchParams?: {
+        [key: string]: string | string[] | undefined
     };
+    // Replace single filterKey with array of filter configurations
+    filters?: {
+        key: string;
+        label: string;
+        options: { label: string; value: string }[];
+    }[];
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
-    // searchKey
+    searchKey,
+    filters
 }: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] =useState<SortingState>([])
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = React.useState({})
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+    
+    // Track selected values for each filter
+    const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({});
 
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-        []
-      )    
-      const [columnVisibility, setColumnVisibility] =React.useState<VisibilityState>({})
+    // Get page index from URL (default to 0 if not set)
+    const pageIndexFromUrl = Number(searchParams.get("page")) || 0;
+    const [pageIndex, setPageIndex] = useState(pageIndexFromUrl);
+
+    // Handle filter change for a specific filter key
+    const handleFilterChange = (filterKey: string, value: string) => {
+        setSelectedFilters(prev => ({
+            ...prev,
+            [filterKey]: value
+        }));
+
+        if (value === "all") {
+            // Remove this filter
+            setColumnFilters(prev => 
+                prev.filter(filter => filter.id !== filterKey)
+            );
+        } else {
+            // Update or add this filter
+            setColumnFilters(prev => {
+                const existing = prev.findIndex(filter => filter.id === filterKey);
+                if (existing >= 0) {
+                    const updated = [...prev];
+                    updated[existing] = { id: filterKey, value };
+                    return updated;
+                } else {
+                    return [...prev, { id: filterKey, value }];
+                }
+            });
+        }
+    }
 
     const table = useReactTable({
         data,
@@ -66,40 +107,79 @@ export function DataTable<TData, TValue>({
             sorting,
             rowSelection,
             columnFilters,
-            columnVisibility
-          },
-         
+            columnVisibility,
+            pagination: {
+                pageIndex,
+                pageSize: 10
+            }
+        },
+        onPaginationChange: (updater) => {
+            if (typeof updater === "function") {
+                const newState = updater({
+                    pageIndex,
+                    pageSize: 10
+                });
+                setPageIndex(newState.pageIndex);
+                router.push(`?page=${newState.pageIndex}`, { scroll: false });
+            } else {
+                setPageIndex(updater.pageIndex);
+                router.push(`?page=${updater.pageIndex}`, { scroll: false });
+            }
+        }
     })
 
     return (
         <div className="flex flex-col gap-2">
-             <div className="flex items-center py-4">
-        <Input
-          placeholder="Search business ..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-      </div>
+            <div className="flex flex-wrap items-center gap-4 py-4">
+                <Input
+                    placeholder={`Search ...`}
+                    value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+                    onChange={(event) =>
+                        table.getColumn(searchKey)?.setFilterValue(event.target.value)
+                    }
+                    className="max-w-sm"
+                />
+                
+                {/* Render each filter as a separate Select component */}
+                {filters && filters.map((filter) => (
+                    <div key={filter.key} className="flex items-center gap-2">
+                        <span className="text-sm font-medium">{filter.label}:</span>
+                        <Select 
+                            value={selectedFilters[filter.key] || 'all'} 
+                            onValueChange={(value) => handleFilterChange(filter.key, value)}
+                        >
+                            <SelectTrigger className="w-[160px]">
+                                <SelectValue placeholder={`Select ${filter.label.toLowerCase()}`} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All</SelectItem>
+                                {filter.options.map((option) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                ))}
+            </div>
+            
+            {/* Rest of the table implementation remains the same */}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </TableHead>
-                                    )
-                                })}
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                    </TableHead>
+                                ))}
                             </TableRow>
                         ))}
                     </TableHeader>
@@ -127,6 +207,7 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
+            {/* Pagination controls remain the same */}
             <div className="flex items-center justify-between px-2">
                 <div className="flex-1 text-sm text-muted-foreground">
                     {table.getFilteredSelectedRowModel().rows.length} of{" "}
@@ -198,6 +279,5 @@ export function DataTable<TData, TValue>({
                 </div>
             </div>
         </div>
-
     )
 }

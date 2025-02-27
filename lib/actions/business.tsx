@@ -7,7 +7,7 @@ export const fetchAllBusiness = async (): Promise<Business[]> => {
     try {
         const apiClient = new ApiClient();
         const data = await apiClient.get("/api/businesses/all");
-        console.log(data)
+        // console.log(data)
         return parseStringify(data);
 
     } catch (error) {
