@@ -19,7 +19,7 @@ export default function Dashboard() {
 const fetchBusinessTypes = async () => {
   try {
     const types = await fetchAllBusiness()
-    // console.log(types)
+    console.log(types)
     setBusinesses(types)
     
   } catch (error) {
