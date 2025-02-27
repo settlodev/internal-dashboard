@@ -48,11 +48,11 @@ const data = {
           url: "/businesses",
           requiredPermission: "view:businesses",
         },
-        {
-          title: "Business Types",
-          url: "/business-types",
-          requiredPermission: "manage_business_types",
-        },
+        // {
+        //   title: "Business Types",
+        //   url: "/business-types",
+        //   requiredPermission: "manage_business_types",
+        // },
       ],
     },
     {
@@ -73,9 +73,14 @@ const data = {
       icon: CalendarSync,
       items: [
         {
+          title: "Subscriptions",
+          url: "/subscriptions",
+          requiredPermission: "view:requests",
+        },
+        {
           title: "Requests",
           url: "/requests",
-          requiredPermission: "view:requests",
+          requiredPermission: "view:subscriptions",
         },
       ],
     },

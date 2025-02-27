@@ -19,12 +19,14 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { signInSchema } from "@/types/auth/signInSchema"
-import { useCallback, useTransition } from "react"
+import { useCallback, useState, useTransition } from "react"
 import { SignIn } from "@/lib/actions/auth/signIn"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import toast from "react-hot-toast"
+import { Eye, EyeOff} from "lucide-react"
 export function SignInForm() {
   const [isPending, startTransition] = useTransition()
+  const [isView, setIsView] = useState(false)
 
 
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -97,22 +99,44 @@ export function SignInForm() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" {...field} />
-                          </FormControl>
 
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <div className="relative items-center">
+                            <Input
+                              type={isView ? "text" : "password"}
+                              id="password"
+                              // className={inputLead}
+                              placeholder=" "
+                              {...field}
+                            />
+                            {isView ? (
+                              <Eye
+                                className="absolute right-4 top-2 z-10 cursor-pointer text-gray-500"
+                                onClick={() => {
+                                  setIsView(!isView), console.log(isView)
+                                }}
+                              />
+                            ) : (
+                              <EyeOff
+                                className="absolute right-4 top-2 z-10 cursor-pointer text-gray-500"
+                                onClick={() => setIsView(!isView)}
+                              />
+                            )}
+
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <Button type="submit" className="w-full" disabled={isPending}>
                     {isPending ? "Signing In..." : "Sign In"}
                   </Button>

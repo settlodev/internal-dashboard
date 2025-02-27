@@ -57,6 +57,10 @@ export const columns: ColumnDef<Owner>[] = [
         header: "Phone Number",
     },
     {
+      accessorKey: "isMigrated",
+      header: "Migrated",
+  },
+    {
         accessorKey: "gender",
         header: "Gender"
     },

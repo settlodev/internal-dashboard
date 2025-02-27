@@ -67,7 +67,20 @@ export default function page() {
           <DataTable
           columns={columns}
           data={businessOwners}
-          searchKey='name'
+          searchKey='firstName'
+         
+          filters={[
+            {
+              key: "isMigrated",
+              label: "Business Owners",
+              options: [
+                {label: "Migrated",value: "true"},
+                {label: "New",value: "false"}
+              ]
+            },
+            
+            // Add more filters as needed
+          ]}
            />
         </CardContent>
       </Card>

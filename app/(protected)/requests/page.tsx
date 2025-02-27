@@ -61,7 +61,7 @@ if (isLoading) {
                     <DataTable 
                     columns={columns}
                     data={requests}
-                    searchKey="name"
+                    searchKey="location_name"
                     // pageSize={5}
                     />
                 </CardContent>

@@ -1,3 +1,6 @@
+export interface ApiResponse<T> {
+    content: T;
+}
 
 export interface FormResponse<T = unknown> {
     responseType: "success" | "error";
