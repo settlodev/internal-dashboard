@@ -87,7 +87,7 @@ export default function Dashboard() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex-1 md:max-w-md">
                         <BreadcrumbNav items={breadcrumbItems} />
-                        <h1 className="text-2xl font-bold text-gray-800 mt-2">Management Analytics</h1>
+                        <h1 className="text-2xl font-bold text-gray-800 mt-2">Quick Analytics</h1>
                     </div>
                     
                 </div>
