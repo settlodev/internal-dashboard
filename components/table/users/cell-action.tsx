@@ -51,7 +51,7 @@ export function CellAction({ data }: CellActionProps) {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <UpdatePasswordForm userId={data.id} onSuccess={() => setIsModalOpen(false)} />
+            <UpdatePasswordForm userId={data.id} />
           </div>
         </DialogContent>
       </Dialog>

@@ -4,6 +4,37 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import SummaryCard from './summary-card';
 import { Location } from '@/types/location/type';
 
+interface StatusData {
+    name: string;
+    value: number;
+}
+
+interface StatusAccumulator {
+    [key: string]: StatusData;
+}
+
+interface Settings {
+    useRecipe: boolean;
+    usePasscode: boolean;
+    useDepartments: boolean;
+    useCustomPrice: boolean;
+    useWarehouse: boolean;
+    useShifts: boolean;
+    useKds: boolean;
+    ecommerceEnabled: boolean;
+}
+
+interface SettingsUsage {
+    useRecipe: number;
+    usePasscode: number;
+    useDepartments: number;
+    useCustomPrice: number;
+    useWarehouse: number;
+    useShifts: number;
+    useKds: number;
+    ecommerceEnabled: number;
+}
+
 const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) => {
   // Derived metrics
   const metrics = useMemo(() => {
@@ -15,7 +46,7 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
     const inactiveLocations = totalLocations - activeLocations;
     
     // Subscription status breakdown
-    const subscriptionStatusData = locations.reduce((acc, loc) => {
+    const subscriptionStatusData = locations.reduce<StatusAccumulator>((acc, loc) => {
       const status = loc.subscriptionStatus || 'UNKNOWN';
       if (!acc[status]) {
         acc[status] = { name: status, value: 0 };
@@ -25,7 +56,7 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
     }, {});
     
     // Business type distribution
-    const businessTypeData = locations.reduce((acc, loc) => {
+    const businessTypeData = locations.reduce<StatusAccumulator>((acc, loc) => {
       const type = loc.locationBusinessTypeName || 'Unknown';
       if (!acc[type]) {
         acc[type] = { name: type, value: 0 };
@@ -35,7 +66,7 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
     }, {});
     
     // Settings usage analytics
-    const settingsUsage = {
+    const settingsUsage: SettingsUsage = {
       useRecipe: 0,
       usePasscode: 0,
       useDepartments: 0,
@@ -48,7 +79,7 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
     
     locations.forEach(loc => {
       if (loc.settings) {
-        Object.keys(settingsUsage).forEach(key => {
+        (Object.keys(settingsUsage) as Array<keyof Settings>).forEach(key => {
           if (loc.settings[key]) {
             settingsUsage[key] += 1;
           }
@@ -56,9 +87,13 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
       }
     });
     
-    const settingsUsageData = Object.keys(settingsUsage).map(key => ({
-      name: key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace('use ', '').replace('Kds', 'KDS').replace('ecommerce', 'E-commerce'),
-      value: (settingsUsage[key] / totalLocations * 100).toFixed(1)
+    const settingsUsageData = (Object.keys(settingsUsage) as Array<keyof SettingsUsage>).map(key => ({
+      name: key.replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .replace('use ', '')
+        .replace('Kds', 'KDS')
+        .replace('ecommerce', 'E-commerce'),
+      value: Number((settingsUsage[key] / totalLocations * 100).toFixed(1))
     })).sort((a, b) => b.value - a.value);
     
     // Operating hours analysis

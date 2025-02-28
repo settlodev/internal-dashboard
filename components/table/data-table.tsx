@@ -41,7 +41,7 @@ interface DataTableProps<TData, TValue> {
     filters?: {
         key: string;
         label: string;
-        options: { label: string; value: string }[];
+        options: { label: string; value: string | boolean }[];
     }[];
 }
 
@@ -155,7 +155,7 @@ export function DataTable<TData, TValue>({
                             <SelectContent>
                                 <SelectItem value="all">All</SelectItem>
                                 {filter.options.map((option) => (
-                                    <SelectItem key={option.value} value={option.value}>
+                                    <SelectItem key={option.value.toString()} value={option.value.toString()}>
                                         {option.label}
                                     </SelectItem>
                                 ))}

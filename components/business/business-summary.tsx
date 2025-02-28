@@ -2,37 +2,54 @@ import React, { useMemo } from 'react'
 import SummaryCard from './summary-card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { Business } from '@/types/business/types';
 
-export default function BusinessSummary({ businesses }) {
+interface StatusData {
+    name: string;
+    value: number;
+}
+
+interface StatusAccumulator {
+    [key: string]: StatusData;
+}
+
+interface BusinessWithLocations extends Business {
+  allLocations: {
+    subscriptionStatus: string;
+  }[];
+}
+
+export default function BusinessSummary({ businesses }: { businesses: Business[] }) {
+    const businessesWithLocations = businesses as BusinessWithLocations[];
+    
     const metrics = useMemo(() => {
         // Basic counts
         const totalBusinesses = businesses.length;
         const businessesWithVFD = businesses.filter(bus => bus.vfdRegistrationState === true).length;
-        const activeSubscription = businesses.filter(bus => 
-            bus.allLocations.some(loc => loc.subscriptionStatus === 'OK')
+        const activeSubscription = businessesWithLocations.filter(bus => 
+            bus.allLocations?.some(loc => loc.subscriptionStatus === 'OK')
         ).length;
-        const trialSubscription = businesses.filter(bus => 
-            bus.allLocations.some(loc => loc.subscriptionStatus === 'TRIAL')
+        const trialSubscription = businessesWithLocations.filter(bus => 
+            bus.allLocations?.some(loc => loc.subscriptionStatus === 'TRIAL')
         ).length;
-        const expiredSubscription = businesses.filter(bus => 
-            bus.allLocations.some(loc => loc.subscriptionStatus === 'EXPIRED')
+        const expiredSubscription = businessesWithLocations.filter(bus => 
+            bus.allLocations?.some(loc => loc.subscriptionStatus === 'EXPIRED')
         ).length;
         
        // Subscription status breakdown
-       const subscriptionStatusData = businesses.reduce((acc, bus) => {
-        // Iterate over each location in the business
-        bus.allLocations.forEach(loc => {
-            const status = loc.subscriptionStatus || 'UNKNOWN'; // Get the subscription status for the location
+       const subscriptionStatusData = businessesWithLocations.reduce<StatusAccumulator>((acc, bus) => {
+        bus.allLocations?.forEach(loc => {
+            const status = loc.subscriptionStatus || 'UNKNOWN';
             if (!acc[status]) {
-                acc[status] = { name: status, value: 0 }; 
+                acc[status] = { name: status, value: 0 };
             }
-            acc[status].value += 1; // Increment the count for this status
+            acc[status].value += 1;
         });
         return acc;
     }, {});
         
         //Business type distribution
-        const businessTypeData = businesses.reduce((acc, bus) => {
+        const businessTypeData = businesses.reduce<StatusAccumulator>((acc, bus) => {
           const type = bus.businessTypeName || 'Unknown';
           if (!acc[type]) {
             acc[type] = { name: type, value: 0 };

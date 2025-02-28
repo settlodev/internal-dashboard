@@ -68,18 +68,17 @@ export default function page() {
           data={businessOwners}
           searchKey='firstName'
          
-          filters={[
-            {
-              key: "isMigrated",
-              label: "Business Owners",
-              options: [
-                {label: "Migrated",value: true},
-                {label: "New",value: false}
-              ]
-            },
+          // filters={[
+          //   {
+          //     key: "isMigrated",
+          //     label: "Business Owners",
+          //     options: [
+          //       {label: "Migrated",value: true},
+          //       {label: "New",value: false}
+          //     ]
+          //   },
             
-            // Add more filters as needed
-          ]}
+          // ]}
            />
         </CardContent>
       </Card>

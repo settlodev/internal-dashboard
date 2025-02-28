@@ -39,14 +39,14 @@ export function ResetPasswordForm() {
 
   const onSubmitData = useCallback((values: z.infer<typeof resetPasswordSchema>) => {
     
-    startTransition(() => {
-      resetPassword(values).then((data) => {
-        if (data.redirectTo) {
-          window.location.href = data.redirectTo
-        }
-      })
+    // startTransition(() => {
+    //   resetPassword(values).then((data) => {
+    //     if (data.redirectTo) {
+    //       window.location.href = data.redirectTo
+    //     }
+    //   })
       
-    })
+    // })
   },[]
   )
 
