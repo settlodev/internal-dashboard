@@ -147,8 +147,9 @@ export function DataTable<TData, TValue>({
                         <Select 
                             value={selectedFilters[filter.key] || 'all'} 
                             onValueChange={(value) => handleFilterChange(filter.key, value)}
+                            
                         >
-                            <SelectTrigger className="w-[160px]">
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder={`Select ${filter.label.toLowerCase()}`} />
                             </SelectTrigger>
                             <SelectContent>

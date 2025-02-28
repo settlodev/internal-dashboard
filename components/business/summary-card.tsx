@@ -7,41 +7,51 @@ export default function SummaryCard({metrics}: any) {
   // Define the card data with all needed properties
   const cardData = [
     {
-      title: "Total Locations",
-      value: metrics.totalLocations,
+      title: "Total Businesses",
+      value: metrics.totalBusinesses,
       icon: Store,
       bgColor: "bg-blue-100",
       textColor: "text-blue-600"
     },
     {
-      title: "Active Locations",
-      value: metrics.activeLocations,
-      suffix: `(${((metrics.activeLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
+      title: "Active Subscription",
+      value: metrics.activeSubscription,
+      suffix: `(${((metrics.activeSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
       icon: CheckCircle,
       bgColor: "bg-green-100",
       textColor: "text-green-600"
     },
     {
-        title: "Trial Locations",
-        value: metrics.trialLocations,
-        suffix: `(${((metrics.trialLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
-        icon: Tag,
-        bgColor: "bg-gray-100",
-        textColor: "text-red-300"
-      },
-      {
-        title: "Expired Locations",
-        value: metrics.expiredLocations,
-        suffix: `(${((metrics.expiredLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
-        icon: AlertTriangle,
-        bgColor: "bg-red-500",
-        textColor: "text-white"
-      },
+      title: "Trial Subscription",
+      value: metrics.trialSubscription,
+      suffix: `(${((metrics.trialSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
+      icon: Tag,
+      bgColor: "bg-gray-100",
+      textColor: "text-red-300"
+    },
+    {
+      title: "Expired Subscription",
+      value: metrics.expiredSubscription,
+      suffix: `(${((metrics.expiredSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
+      icon: AlertTriangle,
+      bgColor: "bg-red-600",
+      textColor: "text-white"
+    },
+
+    // {
+    //   title: "Businesses With VDF",
+    //   value: metrics.businessesWithVFD,
+    //   suffix: `(${((metrics.businessesWithVFD / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
+    //   icon: CheckCircle,
+    //   bgColor: "bg-green-100",
+    //   textColor: "text-green-600"
+    // },
+   
     
   ]
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-2">
       {cardData.map((card, index) => (
         <Card key={index}>
           <CardContent className="pt-6">

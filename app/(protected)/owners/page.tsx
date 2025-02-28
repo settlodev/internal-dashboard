@@ -3,8 +3,6 @@ import { BreadcrumbNav } from '@/components/layout/breadcrumbs'
 import { columns } from '@/components/table/owners/column'
 import { DataTable } from '@/components/table/data-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getBusinessTypes } from '@/lib/actions/business-types'
-import { BusinessType } from '@/types/business/types'
 import React, { useEffect, useState } from 'react'
 import { Owner } from '@/types/owners/type'
 import { fetchAllBusinessOwners } from '@/lib/actions/business-owners'
@@ -21,6 +19,7 @@ export default function page() {
   const fetchBusinessOwners = async () => {
     try {
       const owners = await fetchAllBusinessOwners()
+      console.log("The business owners are",owners)
       setBusinessOwners(owners)
     } catch (error) {
       throw error
@@ -74,8 +73,8 @@ export default function page() {
               key: "isMigrated",
               label: "Business Owners",
               options: [
-                {label: "Migrated",value: "true"},
-                {label: "New",value: "false"}
+                {label: "Migrated",value: true},
+                {label: "New",value: false}
               ]
             },
             

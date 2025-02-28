@@ -3,7 +3,6 @@ import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { columns } from "@/components/table/location/column";
 import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fetchAllBusiness } from "@/lib/actions/business";
 import { fetchAllLocation } from "@/lib/actions/location";
 import { Location } from "@/types/location/type";
 import { useEffect, useState } from "react";
@@ -89,7 +88,8 @@ if (isLoading) {
                           {label: "Expired",value: "EXPIRED"},
                           {label: "Active",value: "OK"},
                           {label: "Pending",value: "PENDING"},
-                          {label: "Due",value: "DUE"}
+                          {label: "Due",value: "DUE"},
+                          {label:"Almost Due",value:"ALMOST_DUE"}
                         ]
                       },
                       

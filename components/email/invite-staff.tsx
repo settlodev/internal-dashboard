@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { Html, Button, Head, Preview, Body, Container, Section, Heading,Text } from "@react-email/components";
-import { requestPasswordReset } from '@/lib/actions/auth/signIn';
 
 interface EmailTemplateProps {
   email: string;
-}
-const handleRequestPasswordReset = async (email: string) => async () => {
-    await requestPasswordReset(email)
+  first_name: string;
+  last_name: string;
+  code: string;
+  password: string
 }
 
-export default function InvitationEmailTemplate({email}:EmailTemplateProps){
+
+export default function InvitationEmailTemplate({email,first_name,last_name,code,password}:EmailTemplateProps){
   return (
     <Html>
     <Head/>
@@ -18,23 +19,34 @@ export default function InvitationEmailTemplate({email}:EmailTemplateProps){
     <Container style={container}>
     <Section style={coverSection}>
         <Section style={upperSection}>
-            <Heading style={h1}>🌟 You &apos;re Invited to Join the Internal Dashboard! 🌟</Heading>
+            <Heading style={h1}>🌟 {first_name} {last_name} You &apos;re Invited to Join the Internal Dashboard! 🌟</Heading>
             <Text style={mainText}>Hello</Text>
             <Text style={mainText}>
                 You have been invited to join a team on Settlo.
             </Text>
             <Text style={mainText}>
-            To get started, please click the button below to accept the invitation and reset your password;
+                Here are the credentials to access the dashboard:
             </Text>
+            <Section>
+            <Text style={mainText}>
+                Email: {email}
+            </Text>
+            <Text style={mainText}>
+                Password: {code}
+            </Text>
+            <Text style={mainText}>
+                Referral Code: {code}
+            </Text>
+            </Section>
             <Section style={buttonContainer}>
                 <Button
                 onClick={async () => {
-                    await handleRequestPasswordReset(email);
+                    // window.location.href = `https://internal.settlo.com/login?email=${email}&password=${password}`
                 }}
                     // href={`${process.env.NEXT_PUBLIC_APP_URL}/reset-password?email=${email}`}
                     style={button}
                 >
-                     Reset Password
+                     Login
                 </Button>
             </Section>
             <Text style={validityText}>

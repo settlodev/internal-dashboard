@@ -12,7 +12,6 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
     const activeLocations = locations.filter(loc => loc.subscriptionStatus === 'OK').length;
     const expiredLocations = locations.filter(loc => loc.subscriptionStatus === 'EXPIRED').length;
     const trialLocations = locations.filter(loc => loc.subscriptionStatus === 'TRIAL').length;
-    console.log(activeLocations)
     const inactiveLocations = totalLocations - activeLocations;
     
     // Subscription status breakdown

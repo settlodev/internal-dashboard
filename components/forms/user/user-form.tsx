@@ -18,18 +18,50 @@ import {
 import { FieldErrors, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { useCallback, useTransition } from "react"
-import { signUp } from "@/lib/actions/auth/signIn"
+import { useCallback, useEffect, useState, useTransition } from "react"
+import { getUserEmailById, signUp} from "@/lib/actions/auth/signIn"
 import RoleSelect from "@/components/widgets/roleSelector"
 import { UserSchema } from "@/types/users/schema"
 import { User } from "@/types/users/type"
 import UserTypeSelect from "@/components/widgets/userTypeSelector"
 import toast from "react-hot-toast"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import CancelButton from "@/components/widgets/cancel-button"
+import { Separator } from "@/components/ui/separator"
+import SubmitButton from "@/components/widgets/submit-button"
 
 
 export function UserForm({ item }: { item: User | null | undefined }) {
   const [isPending, startTransition] = useTransition()
+  const [userEmail, setUserEmail] = useState("")
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch user email when editing an existing user
+  useEffect(() => {
+    const fetchUserEmail = async () => {
+      if (item?.id) {
+        setIsLoading(true);
+        try {
+          const result = await getUserEmailById(item.id);
+          
+          if (result.email) {
+            setUserEmail(result.email);
+            form.setValue("email", result.email);
+          } else if (result.error) {
+            console.error("Error fetching user email:", result.error);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user email:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    if (item?.id) {
+      fetchUserEmail();
+    }
+  }, [item?.id]);
 
   const form = useForm<z.infer<typeof UserSchema>>({
     resolver: zodResolver(UserSchema),
@@ -37,13 +69,19 @@ export function UserForm({ item }: { item: User | null | undefined }) {
       ...item,
       first_name: item?.first_name || "",
       last_name: item?.last_name || "",
-      email: item?.email || "",
+      email: userEmail || item?.email || "",
       phone: item?.phone || "",
-      password: item?.password || "",
       role: item ? (typeof item.role === 'string' ? item.role : "") : "",
       user_type: item?.user_type || "",
     }
   })
+
+  // This will update the form when email is fetched after initial render
+  useEffect(() => {
+    if (userEmail && item?.id) {
+      form.setValue("email", userEmail);
+    }
+  }, [userEmail, form, item?.id]);
 
   const onInvalid = useCallback((errors: FieldErrors) => {
     console.log(errors)
@@ -150,7 +188,10 @@ export function UserForm({ item }: { item: User | null | undefined }) {
                             <Input
                               placeholder="Enter user email"
                               type="email"
+                              // disabled
                               {...field}
+                              value={field.value || userEmail}
+                              readOnly={!!item} 
                             />
                           </FormControl>
                           <FormMessage />
@@ -180,26 +221,8 @@ export function UserForm({ item }: { item: User | null | undefined }) {
                 </div>
 
                 {/* Third row */}
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="grid gap-2">
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="password"
-                              {...field}
-                              placeholder="Enter password"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                <div className="grid grid-cols-2 gap-2">
+              
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
@@ -240,11 +263,20 @@ export function UserForm({ item }: { item: User | null | undefined }) {
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <Button type="submit" className="w-full" disabled={isPending} onClick={() => toast.success("User added successfully")}>
                     {isPending ? "Updating user..." : "Add User"}
                   </Button>
             
+                </div> */}
+
+                <div className="flex h-5 items-center space-x-4 mt-10">
+                    <CancelButton/>
+                    <Separator orientation="vertical"/>
+                    <SubmitButton
+                        isPending={isPending}
+                        label={item ? "Update User" : "Add User"}
+                    />
                 </div>
 
 

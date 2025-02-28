@@ -51,7 +51,7 @@ const LocationDetailClient = ({ location, payments, activeSubscription }: { loca
         { title: location.name, link: "" },
     ];
 
-    console.log("The subscription payments are", location)
+    // console.log("The subscription payments are", location)
 
     const handleRequestSubscription = () => {
         setIsModalOpen(true); 

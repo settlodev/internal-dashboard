@@ -58,7 +58,6 @@ export const getLocationSubscriptionPayments = async (id: string) => {
     try {
         const apiClient = new ApiClient();
         const data = await apiClient.post(`/api/subscription-payments/${id}`, {});
-        console.log("The subscription records basing on the location", data)
         return parseStringify(data);
     } catch (error) {
         throw error;
