@@ -1,5 +1,6 @@
 'use client'
 import { ProtectedComponent } from "@/components/auth/protectedComponent";
+import BusinessSummary from "@/components/business/business-summary";
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { columns } from "@/components/table/business/column";
 import { DataTable } from "@/components/table/data-table";
@@ -19,7 +20,6 @@ export default function Dashboard() {
 const fetchBusinessTypes = async () => {
   try {
     const types = await fetchAllBusiness()
-    // console.log(types)
     setBusinesses(types)
     
   } catch (error) {
@@ -54,11 +54,12 @@ if (isLoading) {
        fallback={<div>You don't have permission to view businesses</div>}
         >
          <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
-            <div className={`flex items-center justify-between mb-2`}>
+            <div className="flex flex-col items-start justify-between mb-2">
                 <div className={`relative flex-1 md:max-w-md`}>
                     <BreadcrumbNav items={breadcrumbItems} />
                 </div>
 
+            <BusinessSummary businesses={businesses}/>
             </div>
             <Card>
                 <CardHeader>

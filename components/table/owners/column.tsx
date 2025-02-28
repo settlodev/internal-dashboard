@@ -64,6 +64,10 @@ export const columns: ColumnDef<Owner>[] = [
         accessorKey: "gender",
         header: "Gender"
     },
+    {
+        accessorKey: "referredByCode",
+        header: "Referral Code" 
+    },
    
     {
         id: "actions",

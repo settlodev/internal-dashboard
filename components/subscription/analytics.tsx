@@ -3,6 +3,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ArrowUpCircle, TrendingUp, Users, DollarSign, Calendar, Award } from 'lucide-react';
 import { Payment } from '@/types/location/type';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+// Add date filter options
+const dateFilters = {
+  today: 'Today',
+  yesterday: 'Yesterday',
+  week: 'This Week',
+  month: 'This Month',
+  year: 'This Year',
+} as const;
+
+type DateFilterType = keyof typeof dateFilters;
 
 interface SubscriptionTypeData {
   [key: string]: {
@@ -35,8 +47,45 @@ interface BusinessData {
   }
 }
 const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) => {
-  // Filter only SUCCESS status transactions
-  const successSubscriptions = subscriptions.filter(sub => sub.status === 'SUCCESS');
+  const [dateFilter, setDateFilter] = useState<DateFilterType>('today');
+
+  // Filter data based on selected date range
+  const filterDataByDate = (data: Payment[]) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    return data.filter(sub => {
+      const date = new Date(sub.dateCreated);
+      
+      switch (dateFilter) {
+        case 'today':
+          return date >= today;
+        case 'yesterday':
+          return date >= yesterday && date < today;
+        case 'week':
+          const weekStart = new Date(today);
+          weekStart.setDate(today.getDate() - 7);
+          return date >= weekStart;
+        case 'month':
+          const monthStart = new Date(today);
+          monthStart.setMonth(today.getMonth() - 1);
+          return date >= monthStart;
+        case 'year':
+          const yearStart = new Date(today);
+          yearStart.setFullYear(today.getFullYear() - 1);
+          return date >= yearStart;
+        default:
+          return true;
+      }
+    });
+  };
+
+  // Filter only SUCCESS status transactions and apply date filter
+  const successSubscriptions = filterDataByDate(
+    subscriptions.filter(sub => sub.status === 'SUCCESS')
+  );
   
   // Extract basic metrics
   const totalRevenue = successSubscriptions.reduce((sum, sub) => sum + sub.amount, 0);
@@ -85,20 +134,34 @@ const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) 
   
   // Group by day for time series
   const timeSeriesData = successSubscriptions.reduce<TimeSeriesData>((acc, sub) => {
-    const date = new Date(sub.dateCreated).toLocaleDateString();
-    if (!acc[date]) {
-      acc[date] = {
-        date,
+    const date = new Date(sub.dateCreated);
+    const formattedDate = date.toLocaleDateString('en-GB', { 
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    
+    if (!acc[formattedDate]) {
+      acc[formattedDate] = {
+        date: formattedDate,
         revenue: 0,
         subscriptions: 0
       };
     }
-    acc[date].revenue += sub.amount;
-    acc[date].subscriptions += 1;
+    acc[formattedDate].revenue += sub.amount;
+    acc[formattedDate].subscriptions += 1;
     return acc;
   }, {});
-  
-  const timeSeriesChartData = Object.values(timeSeriesData).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  const timeSeriesChartData = Object.values(timeSeriesData)
+    .sort((a, b) => {
+      const [dayA, monthA, yearA] = a.date.split('/').map(Number);
+      const [dayB, monthB, yearB] = b.date.split('/').map(Number);
+      const dateA = new Date(yearA, monthA - 1, dayA);
+      const dateB = new Date(yearB, monthB - 1, dayB);
+      return dateB.getTime() - dateA.getTime(); // Reverse sort (newest first)
+    });
+  console.log(timeSeriesChartData)
   
   // Top businesses by revenue
   const businessData = successSubscriptions.reduce<BusinessData>((acc, sub) => {
@@ -127,6 +190,25 @@ const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) 
   
   return (
     <div className="space-y-6">
+      {/* Add Date Filter */}
+      <div className="flex justify-end">
+        <Select
+          value={dateFilter}
+          onValueChange={(value: DateFilterType) => setDateFilter(value)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select date range" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(dateFilters).map(([value, label]) => (
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* Summary Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
@@ -261,17 +343,38 @@ const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) 
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Subscriptions Over Time</CardTitle>
-            <CardDescription>Trend of subscription activity</CardDescription>
+            <CardDescription>Trend of subscription activity and revenue</CardDescription>
           </CardHeader>
-          <CardContent className="h-90">
+          <CardContent className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={timeSeriesChartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip formatter={(value) => `${value}`} />
+                <YAxis yAxisId="left" />
+                <YAxis yAxisId="right" orientation="right" />
+                <Tooltip 
+                  formatter={(value, name) => {
+                    if (name === 'revenue') return `${Number(value).toLocaleString()} TZS`;
+                    return value;
+                  }}
+                />
                 <Legend />
-                <Line type="monotone" dataKey="subscriptions" stroke="#8884d8" activeDot={{ r: 8 }} />
+                <Line 
+                  yAxisId="left"
+                  type="monotone" 
+                  dataKey="subscriptions" 
+                  stroke="#8884d8" 
+                  name="Subscriptions"
+                  activeDot={{ r: 8 }} 
+                />
+                <Line 
+                  yAxisId="right"
+                  type="monotone" 
+                  dataKey="revenue" 
+                  stroke="#82ca9d" 
+                  name="Revenue"
+                  activeDot={{ r: 8 }} 
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -331,7 +434,7 @@ const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) 
       </div>
       
       {/* Additional Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -373,7 +476,7 @@ const SubscriptionAnalytics = ({ subscriptions }: { subscriptions: Payment[] }) 
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
     </div>
   );
 };

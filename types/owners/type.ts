@@ -15,6 +15,7 @@ export declare interface Owner  {
         identificationId:string;
         municipal:string;
         referredCodeBy: string;
+        referredByCode: string;
         emailVerified: Date;
         consent: boolean;
         theme: string;
