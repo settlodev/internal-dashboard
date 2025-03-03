@@ -22,7 +22,6 @@ import {
   Warehouse,
   Calendar,
   Box,
-  Plus
 } from 'lucide-react';
 import { ActiveSubscription } from "@/types/location/type";
 import { useState } from "react";
@@ -44,8 +43,8 @@ const FeatureItem = ({ enabled, title, icon: Icon }: { enabled: boolean; title: 
 );
 
 const LocationDetailClient = ({ location, payments, activeSubscription }: { location: any; payments: any; activeSubscription: ActiveSubscription }) => {
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [, setIsModalOpen] = useState<boolean>(false);
+    const [, setCurrentPage] = useState(0);
     const breadcrumbItems = [
         { title: "locations", link: "/locations" },
         { title: location.name, link: "" },

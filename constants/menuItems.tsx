@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, CalendarSync, ChartColumn, MapPin, Settings2, User, Users } from "lucide-react"
+import { BriefcaseBusiness, CalendarSync, ChartColumn, MapPin, Settings2,Users } from "lucide-react"
 
 const data = {
   navMain: [

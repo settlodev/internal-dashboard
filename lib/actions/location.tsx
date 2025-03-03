@@ -1,5 +1,4 @@
 'use server'
-import { Business } from "@/types/business/types";
 import ApiClient from "../api-client";
 import { parseStringify } from "../utils";
 import { Location, RequestSubscription } from "@/types/location/type";
@@ -186,7 +185,7 @@ export const rejectSubscriptionRequest = async (id: string) => {
     if (error) throw error;
 };
 
-const paySubscription = async (id: string) => {
+// const paySubscription = async (id: string) => {
     
-} 
+// } 
 

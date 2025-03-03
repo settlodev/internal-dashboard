@@ -2,8 +2,7 @@
 'use client';
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Business } from "@/types/business/types";
-import { Location, Payment } from "@/types/location/type";
+import { Payment } from "@/types/location/type";
 import { MoreHorizontal} from "lucide-react";
 import { useRouter } from "next/navigation";
 interface CellActionProps {

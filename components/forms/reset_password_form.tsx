@@ -19,11 +19,10 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useCallback, useTransition } from "react"
-import { resetPassword} from "@/lib/actions/auth/signIn"
 import { useSearchParams } from "next/navigation"
 import { resetPasswordSchema } from "@/types/auth/resetPasswordSchema"
 export function ResetPasswordForm() {
-  const [isPending,startTransition] = useTransition()
+  const [isPending,] = useTransition()
   const param = useSearchParams()
   const emailParam =param.get("email")
   
@@ -37,7 +36,7 @@ export function ResetPasswordForm() {
   })
 
 
-  const onSubmitData = useCallback((values: z.infer<typeof resetPasswordSchema>) => {
+  const onSubmitData = useCallback(() => {
     
     // startTransition(() => {
     //   resetPassword(values).then((data) => {

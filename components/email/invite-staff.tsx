@@ -32,7 +32,7 @@ export default function InvitationEmailTemplate({email,first_name,last_name,code
                 Email: {email}
             </Text>
             <Text style={mainText}>
-                Password: {code}
+                Password: {password}
             </Text>
             <Text style={mainText}>
                 Referral Code: {code}

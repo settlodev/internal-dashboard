@@ -9,7 +9,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { inviteStaff } from "../email/send";
 import { resetPasswordSchema } from "@/types/auth/resetPasswordSchema";
-import { cookies } from 'next/headers';
 import { cache } from 'react';
 
 export const SignIn = async (
@@ -203,7 +202,7 @@ export const resetPassword = async (userId: string, passwordData: z.infer<typeof
     // Initialize Supabase client
     const supabase = await createClient();
 
-    const { data, error } = await supabase.auth.admin.updateUserById(
+    const { error } = await supabase.auth.admin.updateUserById(
       userId,
       { password: validatedData.data.password }
     );
@@ -243,7 +242,6 @@ export const signOut = async () => {
 
 export async function getCurrentUser() {
   try {
-    const cookieStore = cookies();
     const supabase = await createClient();
     
     const { data: { user }, error } = await supabase.auth.getUser();
