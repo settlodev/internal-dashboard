@@ -10,6 +10,7 @@ import Loading from "@/components/widgets/loader";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ProtectedComponent } from "@/components/auth/protectedComponent";
+import Unauthorized from "@/components/code/401";
 
 const breadcrumbItems = [
   { title: "Users", link: "/locations" },
@@ -53,13 +54,8 @@ export default function Page() {
         <Loading />
       </div>
     }
-    fallback={<div
-    className="flex items-center justify-center min-h-screen gap-1"
-    >
-      {/* <ExpandIcon /> */}
-      <span className=" bg-red-500 text-white py-2 px-3 rounded-sm">
-      You don't have permission, please contact the admin</span>
-      </div>}
+    fallback={
+      <Unauthorized />}
   >
     <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
       <div className='flex items-center justify-between mb-3'>

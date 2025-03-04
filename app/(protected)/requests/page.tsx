@@ -8,6 +8,7 @@ import { RequestSubscription } from "@/types/location/type";
 import { useEffect, useState } from "react";
 import Loading from "@/components/widgets/loader";
 import { ProtectedComponent } from "@/components/auth/protectedComponent";
+import Unauthorized from "@/components/code/401";
 
 const breadcrumbItems = [
     { title: "Requests", link: "/requests" },
@@ -44,7 +45,7 @@ if (isLoading) {
     return (
       <ProtectedComponent 
       requiredPermissions={['view:requests', 'approve:request']}
-      fallback={<div>Access denied</div>}>
+      fallback={<Unauthorized />}>
         <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
             <div className={`flex items-center justify-between mb-2`}>
                 <div className={`relative flex-1 md:max-w-md`}>

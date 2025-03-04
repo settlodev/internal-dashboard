@@ -7,6 +7,7 @@ import { SummaryResponse } from "@/types/dashboard/type";
 import { useEffect, useState } from "react";
 import { BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { UserIcon, MapPinIcon, UserPlusIcon, UserMinusIcon, MinusIcon, ArrowUpIcon, ArrowDownIcon } from 'lucide-react';
+import Unauthorized from "@/components/code/401";
 
 
 const breadcrumbItems = [
@@ -76,7 +77,7 @@ export default function Dashboard() {
     return (
         <ProtectedComponent 
             requiredPermission="view:analytics" 
-            fallback={<div className="p-8 text-center text-lg">You are not authorized to view this page</div>}
+            fallback={<Unauthorized />}
         >
             <div className="flex flex-col space-y-6 md:p-8 p-4 w-full bg-gray-50 min-h-screen">
                 {/* Header section with breadcrumb and date filter */}
@@ -136,11 +137,11 @@ export default function Dashboard() {
                         <div className="mt-4 grid grid-cols-2 gap-2 text-center">
                             <div className="p-2 bg-blue-50 rounded-lg">
                                 <p className="text-sm text-gray-500">Active Users</p>
-                                <p className="text-xl font-bold text-blue-600">{stats?.totalUsersWithActiveSubscriptions || 0}</p>
+                                <p className="text-xl font-bold text-emerald-600">{stats?.totalUsersWithActiveSubscriptions || 0}</p>
                             </div>
                             <div className="p-2 bg-orange-50 rounded-lg">
                                 <p className="text-sm text-gray-500">Inactive Users</p>
-                                <p className="text-xl font-bold text-orange-600">{stats?.totalUsersWithInActiveSubscriptions || 0}</p>
+                                <p className="text-xl font-bold text-red-600">{stats?.totalUsersWithInActiveSubscriptions || 0}</p>
                             </div>
                         </div>
                     </div>
@@ -221,7 +222,7 @@ function UserGrowthLineChart({ userData, businessData, locationData }: { userDat
     });
 
     return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={350}>
             <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" />
@@ -229,8 +230,8 @@ function UserGrowthLineChart({ userData, businessData, locationData }: { userDat
                 <Tooltip />
                 <Legend />
                 <Bar dataKey="Users" fill="#3b82f6" name="Users"/>
-                <Bar dataKey="Businesses" fill="#8b5cf6" name="Businesses"/>
-                <Bar dataKey="Locations" fill="#ef4444" name="Locations"/>
+                <Bar dataKey="Businesses" fill="#F97415" name="Businesses"/>
+                <Bar dataKey="Locations" fill="#22C55E" name="Locations"/>
             </BarChart>
         </ResponsiveContainer>
          
@@ -241,12 +242,12 @@ function UserGrowthLineChart({ userData, businessData, locationData }: { userDat
 // Subscription pie chart
 function SubscriptionPieChart({ activeSubscriptions, inactiveSubscriptions }: { activeSubscriptions: number, inactiveSubscriptions: number }) {
     const data = [
-        { name: 'Active', value: activeSubscriptions, color: '#3b82f6' },
-        { name: 'Inactive', value: inactiveSubscriptions, color: '#f97316' }
+        { name: 'Active', value: activeSubscriptions, color: '#22C55E' },
+        { name: 'Inactive', value: inactiveSubscriptions, color: '#EF4445' }
     ];
 
     return (
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={250}>
             <PieChart>
                 <Pie
                     data={data}

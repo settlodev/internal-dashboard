@@ -14,6 +14,7 @@ export declare interface Location{
     openingTime: string
     closingTime: string
     business: UUID,
+    businessName:string,
     locationBusinessType:string,
     locationBusinessTypeName:string,
     subscriptionStatus:string,

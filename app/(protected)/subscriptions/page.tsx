@@ -9,6 +9,7 @@ import { ProtectedComponent } from "@/components/auth/protectedComponent";
 import { getAllSubscriptions } from "@/lib/actions/subscriptions";
 import { Payment } from "@/types/location/type";
 import SubscriptionAnalytics from "@/components/subscription/analytics";
+import Unauthorized from "@/components/code/401";
 
 const breadcrumbItems = [
   { title: "Subscriptions", link: "/subscriptions" },
@@ -50,9 +51,7 @@ export default function Subscription() {
           <Loading />
         </div>
       }
-      fallback={<div
-        className="flex items-center justify-center min-h-screen gap-1"
-      ></div>}>
+      fallback={<Unauthorized />}>
       <div className='flex-1 space-y-2 md:p-8 pt-4 px-4'>
         <div className={`flex items-center justify-between mb-2`}>
           <div className={`relative flex-1 md:max-w-md`}>

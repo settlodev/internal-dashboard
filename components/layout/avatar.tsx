@@ -31,7 +31,7 @@ export function UserAvatar({user}:{user: userProps}) {
                     <p className="text-sm font-medium leading-none">
                         {user?.displayName}
                     </p>
-                    <p className="text-xs leading-none text-muted-foreground">
+                    <p className="hidden lg:block text-xs leading-none text-muted-foreground">
                         {user?.email}
                     </p>
                 </div>   
