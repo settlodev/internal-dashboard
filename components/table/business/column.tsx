@@ -44,25 +44,14 @@ export const columns: ColumnDef<Business>[] = [
             )
         }
     },
-    {
-        accessorKey: "prefix",
-        header: "Prefix",
-    },
-    {
-        accessorKey: "email",
-        header: "Email",
-    },
-    {
-        accessorKey: "phone",
-        header: "Phone",
-    },
+    
     {
         accessorKey: "businessTypeName",
         header: "Business Type",
     },
     {
         accessorKey: "totalLocations",
-        header: "Locations",
+        header: "Total Locations",
     },
     {
         accessorKey: "countryName",

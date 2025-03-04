@@ -1,5 +1,4 @@
 'use server'
-import { Business } from "@/types/business/types";
 import ApiClient from "../api-client";
 import { parseStringify } from "../utils";
 import { Location, RequestSubscription } from "@/types/location/type";
@@ -58,7 +57,6 @@ export const getLocationSubscriptionPayments = async (id: string) => {
     try {
         const apiClient = new ApiClient();
         const data = await apiClient.post(`/api/subscription-payments/${id}`, {});
-        console.log("The subscription records basing on the location", data)
         return parseStringify(data);
     } catch (error) {
         throw error;
@@ -187,7 +185,7 @@ export const rejectSubscriptionRequest = async (id: string) => {
     if (error) throw error;
 };
 
-const paySubscription = async (id: string) => {
+// const paySubscription = async (id: string) => {
     
-} 
+// } 
 

@@ -2,18 +2,10 @@
 import { useState } from "react";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../ui/pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { Badge, Calendar,CreditCard} from "lucide-react";
+import {Calendar,CreditCard} from "lucide-react";
 import { Payment } from "@/types/location/type";
 import { Card, CardContent, CardHeader } from "../ui/card";
-
-interface PaginationInfo {
-    pageNumber: number;
-    pageSize: number;
-    totalPages: number;
-    totalElements: number;
-  }
-  
-  interface SubscriptionPaymentsProps {
+    interface SubscriptionPaymentsProps {
     payments: {
       content: Payment[];
       pageable: {
@@ -39,13 +31,13 @@ interface PaginationInfo {
     };
     
     // Function to format currency based on location settings
-    const formatCurrency = (amount: number) => {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'TZS', // This should come from location settings
-        minimumFractionDigits: 0,
-      }).format(amount);
-    };
+    // const formatCurrency = (amount: number) => {
+    //   return new Intl.NumberFormat('en-US', {
+    //     style: 'currency',
+    //     currency: 'TZS', // This should come from location settings
+    //     minimumFractionDigits: 0,
+    //   }).format(amount);
+    // };
   
     // Generate pagination items
     const renderPaginationItems = () => {

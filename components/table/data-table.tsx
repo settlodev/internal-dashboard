@@ -41,7 +41,7 @@ interface DataTableProps<TData, TValue> {
     filters?: {
         key: string;
         label: string;
-        options: { label: string; value: string }[];
+        options: { label: string; value: string | boolean }[];
     }[];
 }
 
@@ -147,14 +147,15 @@ export function DataTable<TData, TValue>({
                         <Select 
                             value={selectedFilters[filter.key] || 'all'} 
                             onValueChange={(value) => handleFilterChange(filter.key, value)}
+                            
                         >
-                            <SelectTrigger className="w-[160px]">
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder={`Select ${filter.label.toLowerCase()}`} />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All</SelectItem>
                                 {filter.options.map((option) => (
-                                    <SelectItem key={option.value} value={option.value}>
+                                    <SelectItem key={option.value.toString()} value={option.value.toString()}>
                                         {option.label}
                                     </SelectItem>
                                 ))}

@@ -13,7 +13,6 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getRequestSubscriptionById, approveSubscriptionRequest, rejectSubscriptionRequest } from '@/lib/actions/location';
 import { BreadcrumbNav } from '@/components/layout/breadcrumbs';
-import CancelButton from '@/components/widgets/cancel-button';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
 

@@ -3,14 +3,13 @@ import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { columns } from "@/components/table/users/column";
-import { fetchAllUsers, searchUsers } from "@/lib/actions/user-actions";
-import { Profile, User } from "@/types/users/type";
+import { fetchAllUsers} from "@/lib/actions/user-actions";
+import { User } from "@/types/users/type";
 import { useEffect, useState } from "react";
 import Loading from "@/components/widgets/loader";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ProtectedComponent } from "@/components/auth/protectedComponent";
-import { ExpandIcon } from "lucide-react";
 
 const breadcrumbItems = [
   { title: "Users", link: "/locations" },

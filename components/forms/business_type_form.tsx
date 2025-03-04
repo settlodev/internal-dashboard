@@ -16,7 +16,7 @@ import CancelButton from "../widgets/cancel-button";
 
 function BusinessTypeForm({ item }: { item: BusinessType | null | undefined }) {
     const [isPending, startTransition] = useTransition()
-    const [response, setResponse] =useState<FormResponse | undefined>()
+    const [,setResponse] =useState<FormResponse | undefined>()
     const { toast } = useToast()
 
     const form = useForm<z.infer<typeof BusinessTypeSchema>>({

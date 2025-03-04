@@ -16,7 +16,6 @@ import {
   Instagram,
   Linkedin,
   Youtube,
-  Store
 } from 'lucide-react';
 import { Location } from "@/types/location/type";
 

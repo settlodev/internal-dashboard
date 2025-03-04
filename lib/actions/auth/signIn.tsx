@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { inviteStaff } from "../email/send";
 import { resetPasswordSchema } from "@/types/auth/resetPasswordSchema";
-import { cookies } from 'next/headers';
+import { cache } from 'react';
 
 export const SignIn = async (
   credentials: z.infer<typeof signInSchema>
@@ -91,7 +91,8 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
 
   try {
     const supabase = await createClient();
-    const { email, password, first_name, last_name, phone, role, user_type} = validatedData.data;
+    const { email,first_name, last_name, phone, role, user_type} = validatedData.data;
+    const password = `${first_name.slice(0, 3).toUpperCase()}${Math.floor(100 + Math.random() * 900)}`;
 
     // Sign up with email and password
     const { data, error } = await supabase.auth.admin.createUser({
@@ -107,7 +108,7 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
 
     const user = data.user;
     const code = `${first_name.slice(0, 3).toUpperCase()}${Math.floor(100 + Math.random() * 900)}`; 
-    console.log("The user code is", code)
+    // console.log("The user code is", code)
     if (user) {
       const { error: profileError } = await supabase
         .from('internal_profiles')
@@ -136,7 +137,7 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
           role_id: role,
         },
       ]);
-      // await inviteStaff(email)
+      await inviteStaff(email,first_name, last_name, code, password)
 
       return { redirectTo: "/users" };
     }
@@ -146,97 +147,88 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
   }
 };
 
-//First, create a function to request password reset
-export const requestPasswordReset = async (email: string) => {
+// Using cache to prevent redundant fetches within the same request
+export const getUserEmailById = cache(async (userId: string) => {
   try {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password?email=${email}`, // Adjust this URL as needed
-    });
-
-    if (error) {
-      return parseStringify({
-        responseType: "error",
-        message: error.message,
-        error: new Error(error.message),
-        status: 400
-      });
+    if (!userId) {
+      return { error: "User ID is required", email: null };
     }
 
-    return parseStringify({
-      responseType: "success",
-      message: "Password reset instructions sent to your email",
-      status: 200
-    });
-  } catch (error: any) {
-    return parseStringify({
-      responseType: "error",
-      message: error.message,
-      error: new Error(error.message),
-      status: 400
-    });
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.admin.getUserById(userId);
+    
+    if (error) {
+      console.error("Error fetching user by ID:", error);
+      return { error: error.message, email: null };
+    }
+    
+    if (!data.user) {
+      return { error: "User not found", email: null };
+    }
+    
+    return { email: data.user.email, error: null };
+  } catch (error) {
+    console.error("Unexpected error getting user email:", error);
+    return { error: "An unexpected error occurred", email: null };
   }
-};
+});
 
-//Then, update the password reset function to use the reset token
-export const resetPassword = async (password: z.infer<typeof resetPasswordSchema>) => {
-  const validatedData = resetPasswordSchema.safeParse(password);
+
+export const resetPassword = async (userId: string, passwordData: z.infer<typeof resetPasswordSchema>) => {
+  // Validate the incoming data
+  const validatedData = resetPasswordSchema.safeParse(passwordData);
   if (!validatedData.success) {
-    return parseStringify({ 
+    return {
       responseType: "error",
-      message: "Please fill all the fields before submitting",
-      error: new Error(validatedData.error.message),
+      message: "Please fill all the fields correctly",
+      error: validatedData.error.message,
       status: 400
-    });
+    };
   }
   
   try {
+    // Get user by ID first to verify they exist
+    const userData = await getUserEmailById(userId);
+
+    if (userData.error) {
+      return {
+        responseType: "error",
+        message: userData.error,
+        error: userData.error,
+        status: 400
+      };
+    }
+
+    // Initialize Supabase client
     const supabase = await createClient();
 
-    // Get the session from the URL if this is a password reset flow
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
-      return parseStringify({
-        responseType: "error",
-        message: "Invalid or expired reset link. Please request a new password reset.",
-        error: new Error("Invalid session"),
-        status: 401
-      });
-    }
-
-    const { error } = await supabase.auth.updateUser({
-      password: validatedData.data.password
-    });
+    const { error } = await supabase.auth.admin.updateUserById(
+      userId,
+      { password: validatedData.data.password }
+    );
 
     if (error) {
-      console.log(error);
-      return parseStringify({
+      console.error("Admin password update error:", error);
+      return {
         responseType: "error",
-        message: error.message,
-        error: new Error(error.message),
+        message: error.message || "Failed to update user password",
+        error: error.message,
         status: 400
-      });
+      };
     }
 
-    revalidatePath("/");
-    return parseStringify({
-      responseType: "success",
-      message: "Password updated successfully",
-      status: 200
-    });
+
+    return { redirectTo: "/users" };
   } catch (error: any) {
-    console.log(error);
-    return parseStringify({
+    console.error("Unexpected error in resetPassword:", error);
+    return {
       responseType: "error",
-      message: error.message,
-      error: new Error(error.message),
-      status: 400
-    });
+      message: error.message || "An unexpected error occurred",
+      error: error.message,
+      status: 500 
+    };
   }
 };
-
-
 
 export const signOut = async () => {
   const supabase = await createClient()
@@ -250,12 +242,11 @@ export const signOut = async () => {
 
 export async function getCurrentUser() {
   try {
-    const cookieStore = cookies();
     const supabase = await createClient();
     
     const { data: { user }, error } = await supabase.auth.getUser();
 
-    console.log("The user", user)
+    // console.log("The user", user)
     
     if (error || !user) {
       return { user: null, error: error?.message };
@@ -309,5 +300,41 @@ export async function checkUserPermissions() {
   } catch (error) {
     console.error('Error checking permissions:', error);
     return { permissions: [], error: 'Failed to check permissions' };
+  }
+}
+
+
+export async function deleteUser(userId: string) {
+  try {
+      const supabase = await createClient();
+
+      const { data: user, error: fetchError } = await supabase.auth.admin.getUserById(userId);
+      if (fetchError || !user) {
+          return { error: "User not found in authentication system." };
+      }
+
+      // Delete the user profile from the database 
+      const { error: profileError } = await supabase
+          .from("internal_profiles") 
+          .delete()
+          .eq("id", userId); 
+
+      if (profileError) {
+          console.error("Error deleting user profile:", profileError);
+          return { error: "Failed to delete user profile." };
+      }
+
+      // Delete the user from Supabase Auth
+      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+
+      if (authError) {
+          console.error("Error deleting user from auth:", authError);
+          return { error: "Failed to delete user from authentication." };
+      }
+
+      return { error: null }; // Success
+  } catch (error) {
+      console.error("Unexpected error deleting user:", error);
+      return { error: "An unexpected error occurred while deleting the user." };
   }
 }
