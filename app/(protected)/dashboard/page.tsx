@@ -1,9 +1,5 @@
 'use client'
 import { ProtectedComponent } from "@/components/auth/protectedComponent";
-import BusinessBarChart from "@/components/dashboard/businessBar";
-import CardComponent from "@/components/dashboard/card";
-import LocationBarChart from "@/components/dashboard/locationBarChart";
-import UseLineChart from "@/components/dashboard/userLineChart";
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import Loading from "@/components/widgets/loader";
 import { getDashboardSummaries } from "@/lib/actions/dashboard-actions";
@@ -24,7 +20,7 @@ export default function Dashboard() {
     const getSummary = async () => {
         try {
             const data = await getDashboardSummaries();
-            console.log(data)
+            // console.log(data)
             setStats(data as SummaryResponse);
         } catch (error) {
             console.error("Error fetching dashboard data:", error);

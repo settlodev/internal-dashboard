@@ -1,5 +1,4 @@
 'use client'
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -24,7 +23,6 @@ import RoleSelect from "@/components/widgets/roleSelector"
 import { UserSchema } from "@/types/users/schema"
 import { User } from "@/types/users/type"
 import UserTypeSelect from "@/components/widgets/userTypeSelector"
-import toast from "react-hot-toast"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import CancelButton from "@/components/widgets/cancel-button"
 import { Separator } from "@/components/ui/separator"
@@ -34,7 +32,7 @@ import SubmitButton from "@/components/widgets/submit-button"
 export function UserForm({ item }: { item: User | null | undefined }) {
   const [isPending, startTransition] = useTransition()
   const [userEmail, setUserEmail] = useState("")
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
 
   // Fetch user email when editing an existing user
   useEffect(() => {

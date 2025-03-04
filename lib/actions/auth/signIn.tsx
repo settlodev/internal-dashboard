@@ -9,7 +9,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { inviteStaff } from "../email/send";
 import { resetPasswordSchema } from "@/types/auth/resetPasswordSchema";
-import { cookies } from 'next/headers';
 import { cache } from 'react';
 
 export const SignIn = async (
@@ -203,7 +202,7 @@ export const resetPassword = async (userId: string, passwordData: z.infer<typeof
     // Initialize Supabase client
     const supabase = await createClient();
 
-    const { data, error } = await supabase.auth.admin.updateUserById(
+    const { error } = await supabase.auth.admin.updateUserById(
       userId,
       { password: validatedData.data.password }
     );
@@ -243,7 +242,6 @@ export const signOut = async () => {
 
 export async function getCurrentUser() {
   try {
-    const cookieStore = cookies();
     const supabase = await createClient();
     
     const { data: { user }, error } = await supabase.auth.getUser();
@@ -302,5 +300,41 @@ export async function checkUserPermissions() {
   } catch (error) {
     console.error('Error checking permissions:', error);
     return { permissions: [], error: 'Failed to check permissions' };
+  }
+}
+
+
+export async function deleteUser(userId: string) {
+  try {
+      const supabase = await createClient();
+
+      const { data: user, error: fetchError } = await supabase.auth.admin.getUserById(userId);
+      if (fetchError || !user) {
+          return { error: "User not found in authentication system." };
+      }
+
+      // Delete the user profile from the database 
+      const { error: profileError } = await supabase
+          .from("internal_profiles") 
+          .delete()
+          .eq("id", userId); 
+
+      if (profileError) {
+          console.error("Error deleting user profile:", profileError);
+          return { error: "Failed to delete user profile." };
+      }
+
+      // Delete the user from Supabase Auth
+      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+
+      if (authError) {
+          console.error("Error deleting user from auth:", authError);
+          return { error: "Failed to delete user from authentication." };
+      }
+
+      return { error: null }; // Success
+  } catch (error) {
+      console.error("Unexpected error deleting user:", error);
+      return { error: "An unexpected error occurred while deleting the user." };
   }
 }

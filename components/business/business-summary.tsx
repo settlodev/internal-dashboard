@@ -93,7 +93,7 @@ export default function BusinessSummary({ businesses }: { businesses: Business[]
                   nameKey="name"
                   label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                 >
-                  {metrics.subscriptionStatusData.map((entry, index) => (
+                  {metrics.subscriptionStatusData.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -123,7 +123,7 @@ export default function BusinessSummary({ businesses }: { businesses: Business[]
                   nameKey="name"
                   label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                 >
-                  {metrics.businessTypeData.map((entry, index) => (
+                  {metrics.businessTypeData.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

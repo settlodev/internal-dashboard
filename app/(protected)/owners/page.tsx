@@ -19,7 +19,7 @@ export default function page() {
   const fetchBusinessOwners = async () => {
     try {
       const owners = await fetchAllBusinessOwners()
-      console.log("The business owners are",owners)
+     
       setBusinessOwners(owners)
     } catch (error) {
       throw error

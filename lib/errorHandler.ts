@@ -1,4 +1,3 @@
-import { toast } from '@/hooks/use-toast';
 import { PostgrestError, AuthError } from '@supabase/supabase-js';
 
 // Define a unified error type

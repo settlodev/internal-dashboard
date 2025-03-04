@@ -164,7 +164,7 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
                   nameKey="name"
                   label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                 >
-                  {metrics.subscriptionStatusData.map((entry, index) => (
+                  {metrics.subscriptionStatusData.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -194,7 +194,7 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
                   nameKey="name"
                   label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                 >
-                  {metrics.businessTypeData.map((entry, index) => (
+                  {metrics.businessTypeData.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -250,7 +250,7 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
                   nameKey="name"
                   label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                 >
-                  {metrics.operatingHoursChartData.map((entry, index) => (
+                  {metrics.operatingHoursChartData.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
