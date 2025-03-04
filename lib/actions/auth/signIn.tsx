@@ -302,3 +302,39 @@ export async function checkUserPermissions() {
     return { permissions: [], error: 'Failed to check permissions' };
   }
 }
+
+
+export async function deleteUser(userId: string) {
+  try {
+      const supabase = await createClient();
+
+      const { data: user, error: fetchError } = await supabase.auth.admin.getUserById(userId);
+      if (fetchError || !user) {
+          return { error: "User not found in authentication system." };
+      }
+
+      // Delete the user profile from the database 
+      const { error: profileError } = await supabase
+          .from("internal_profiles") 
+          .delete()
+          .eq("id", userId); 
+
+      if (profileError) {
+          console.error("Error deleting user profile:", profileError);
+          return { error: "Failed to delete user profile." };
+      }
+
+      // Delete the user from Supabase Auth
+      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+
+      if (authError) {
+          console.error("Error deleting user from auth:", authError);
+          return { error: "Failed to delete user from authentication." };
+      }
+
+      return { error: null }; // Success
+  } catch (error) {
+      console.error("Unexpected error deleting user:", error);
+      return { error: "An unexpected error occurred while deleting the user." };
+  }
+}
