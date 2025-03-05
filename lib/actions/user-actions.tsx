@@ -31,7 +31,6 @@ export const getUserWithProfile = async () => {
       .eq('id', user.id)
       .single()
   
-      console.log(profile)
   // Handle potential errors
   if (error) {
       console.error('Error fetching user profile:', error)
