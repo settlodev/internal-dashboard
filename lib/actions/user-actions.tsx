@@ -6,10 +6,43 @@ import { fetchAllBusiness } from "./business"
 import { fetchAllBusinessOwners } from "./business-owners"
 import { Business } from "@/types/business/types"
 
-export const userWithInSession = async () => {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    return user
+export const getUserWithProfile = async () => {
+  const supabase = await createClient()
+  
+  // Get the authenticated user
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  // If no user is authenticated, return null
+  if (!user) {
+      return null
+  }
+  
+  // Fetch the user's profile from the internal_profile table
+  const { data: profile, error } = await supabase
+      .from('internal_profiles')
+      .select(`
+        id,
+        first_name,
+        last_name,
+        phone,
+        role:internal_roles (name),
+        user_type
+      `)
+      .eq('id', user.id)
+      .single()
+  
+      console.log(profile)
+  // Handle potential errors
+  if (error) {
+      console.error('Error fetching user profile:', error)
+      return null
+  }
+  
+  // Combine user authentication data with profile data
+  return {
+      user: user,
+      profile: profile
+  }
 }
 export const fetchAllUsers = async (): Promise<User[]> => {
     const supabase = await createClient()

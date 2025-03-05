@@ -173,7 +173,6 @@ export const getUserEmailById = cache(async (userId: string) => {
   }
 });
 
-
 export const resetPassword = async (userId: string, passwordData: z.infer<typeof resetPasswordSchema>) => {
   // Validate the incoming data
   const validatedData = resetPasswordSchema.safeParse(passwordData);
@@ -236,9 +235,6 @@ export const signOut = async () => {
   revalidatePath("/")
   redirect("/")
 }
-
-
-
 
 export async function getCurrentUser() {
   try {
@@ -336,5 +332,32 @@ export async function deleteUser(userId: string) {
   } catch (error) {
       console.error("Unexpected error deleting user:", error);
       return { error: "An unexpected error occurred while deleting the user." };
+  }
+}
+
+export async function updateUserProfile(userId: string, data: any) {
+ 
+  try {
+    const supabase = await createClient();
+
+    const payload = {
+      last_name: data.last_name,
+      first_name: data.first_name,
+      phone: data.phone,
+      role: data.role
+    };
+
+    const { error } = await supabase
+      .from('internal_profiles')
+      .update(payload)
+      .eq('id', userId);
+    if (error) {
+      console.error("Error updating user profile:", error);
+      return { error: error.message };
+    }
+    return { redirectTo: "/users" };
+  } catch (error) {
+    console.error("Unexpected error updating user:", error);
+    return { error: "An unexpected error occurred while updating the user.", status: 500 };
   }
 }

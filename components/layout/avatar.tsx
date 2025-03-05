@@ -10,8 +10,14 @@ import { signOut} from "@/lib/actions/auth/signIn"
 import { useRouter } from "next/navigation"
 
 interface userProps {
-    displayName?:string,
-    email?:string
+    user:{
+        email: string,
+        last_signed_in_at: string,
+    },
+    profile: {
+        first_name: string,
+        last_name: string
+    }
 }
 export function UserAvatar({user}:{user: userProps}) {
     const router = useRouter();
@@ -26,13 +32,14 @@ export function UserAvatar({user}:{user: userProps}) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <div className="flex items-center gap-1">
-                 <div className="flex flex-col">
-                    <p className="text-sm font-medium leading-none">
-                        {user?.displayName}
+                <div className="hidden lg:block ">
+                <div className="flex items-center gap-1 border border-emerald-200 rounded-md px-2 py-1">
+                 <div className="flex flex-col gap-1">
+                    <p className="text-sm font-bold leading-none">
+                        {user?.profile?.first_name} {user?.profile?.last_name}
                     </p>
-                    <p className="hidden lg:block text-xs leading-none text-muted-foreground">
-                        {user?.email}
+                    <p className="text-xs leading-none text-muted-foreground">
+                        {user?.user.email}
                     </p>
                 </div>   
                 <Avatar className="h-9 w-9">
@@ -40,6 +47,7 @@ export function UserAvatar({user}:{user: userProps}) {
                     <AvatarFallback>ST</AvatarFallback>
                 </Avatar>
                 <ChevronDown className="h-4 w-4" />
+                </div>
                 </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 m-3">

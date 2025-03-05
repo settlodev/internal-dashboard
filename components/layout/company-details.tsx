@@ -1,11 +1,11 @@
-// "use client"
+"use client"
 
 import * as React from "react"
 import { Plus } from "lucide-react"
 
 import {
   DropdownMenu,
-  
+
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -15,9 +15,7 @@ import {
 } from "@/components/ui/sidebar"
 
 
-export function CompanyDetail() {
-  // const { profile, error } = await fetchProfileData();
-  // console.log("The user logged in" ,user)
+export function CompanyDetail({ user }: Readonly<{ user: any }>) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -27,16 +25,21 @@ export function CompanyDetail() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <Plus className="size-4" />
+              <div className="flex aspect-square size- items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <Plus className="size-8" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
                   Settlo Internal Dashboard
                 </span>
-                <span className="truncate text-xs">Signed In as: Staff</span>
+                <span className="truncate text-xs">Signed In as: {user?.profile.role.name.toUpperCase()}</span>
+                <span className="truncate text-xs">
+                  Last signedIn: {user?.user.last_sign_in_at
+                    ? new Date(user.user.last_sign_in_at).toLocaleString()
+                    : 'Never'}
+                </span>
               </div>
-             
+
             </SidebarMenuButton>
           </DropdownMenuTrigger>
         </DropdownMenu>

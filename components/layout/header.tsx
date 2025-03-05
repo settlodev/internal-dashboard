@@ -4,7 +4,7 @@ import { UserAvatar } from "./avatar";
 import { useSidebar } from "../ui/sidebar";
 
 type HeaderProps = {
-  user: Awaited<ReturnType<typeof import("@/lib/actions/user-actions").userWithInSession>> | null
+  user: Awaited<ReturnType<typeof import("@/lib/actions/user-actions").getUserWithProfile>> | null
 }
 
 function HeaderToggle() {
@@ -20,12 +20,13 @@ function HeaderToggle() {
 }
 
 export function Header({ user }: HeaderProps) {
+  // console.log(user)
   return (
-    <header className="flex w-full justify-end items-center p-3 bg-gray-100">
-      <div className="flex items-center gap-2">
+    <header className="flex w-full justify-between lg:justify-end items-center p-3 bg-gray-100">
+      {/* <div className="flex items-center gap-2"> */}
         <HeaderToggle />
-        {user && <UserAvatar user={user}/>}
-      </div>
+        {user && <UserAvatar user={user as any}/>}
+   
     </header>
   );
 }
