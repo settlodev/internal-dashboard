@@ -65,6 +65,9 @@ export function DataTable<TData, TValue>({
     const pageIndexFromUrl = Number(searchParams.get("page")) || 0;
     const [pageIndex, setPageIndex] = useState(pageIndexFromUrl);
 
+      // Add state for page size (default to 10)
+      const [pageSize, setPageSize] = useState(10);
+
     // Handle filter change for a specific filter key
     const handleFilterChange = (filterKey: string, value: string) => {
         setSelectedFilters(prev => ({
@@ -110,19 +113,21 @@ export function DataTable<TData, TValue>({
             columnVisibility,
             pagination: {
                 pageIndex,
-                pageSize: 10
+                pageSize
             }
         },
         onPaginationChange: (updater) => {
             if (typeof updater === "function") {
                 const newState = updater({
                     pageIndex,
-                    pageSize: 10
+                    pageSize
                 });
                 setPageIndex(newState.pageIndex);
+                setPageSize(newState.pageSize);
                 router.push(`?page=${newState.pageIndex}`, { scroll: false });
             } else {
                 setPageIndex(updater.pageIndex);
+                setPageSize(updater.pageSize);
                 router.push(`?page=${updater.pageIndex}`, { scroll: false });
             }
         }
@@ -130,26 +135,27 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-center gap-4 py-4">
-                <Input
-                    placeholder={`Search ...`}
-                    value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn(searchKey)?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
-                
-                {/* Render each filter as a separate Select component */}
+        {/* Search and filters section - made responsive */}
+        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4 py-4">
+            <Input
+                placeholder={`Search ...`}
+                value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+                onChange={(event) =>
+                    table.getColumn(searchKey)?.setFilterValue(event.target.value)
+                }
+                className="w-full sm:max-w-sm"
+            />
+            
+            {/* Filters in a scrollable container on mobile */}
+            <div className="w-full flex flex-wrap gap-3">
                 {filters && filters.map((filter) => (
-                    <div key={filter.key} className="flex items-center gap-2">
-                        <span className="text-sm font-medium">{filter.label}:</span>
+                    <div key={filter.key} className="flex items-center gap-2 min-w-fit">
+                        <span className="text-sm font-medium whitespace-nowrap">{filter.label}:</span>
                         <Select 
                             value={selectedFilters[filter.key] || 'all'} 
                             onValueChange={(value) => handleFilterChange(filter.key, value)}
-                            
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger className="w-36 min-w-fit">
                                 <SelectValue placeholder={`Select ${filter.label.toLowerCase()}`} />
                             </SelectTrigger>
                             <SelectContent>
@@ -164,90 +170,91 @@ export function DataTable<TData, TValue>({
                     </div>
                 ))}
             </div>
-            
-            {/* Rest of the table implementation remains the same */}
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+        </div>
+        
+        {/* Responsive table with horizontal scroll on small screens */}
+        <div className="rounded-md border overflow-x-auto">
+            <Table>
+                <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <TableHead key={header.id} className="whitespace-nowrap">
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                </TableHead>
+                            ))}
+                        </TableRow>
+                    ))}
+                </TableHeader>
+                <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map((row) => (
+                            <TableRow
+                                key={row.id}
+                                data-state={row.getIsSelected() && "selected"}
+                            >
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id} className="max-w-xs">
+                                        <div className="truncate">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-            {/* Pagination controls remain the same */}
-            <div className="flex items-center justify-between px-2">
-                <div className="flex-1 text-sm text-muted-foreground">
-                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                    {table.getFilteredRowModel().rows.length} row(s) selected.
-                </div>
-                <div className="flex items-center space-x-6 lg:space-x-8">
-                    <div className="flex items-center space-x-2">
-                        <p className="text-sm font-medium">Rows per page</p>
-                        <Select
-                            value={`${table.getState().pagination.pageSize}`}
-                            onValueChange={(value) => {
-                                table.setPageSize(Number(value))
-                            }}
-                        >
-                            <SelectTrigger className="h-8 w-[70px]">
-                                <SelectValue placeholder={table.getState().pagination.pageSize} />
-                            </SelectTrigger>
-                            <SelectContent side="top">
-                                {[10, 20, 30, 40, 50].map((pageSize) => (
-                                    <SelectItem key={pageSize} value={`${pageSize}`}>
-                                        {pageSize}
-                                    </SelectItem>
+                                        </div>
+                                    </TableCell>
                                 ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-                        Page {table.getState().pagination.pageIndex + 1} of{" "}
-                        {table.getPageCount()}
-                    </div>
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className="h-24 text-center">
+                                No results.
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </div>
+        
+        {/* Improved responsive pagination controls */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-2">
+            <div className="text-sm text-muted-foreground order-2 sm:order-1">
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {table.getFilteredRowModel().rows.length} row(s) selected.
+            </div>
+            <div className="flex flex-col sm:flex-row w-full sm:w-auto items-end sm:items-center gap-4 sm:space-x-6 lg:space-x-8 order-1 sm:order-2">
+                <div className="flex items-center space-x-2">
+                    <p className="text-sm font-medium whitespace-nowrap">Rows per page</p>
+                    <Select
+                        value={`${table.getState().pagination.pageSize}`}
+                        onValueChange={(value) => {
+                            table.setPageSize(Number(value))
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-[70px]">
+                            <SelectValue placeholder={table.getState().pagination.pageSize} />
+                        </SelectTrigger>
+                        <SelectContent side="top">
+                            {[10, 20, 30, 40, 50].map((pageSize) => (
+                                <SelectItem key={pageSize} value={`${pageSize}`}>
+                                    {pageSize}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="flex w-full sm:w-auto justify-between sm:justify-center items-center">
                     <div className="flex items-center space-x-2">
                         <Button
                             variant="outline"
-                            className="hidden h-8 w-8 p-0 lg:flex"
+                            className="h-8 w-8 p-0"
                             onClick={() => table.setPageIndex(0)}
                             disabled={!table.getCanPreviousPage()}
                         >
                             <span className="sr-only">Go to first page</span>
-                            <ChevronsLeft />
+                            <ChevronsLeft className="h-4 w-4" />
                         </Button>
                         <Button
                             variant="outline"
@@ -256,8 +263,14 @@ export function DataTable<TData, TValue>({
                             disabled={!table.getCanPreviousPage()}
                         >
                             <span className="sr-only">Go to previous page</span>
-                            <ChevronLeft />
+                            <ChevronLeft className="h-4 w-4" />
                         </Button>
+                    </div>
+                    <div className="text-sm font-medium whitespace-nowrap px-2">
+                        Page {table.getState().pagination.pageIndex + 1} of{" "}
+                        {table.getPageCount()}
+                    </div>
+                    <div className="flex items-center space-x-2">
                         <Button
                             variant="outline"
                             className="h-8 w-8 p-0"
@@ -265,20 +278,21 @@ export function DataTable<TData, TValue>({
                             disabled={!table.getCanNextPage()}
                         >
                             <span className="sr-only">Go to next page</span>
-                            <ChevronRight />
+                            <ChevronRight className="h-4 w-4" />
                         </Button>
                         <Button
                             variant="outline"
-                            className="hidden h-8 w-8 p-0 lg:flex"
+                            className="h-8 w-8 p-0"
                             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                             disabled={!table.getCanNextPage()}
                         >
                             <span className="sr-only">Go to last page</span>
-                            <ChevronsRight />
+                            <ChevronsRight className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     )
 }

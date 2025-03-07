@@ -8,28 +8,44 @@ import { useEffect, useState } from "react";
 import { BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { UserIcon, MapPinIcon, UserPlusIcon, UserMinusIcon, MinusIcon, ArrowUpIcon, ArrowDownIcon } from 'lucide-react';
 import Unauthorized from "@/components/code/401";
+import { DatePickerWithRange } from "@/components/widgets/date-range-picker";
+import { DateRange } from "react-day-picker";
 
 
 const breadcrumbItems = [
     { title: "Dashboard", link: "/dashboard" },
 ]
+
 export default function Dashboard() {
     const [stats, setStats] = useState<SummaryResponse >();
     const [isLoading, setLoading] = useState(true);
+    const [dateRange, setDateRange] = useState<DateRange>({
+        from: new Date(new Date().getFullYear(), new Date().getMonth(), 1), // First day of current month
+        to: new Date()
+      });
     
 
-    const getSummary = async () => {
+      const getSummary = async (dateRange?: DateRange) => {
+        setLoading(true);
         try {
-            const data = await getDashboardSummaries();
-            // console.log(data)
-            setStats(data as SummaryResponse);
+          const data = await getDashboardSummaries(
+            dateRange?.from,
+            dateRange?.to
+          );
+          
+          setStats(data as SummaryResponse);
         } catch (error) {
-            console.error("Error fetching dashboard data:", error);
-            // toast.error("Failed to load dashboard data");
+          console.error("Error fetching dashboard data:", error);
+          // toast.error("Failed to load dashboard data");
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
+      };
+
+    const handleDateChange = (newDateRange: DateRange) => {
+        setDateRange(newDateRange);
+        getSummary(newDateRange);
+      };
 
     useEffect(() => {
         getSummary();
@@ -86,7 +102,10 @@ export default function Dashboard() {
                         <BreadcrumbNav items={breadcrumbItems} />
                         <h1 className="text-2xl font-bold text-gray-800 mt-2">Quick Analytics</h1>
                     </div>
-                    
+                    <DatePickerWithRange
+                     value={dateRange}
+                     onChange={handleDateChange}
+                     />
                 </div>
 
                 {/* Summary metrics row */}

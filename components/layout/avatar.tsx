@@ -32,9 +32,9 @@ export function UserAvatar({user}:{user: userProps}) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <div className="hidden lg:block ">
-                <div className="flex items-center gap-1 border border-emerald-200 rounded-md px-2 py-1">
-                 <div className="flex flex-col gap-1">
+                <div className="">
+                <div className="flex items-center gap-1 lg:border lg:border-emerald-200 lg:rounded-md lg:px-2 lg:py-1">
+                 <div className="hidden lg:flex flex-col gap-1">
                     <p className="text-sm font-bold leading-none">
                         {user?.profile?.first_name} {user?.profile?.last_name}
                     </p>

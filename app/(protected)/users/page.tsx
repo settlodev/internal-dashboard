@@ -58,8 +58,8 @@ export default function Page() {
       <Unauthorized />}
   >
     <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
-      <div className='flex items-center justify-between mb-3'>
-        <div className='relative'>
+      <div className='flex items-center justify-between mb-3 pl-2 pr-2'>
+        <div className='relative '>
           <BreadcrumbNav items={breadcrumbItems} />
         </div>
         <Button>

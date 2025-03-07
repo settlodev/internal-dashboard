@@ -36,6 +36,7 @@ interface SettingsUsage {
 }
 
 const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) => {
+  // console.log(locations)
   // Derived metrics
   const metrics = useMemo(() => {
     // Basic counts
@@ -43,6 +44,8 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
     const activeLocations = locations.filter(loc => loc.subscriptionStatus === 'OK').length;
     const expiredLocations = locations.filter(loc => loc.subscriptionStatus === 'EXPIRED').length;
     const trialLocations = locations.filter(loc => loc.subscriptionStatus === 'TRIAL').length;
+    const almostDueLocations = locations.filter(loc => loc.subscriptionStatus === 'ALMOST_DUE').length;
+    const dueLocations = locations.filter(loc => loc.subscriptionStatus === 'DUE').length;
     const inactiveLocations = totalLocations - activeLocations;
     
     // Subscription status breakdown
@@ -128,6 +131,8 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
       activeLocations,
       expiredLocations,
       trialLocations,
+      almostDueLocations,
+      dueLocations,
       inactiveLocations,
       subscriptionStatusData: Object.values(subscriptionStatusData),
       businessTypeData: Object.values(businessTypeData),
@@ -139,129 +144,153 @@ const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) =
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
   return (
-    <div className=" w-full space-y-6">
-      {/* Summary Cards */}
-        <SummaryCard metrics={metrics} />
-        
-      {/* Charts - First Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Subscription Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Subscription Status</CardTitle>
-            <CardDescription>Distribution of location subscription statuses</CardDescription>
-          </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={metrics.subscriptionStatusData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  nameKey="name"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                >
-                  {metrics.subscriptionStatusData.map((_entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-        
-        {/* Business Type */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Business Type Distribution</CardTitle>
-            <CardDescription>Breakdown of locations by business type</CardDescription>
-          </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={metrics.businessTypeData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  nameKey="name"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                >
-                  {metrics.businessTypeData.map((_entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Charts - Second Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Feature Usage */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Feature Adoption Rate</CardTitle>
-            <CardDescription>Percentage of locations using each feature</CardDescription>
-          </CardHeader>
-          <CardContent className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                layout="vertical"
-                data={metrics.settingsUsageData}
-                margin={{ top: 5, right: 30, left: 80, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" domain={[0, 100]} unit="%" />
-                <YAxis dataKey="name" type="category" width={80} />
-                <Tooltip formatter={(value) => [`${value}%`, 'Adoption Rate']} />
-                <Bar dataKey="value" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-        
-        {/* Operating Hours */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Operating Hours</CardTitle>
-            <CardDescription>Distribution of business operating schedules</CardDescription>
-          </CardHeader>
-          <CardContent className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={metrics.operatingHoursChartData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  nameKey="name"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                >
-                  {metrics.operatingHoursChartData.map((_entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <div className="w-full p-2 space-y-4 md:space-y-6">
+  {/* Summary Cards */}
+  <SummaryCard metrics={metrics} />
+  
+  {/* Charts - First Row */}
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+    {/* Subscription Status */}
+    <Card className="w-full">
+      <CardHeader className="p-4 md:p-6">
+        <CardTitle className="text-lg md:text-xl">Subscription Status</CardTitle>
+        <CardDescription className="text-sm">Distribution of location subscription statuses</CardDescription>
+      </CardHeader>
+      <CardContent className="h-64 md:h-72 p-2 md:p-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={metrics.subscriptionStatusData}
+              cx="50%"
+              cy="50%"
+              outerRadius={window?.innerWidth < 768 ? 60 : 80}
+              fill="#8884d8"
+              dataKey="value"
+              nameKey="name"
+              label={({ name, percent }) => 
+                window?.innerWidth < 640 
+                  ? `${(percent * 100).toFixed(0)}%`
+                  : `${name}: ${(percent * 100).toFixed(0)}%`
+              }
+            >
+              {metrics.subscriptionStatusData.map((_entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend layout={window?.innerWidth < 768 ? "horizontal" : "vertical"} 
+                   align={window?.innerWidth < 768 ? "center" : "right"}
+                   verticalAlign={window?.innerWidth < 768 ? "bottom" : "middle"} />
+          </PieChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+    
+    {/* Business Type */}
+    <Card className="w-full">
+      <CardHeader className="p-4 md:p-6">
+        <CardTitle className="text-lg md:text-xl">Business Type Distribution</CardTitle>
+        <CardDescription className="text-sm">Breakdown of locations by business type</CardDescription>
+      </CardHeader>
+      <CardContent className="h-64 md:h-72 p-2 md:p-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={metrics.businessTypeData}
+              cx="50%"
+              cy="50%"
+              outerRadius={window?.innerWidth < 768 ? 60 : 80}
+              fill="#8884d8"
+              dataKey="value"
+              nameKey="name"
+              label={({ name, percent }) => 
+                window?.innerWidth < 640 
+                  ? `${(percent * 100).toFixed(0)}%`
+                  : `${name}: ${(percent * 100).toFixed(0)}%`
+              }
+            >
+              {metrics.businessTypeData.map((_entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend layout={window?.innerWidth < 768 ? "horizontal" : "vertical"}
+                   align={window?.innerWidth < 768 ? "center" : "right"}
+                   verticalAlign={window?.innerWidth < 768 ? "bottom" : "middle"} />
+          </PieChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+  </div>
+  
+  {/* Charts - Second Row */}
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+    {/* Feature Usage */}
+    <Card className="w-full">
+      <CardHeader className="p-4 md:p-6">
+        <CardTitle className="text-lg md:text-xl">Feature Adoption Rate</CardTitle>
+        <CardDescription className="text-sm">Percentage of locations using each feature</CardDescription>
+      </CardHeader>
+      <CardContent className="h-64 md:h-80 p-2 md:p-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            layout="vertical"
+            data={metrics.settingsUsageData}
+            margin={window?.innerWidth < 768 
+              ? { top: 5, right: 20, left: 50, bottom: 5 }
+              : { top: 5, right: 30, left: 80, bottom: 5 }
+            }
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" domain={[0, 100]} unit="%" 
+                  tick={{ fontSize: window?.innerWidth < 640 ? 10 : 12 }} />
+            <YAxis dataKey="name" type="category" 
+                  width={window?.innerWidth < 768 ? 50 : 80} 
+                  tick={{ fontSize: window?.innerWidth < 640 ? 10 : 12 }} />
+            <Tooltip formatter={(value) => [`${value}%`, 'Adoption Rate']} />
+            <Bar dataKey="value" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+    
+    {/* Operating Hours */}
+    <Card className="w-full">
+      <CardHeader className="p-4 md:p-6">
+        <CardTitle className="text-lg md:text-xl">Operating Hours</CardTitle>
+        <CardDescription className="text-sm">Distribution of business operating schedules</CardDescription>
+      </CardHeader>
+      <CardContent className="h-64 md:h-80 p-2 md:p-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={metrics.operatingHoursChartData}
+              cx="50%"
+              cy="50%"
+              outerRadius={window?.innerWidth < 768 ? 60 : 80}
+              fill="#8884d8"
+              dataKey="value"
+              nameKey="name"
+              label={({ name, percent }) => 
+                window?.innerWidth < 640 
+                  ? `${(percent * 100).toFixed(0)}%`
+                  : `${name}: ${(percent * 100).toFixed(0)}%`
+              }
+            >
+              {metrics.operatingHoursChartData.map((_entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend layout={window?.innerWidth < 768 ? "horizontal" : "vertical"}
+                   align={window?.innerWidth < 768 ? "center" : "right"}
+                   verticalAlign={window?.innerWidth < 768 ? "bottom" : "middle"} />
+          </PieChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+  </div>
+</div>
   );
 };
 

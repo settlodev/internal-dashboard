@@ -1,6 +1,6 @@
 'use server'
 import { createClient } from "@/lib/supabase/server";
-import { parseStringify } from "@/lib/utils";
+import { generatePassword, parseStringify } from "@/lib/utils";
 import { signInSchema } from "@/types/auth/signInSchema";
 import { FormResponse } from "@/types/types";
 import { UserSchema } from "@/types/users/schema";
@@ -92,7 +92,7 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
   try {
     const supabase = await createClient();
     const { email,first_name, last_name, phone, role, user_type} = validatedData.data;
-    const password = `${first_name.slice(0, 3).toUpperCase()}${Math.floor(100 + Math.random() * 900)}`;
+    const password = generatePassword();
 
     // Sign up with email and password
     const { data, error } = await supabase.auth.admin.createUser({
@@ -278,7 +278,7 @@ export async function checkUserPermissions() {
       .eq('user_id', user.id);
   
 
-      console.log("The data has this role", data )
+      // console.log("The data has this role", data )
 
     if (permError) {
       return { permissions: [], error: permError.message };

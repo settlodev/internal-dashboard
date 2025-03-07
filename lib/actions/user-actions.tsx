@@ -63,11 +63,7 @@ export const fetchAllUsers = async (): Promise<User[]> => {
 
 export const searchUsers = async (q: string): Promise<User[]> => {
     const supabase = await createClient()
-    
-     // Calculate start and end index based on page and pageLimit
-    //  const start = (page - 1) * pageLimit;
-    //  const end = start + pageLimit - 1;
- 
+  
      const { data, error } = await supabase
          .from('internal_profiles')
          .select()

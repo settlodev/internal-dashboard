@@ -124,6 +124,7 @@ export declare interface Payment {
     provider: string;
     location: string;
     locationName: string;
+    businessName: string;
     subscriptionPackageName: string;
     business: string;
     subscription: string;

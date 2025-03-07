@@ -154,7 +154,7 @@ export function UserForm({ item }: { item: User | null | undefined }) {
             <form onSubmit={form.handleSubmit(onSubmitData, onInvalid)}>
               <div className="flex flex-col gap-6">
                 {/* First row */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-col-1 lg:grid-cols-2 gap-2">
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
@@ -196,7 +196,7 @@ export function UserForm({ item }: { item: User | null | undefined }) {
                 </div>
 
                 {/* Second row */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-col-1 lg:grid-cols-2 gap-2">
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
@@ -241,7 +241,7 @@ export function UserForm({ item }: { item: User | null | undefined }) {
                 </div>
 
                 {/* Third row */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-col-1 lg:grid-cols-2 gap-2">
               
                   <div className="grid gap-2">
                     <FormField
