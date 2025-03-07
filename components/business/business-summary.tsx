@@ -32,6 +32,12 @@ export default function BusinessSummary({ businesses }: { businesses: Business[]
         const trialSubscription = businessesWithLocations.filter(bus => 
             bus.allLocations?.some(loc => loc.subscriptionStatus === 'TRIAL')
         ).length;
+        const almostDueSubscription = businessesWithLocations.filter(bus => 
+            bus.allLocations?.some(loc => loc.subscriptionStatus === 'ALMOST_DUE')
+        ).length;
+        const dueSubscription = businessesWithLocations.filter(bus => 
+            bus.allLocations?.some(loc => loc.subscriptionStatus === 'DUE')
+        ).length;
         const expiredSubscription = businessesWithLocations.filter(bus => 
             bus.allLocations?.some(loc => loc.subscriptionStatus === 'EXPIRED')
         ).length;
@@ -62,7 +68,9 @@ export default function BusinessSummary({ businesses }: { businesses: Business[]
           totalBusinesses,
           businessesWithVFD,
           activeSubscription, 
-          trialSubscription, 
+          trialSubscription,
+          almostDueSubscription,
+          dueSubscription, 
           expiredSubscription,
           businessTypeData: Object.values(businessTypeData),
           subscriptionStatusData: Object.values(subscriptionStatusData),
@@ -70,7 +78,7 @@ export default function BusinessSummary({ businesses }: { businesses: Business[]
       }, [businesses]);
       const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
   return (
-    <div className=" w-full space-y-6">
+    <div className=" w-full p-2 space-y-6">
       <SummaryCard metrics={metrics}/>
        {/* Charts - First Row */}
        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

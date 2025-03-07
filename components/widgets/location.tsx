@@ -3,25 +3,25 @@
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Building,
-  Phone, 
-  Mail, 
-  MapPin, 
-  Clock, 
-  Settings,
-  Check,
-  X,
-  Store,
-  ShoppingCart,
-  Bell,
-  ClipboardList,
-  Lock,
-  Users,
-  DollarSign,
-  Warehouse,
-  Calendar,
-  Box,
+import {
+    Building,
+    Phone,
+    Mail,
+    MapPin,
+    Clock,
+    Settings,
+    Check,
+    X,
+    Store,
+    ShoppingCart,
+    Bell,
+    ClipboardList,
+    Lock,
+    Users,
+    DollarSign,
+    Warehouse,
+    Calendar,
+    Box,
 } from 'lucide-react';
 import { ActiveSubscription } from "@/types/location/type";
 import { useState } from "react";
@@ -29,20 +29,20 @@ import { SubscriptionDialog } from "./dialog";
 import { LocationSubscriptions } from "./subscriptionPaymentsTable";
 
 const FeatureItem = ({ enabled, title, icon: Icon }: { enabled: boolean; title: string; icon: any }) => (
-  <div className="flex items-center gap-2 text-sm">
-    {enabled ? (
-      <Check className="w-4 h-4 text-green-500" />
-    ) : (
-      <X className="w-4 h-4 text-gray-300" />
-    )}
-    <div className="flex items-center gap-1">
-      <Icon className="w-4 h-4 text-gray-500" />
-      <span className={enabled ? "text-gray-900" : "text-gray-400"}>{title}</span>
+    <div className="flex items-center gap-2 text-sm">
+        {enabled ? (
+            <Check className="w-4 h-4 text-green-500" />
+        ) : (
+            <X className="w-4 h-4 text-gray-300" />
+        )}
+        <div className="flex items-center gap-1">
+            <Icon className="w-4 h-4 text-gray-500" />
+            <span className={enabled ? "text-gray-900" : "text-gray-400"}>{title}</span>
+        </div>
     </div>
-  </div>
 );
 
-const LocationDetailClient = ({ location, payments, activeSubscription }: { location: any; payments: any; activeSubscription: ActiveSubscription }) => {
+const LocationDetailClient = ({ location, payments, activeSubscription }: { location: any; payments: any; activeSubscription: ActiveSubscription | null }) => {
     const [, setIsModalOpen] = useState<boolean>(false);
     const [, setCurrentPage] = useState(0);
     const breadcrumbItems = [
@@ -50,16 +50,51 @@ const LocationDetailClient = ({ location, payments, activeSubscription }: { loca
         { title: location.name, link: "" },
     ];
 
-    // console.log("The subscription payments are", location)
+    console.log("The subscription payments are", activeSubscription)
 
     const handleRequestSubscription = () => {
-        setIsModalOpen(true); 
+        setIsModalOpen(true);
     }
     const handlePageChange = async (page: number) => {
         setCurrentPage(page);
         // Here you would typically fetch new data for the page
         // For example: await fetchPayments(location.id, page, 10);
     };
+
+    const getSubscriptionStatusBadge = (status: string) => {
+        switch (status) {
+            case 'OK':
+                return {
+                    text: 'ACTIVE',
+                    variant: 'default'
+                };
+            case 'DUE':
+                return {
+                    text: 'DUE',
+                    variant: 'destructive'
+                };
+            case 'ALMOST_DUE':
+                return {
+                    text: 'ALMOST DUE',
+                    variant: 'warning'
+                };
+            case 'SUSPENDED':
+                return {
+                    text: 'SUSPENDED',
+                    variant: 'outline'
+                };
+            default:
+                return {
+                    text: status,
+                    variant: 'secondary'
+                };
+        }
+    };
+
+    // Then in your component:
+    const statusBadge = getSubscriptionStatusBadge(location.subscriptionStatus);
+
+
 
     return (
         <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
@@ -74,30 +109,46 @@ const LocationDetailClient = ({ location, payments, activeSubscription }: { loca
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="p-3 bg-gray-100 rounded-lg">
-                                <Store className="w-8 h-8 text-gray-600" />
+                                <Store className="w-9 h-9 text-gray-600" />
                             </div>
                             <div>
-                                <CardTitle className="text-2xl">{location.name}</CardTitle>
+                                <CardTitle className="flex flex-col">
+                                    <span className="text-xs text-muted-foreground">{location.businessName}</span>
+                                    <span className="text-2xl">{location.name}</span>
+
+                                </CardTitle>
                                 <div className="flex gap-2 mt-2">
                                     <Badge variant="secondary">{location.locationBusinessTypeName}</Badge>
-                                    <Badge variant="outline">{location.subscriptionStatus}</Badge>
+                                    <Badge variant={statusBadge.variant as 'default' | 'destructive' | 'outline' | 'secondary'}>
+                                        {statusBadge.text}
+                                    </Badge>
                                 </div>
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
-                            
+
                             <div>
                                 <CardTitle className="text-2xl">Subscription status</CardTitle>
                                 <div className="flex gap-2 mt-2">
-                                    <Badge variant={location.subscriptionStatus ? "default" : "destructive"}>
-                                        {location.subscriptionStatus === 'OK' ? 'ACTIVE':location.subscriptionStatus }
+                                    <Badge variant={statusBadge.variant as 'default' | 'destructive' | 'outline' | 'secondary'}>
+                                        {statusBadge.text}
                                     </Badge>
-                                    <Badge variant="secondary">{Intl.NumberFormat().format(activeSubscription.subscription.amount)}</Badge>
-                                    <Badge variant="outline">{activeSubscription.subscription.packageName}</Badge>
+                                    {activeSubscription?.subscription ? (
+                                        <>
+                                            <Badge variant="secondary">
+                                                {Intl.NumberFormat().format(activeSubscription.subscription.amount)}
+                                            </Badge>
+                                            <Badge variant="outline">
+                                                {activeSubscription.subscription.packageName}
+                                            </Badge>
+                                        </>
+                                    ) : (
+                                        <Badge variant="secondary">No active subscription</Badge>
+                                    )}
                                 </div>
                             </div>
                             <div className="p-3 bg-gray-100 rounded-lg" onClick={handleRequestSubscription}>
-                                 <SubscriptionDialog location={location}/>
+                                <SubscriptionDialog location={location} />
                             </div>
                         </div>
                     </div>
@@ -124,7 +175,7 @@ const LocationDetailClient = ({ location, payments, activeSubscription }: { loca
                                     </div>
                                 )}
                                 {(location.address || location.street || location.city || location.region) && (
-                                    <div className="flex items-start gap-2">
+                                    <div className="flex items-start gap-2 capitalize">
                                         <MapPin className="w-4 h-4 text-gray-500 mt-1" />
                                         <div>
                                             {location.street && <div>{location.street}</div>}
@@ -195,7 +246,7 @@ const LocationDetailClient = ({ location, payments, activeSubscription }: { loca
                     <LocationSubscriptions payments={payments} onPageChange={handlePageChange} />
                 </CardContent>
             </Card>
-           
+
         </div>
     );
 };

@@ -7,6 +7,7 @@ import { MapPin, Mail, Phone, Shield, Building, User, UserRound, AlertTriangle }
 import { getBusinessOwner } from '@/lib/actions/business-owners';
 import { UUID } from 'crypto';
 import { BreadcrumbNav } from '@/components/layout/breadcrumbs';
+import { ProtectedComponent } from '@/components/auth/protectedComponent';
 
 // Define a proper type for the business owner
 interface BusinessOwner {
@@ -279,6 +280,10 @@ const BusinessOwnerProfile = ({ params }: { params: { id: string } }) => {
   }
 
   return (
+    <ProtectedComponent 
+            requiredPermission="view:owners" 
+            fallback={<div className="p-8 text-center text-lg">You are not authorized to view this page</div>}
+        >
     <div className="container mx-auto p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="relative flex-1">
@@ -287,6 +292,7 @@ const BusinessOwnerProfile = ({ params }: { params: { id: string } }) => {
       </div>
       <ProfileDisplay businessOwner={businessOwner} />
     </div>
+    </ProtectedComponent>
   );
 };
 

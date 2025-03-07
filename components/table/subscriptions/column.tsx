@@ -29,20 +29,32 @@ export const columns: ColumnDef<Payment>[] = [
         enableSorting: false,
         enableHiding: false,
       },
+    
     {
-        accessorKey: "locationName",
-        header: ({ column }) => {
-            return (
-                  <Button
-          variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Location
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        }
-    },
+      accessorKey: "locationName",
+      header: ({ column }) => {
+          return (
+                <Button
+        variant="ghost"
+                  onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              >
+                  Business Location
+                  <ArrowUpDown className="ml-2 h-4 w-4" />
+              </Button>
+          )
+      },
+      cell: ({ row }) => {
+        const businessName = row.original.businessName;
+        const locationName = row.original.locationName;
+
+        return (
+            <div className="flex flex-col">
+                <span className="text-xs text-muted-foreground">{businessName}</span>
+                <span className="font-medium text-sm">{locationName}</span>
+            </div>
+        )
+    }
+  },
     
     {
         accessorKey: "amount",

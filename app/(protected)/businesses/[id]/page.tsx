@@ -18,6 +18,8 @@ import {
   Youtube,
 } from 'lucide-react';
 import { Location } from "@/types/location/type";
+import { ProtectedComponent } from "@/components/auth/protectedComponent";
+import Unauthorized from "@/components/code/401";
 
 
 const BusinessDetailPage =async ({params}:{params:{id:string}}) => {
@@ -27,6 +29,10 @@ const BusinessDetailPage =async ({params}:{params:{id:string}}) => {
         { title: business.name, link: "" },
     ]
     return (
+      <ProtectedComponent 
+      requiredPermission="view:business-details" 
+      fallback={<Unauthorized />}
+  >
         <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
             <div className={`flex items-center justify-between mb-2`}>
                 <div className={`relative flex-1 md:max-w-md`}>
@@ -176,6 +182,7 @@ const BusinessDetailPage =async ({params}:{params:{id:string}}) => {
       </Card>
             
         </div>
+        </ProtectedComponent>
     );
 };
 

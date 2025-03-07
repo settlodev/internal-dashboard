@@ -13,19 +13,24 @@ import { CompanyDetail } from "./company-details"
 import data from "@/constants/menuItems"
 import { checkUserPermissions } from "@/lib/actions/auth/signIn"
 import Loading from "@/app/(auth)/loading"
+import { getUserWithProfile } from "@/lib/actions/user-actions"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [permissions, setPermissions] = React.useState<string[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
+  const [user, setUser] = React.useState<any>(null)
 
   React.useEffect(() => {
     const fetchPermissions = async () => {
       const { permissions, error } = await checkUserPermissions()
+      const user = await getUserWithProfile()
+
       // console.log("The permissions", permissions)
       if (error) {
         console.error("Permission error:", error)
       }
       setPermissions(permissions || [])
+      setUser(user)
       setIsLoading(false)
     }
 
@@ -51,7 +56,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <CompanyDetail />
+        <CompanyDetail user={user}/>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={filteredNavItems} />

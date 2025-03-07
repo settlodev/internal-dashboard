@@ -2,13 +2,14 @@
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { columns } from "@/components/table/location/column";
 import { DataTable } from "@/components/table/data-table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent} from "@/components/ui/card";
 import { fetchAllLocation } from "@/lib/actions/location";
 import { Location } from "@/types/location/type";
 import { useEffect, useState } from "react";
 import Loading from "@/components/widgets/loader";
 import { ProtectedComponent } from "@/components/auth/protectedComponent";
 import LocationsAnalyticsDashboard from "@/components/location/location-summary";
+import Unauthorized from "@/components/code/401";
 
 const breadcrumbItems = [
     { title: "Locations", link: "/locations" },
@@ -50,23 +51,21 @@ if (isLoading) {
         <Loading />
       </div>
     }
-    fallback={<div
-    className="flex items-center justify-center min-h-screen gap-1"
-    ></div>}>
-        <div className={`flex-1 space-y-2 md:p-8 pt-4`}>
+    fallback={
+      <Unauthorized />
+    }>
+        <div className="flex-1 space-y-2 md:p-8 pt-4">
             <div className="flex flex-col items-start justify-between mb-2 gap-3">
-                <div className={`relative flex-1 md:max-w-md`}>
+                <div className="relative flex-1 md:max-w-md pl-2">
                     <BreadcrumbNav items={breadcrumbItems} />
                 </div>
                 <LocationsAnalyticsDashboard locations={locations} />
 
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-2xl">Locations</CardTitle>
-                </CardHeader>
+            <Card className="w-full">
                 <CardContent>
+                <p className="text-2xl">Locations</p>
                     <DataTable 
                     columns={columns}
                     data={locations}

@@ -8,6 +8,7 @@ import { Owner } from '@/types/owners/type'
 import { fetchAllBusinessOwners } from '@/lib/actions/business-owners'
 import Loading from '@/components/widgets/loader'
 import { ProtectedComponent } from '@/components/auth/protectedComponent'
+import Unauthorized from '@/components/code/401'
 
 const breadcrumbItems = [
   { title: "Business owners", link: "/owners" },
@@ -49,8 +50,8 @@ export default function page() {
         <Loading />
       </div>
     }
-    fallback={<div
-    className="flex items-center justify-center min-h-screen gap-1"></div>}
+    fallback={
+      <Unauthorized />}
     >
     <div className='flex-1 p-4 space-y-2 md:p-8'>
       <div className='flex items-center justify-between mb-3'>

@@ -29,6 +29,23 @@ export default function SummaryCard({metrics}: any) {
       bgColor: "bg-gray-100",
       textColor: "text-red-300"
     },
+
+    {
+      title: "Almost Due Subscription",
+      value: metrics.almostDueSubscription,
+      suffix: `(${((metrics.almostDueSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
+      icon: AlertTriangle,
+      bgColor: "bg-yellow-600",
+      textColor: "text-white"
+    },
+    {
+      title: "Due Subscription",
+      value: metrics.dueSubscription,
+      suffix: `(${((metrics.dueSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
+      icon: AlertTriangle,
+      bgColor: "bg-orange-500",
+      textColor: "text-white"
+    },
     {
       title: "Expired Subscription",
       value: metrics.expiredSubscription,
@@ -51,7 +68,7 @@ export default function SummaryCard({metrics}: any) {
   ]
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-2">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3 mt-2">
       {cardData.map((card, index) => (
         <Card key={index}>
           <CardContent className="pt-6">

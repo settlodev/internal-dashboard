@@ -14,6 +14,7 @@ export declare interface Location{
     openingTime: string
     closingTime: string
     business: UUID,
+    businessName:string,
     locationBusinessType:string,
     locationBusinessTypeName:string,
     subscriptionStatus:string,
@@ -123,6 +124,7 @@ export declare interface Payment {
     provider: string;
     location: string;
     locationName: string;
+    businessName: string;
     subscriptionPackageName: string;
     business: string;
     subscription: string;

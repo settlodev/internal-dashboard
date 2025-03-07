@@ -18,7 +18,7 @@ import { FieldErrors, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useCallback, useEffect, useState, useTransition } from "react"
-import { getUserEmailById, signUp} from "@/lib/actions/auth/signIn"
+import { getUserEmailById, signUp, updateUserProfile} from "@/lib/actions/auth/signIn"
 import RoleSelect from "@/components/widgets/roleSelector"
 import { UserSchema } from "@/types/users/schema"
 import { User } from "@/types/users/type"
@@ -86,10 +86,31 @@ export function UserForm({ item }: { item: User | null | undefined }) {
   }, [])
 
   const onSubmitData = useCallback(async (values: z.infer<typeof UserSchema>) => {
-    console.log("The values passed are ", values);
+   
 
     startTransition(async () => {
-      const result = await signUp(values);
+      if(item){
+        const result = await updateUserProfile(item.id, values);
+
+      if (result?.error) {
+        console.error("Failed to update user profile:", result.error);
+
+        if (result.status === 400) {
+          form.setError("root", { message: "Invalid data provided." });
+        } else if (result.status === 422) {
+          form.setError("email", { message: "Email already exists." });
+        } else {
+          form.setError("root", { message: result.error });
+        }
+
+        return;
+      }
+
+      if (result?.redirectTo) {
+        window.location.href = result.redirectTo;
+      }
+      }else{
+        const result = await signUp(values);
 
       if (result?.error) {
         console.error("Sign-up error:", result.error);
@@ -107,6 +128,7 @@ export function UserForm({ item }: { item: User | null | undefined }) {
 
       if (result?.redirectTo) {
         window.location.href = result.redirectTo;
+      }
       }
     });
   }, []);
@@ -132,7 +154,7 @@ export function UserForm({ item }: { item: User | null | undefined }) {
             <form onSubmit={form.handleSubmit(onSubmitData, onInvalid)}>
               <div className="flex flex-col gap-6">
                 {/* First row */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-col-1 lg:grid-cols-2 gap-2">
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
@@ -174,7 +196,7 @@ export function UserForm({ item }: { item: User | null | undefined }) {
                 </div>
 
                 {/* Second row */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-col-1 lg:grid-cols-2 gap-2">
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
@@ -219,7 +241,7 @@ export function UserForm({ item }: { item: User | null | undefined }) {
                 </div>
 
                 {/* Third row */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-col-1 lg:grid-cols-2 gap-2">
               
                   <div className="grid gap-2">
                     <FormField
@@ -260,13 +282,6 @@ export function UserForm({ item }: { item: User | null | undefined }) {
                     />
                   </div>
                 </div>
-
-                {/* <div>
-                  <Button type="submit" className="w-full" disabled={isPending} onClick={() => toast.success("User added successfully")}>
-                    {isPending ? "Updating user..." : "Add User"}
-                  </Button>
-            
-                </div> */}
 
                 <div className="flex h-5 items-center space-x-4 mt-10">
                     <CancelButton/>

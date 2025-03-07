@@ -38,11 +38,22 @@ export const columns: ColumnDef<Location>[] = [
           variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Name
+                    Business Location
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
-        }
+        },
+        cell: ({ row }) => {
+          const businessName = row.original.businessName;
+          const locationName = row.original.name;
+  
+          return (
+              <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground">{businessName}</span>
+                  <span className="font-medium text-sm">{locationName}</span>
+              </div>
+          )
+      }
     },
     
     {
