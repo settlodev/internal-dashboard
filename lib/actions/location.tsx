@@ -23,7 +23,6 @@ export const fetchAllLocation = async (): Promise<Location[]> => {
     try {
         const apiClient = new ApiClient();
         const data = await apiClient.get("/api/locations/all");
-        // console.log(data)
         return parseStringify(data);
 
     } catch (error) {

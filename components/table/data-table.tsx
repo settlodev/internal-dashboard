@@ -92,6 +92,8 @@ export function DataTable<TData, TValue>({
                     return [...prev, { id: filterKey, value }];
                 }
             });
+
+            console.log(`Setting filter ${filterKey} to value:`, value);
         }
     }
 
@@ -106,6 +108,11 @@ export function DataTable<TData, TValue>({
         getFilteredRowModel: getFilteredRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
+        filterFns: {
+            exactMatch: (row, id, filterValue) => {
+                return row.getValue(id) === filterValue;
+            }
+        },
         state: {
             sorting,
             rowSelection,
@@ -116,6 +123,7 @@ export function DataTable<TData, TValue>({
                 pageSize
             }
         },
+        // globalFilterFn: "exactMatch",
         onPaginationChange: (updater) => {
             if (typeof updater === "function") {
                 const newState = updater({
