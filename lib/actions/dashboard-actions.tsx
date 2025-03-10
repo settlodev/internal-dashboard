@@ -25,7 +25,6 @@ export const getDashboardSummaries = async (startDate?: Date, endDate?: Date) =>
     try {
         const apiClient = new ApiClient();
         const url = `/api/reports/overview/summary${queryParams ? `?${queryParams}` : ''}`;
-        console.log(url);
         const data = await apiClient.get(url);
         return data;
     } catch (error) {

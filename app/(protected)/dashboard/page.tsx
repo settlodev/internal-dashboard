@@ -32,7 +32,7 @@ export default function Dashboard() {
             dateRange?.from,
             dateRange?.to
           );
-          
+          console.log("The data is", data)
           setStats(data as SummaryResponse);
         } catch (error) {
           console.error("Error fetching dashboard data:", error);
@@ -231,9 +231,16 @@ function MetricCard({ title, value, trend, trendLabel = "growth", secondaryLabel
 function UserGrowthLineChart({ userData, businessData, locationData }: { userData: any[], businessData: any[], locationData: any[] }) {
     // Format data for chart
     const chartData = userData.map((item, index) => {
-        const month = new Date(item.endOfMonth).toLocaleDateString('en-US', { month: 'short' });
+      
+        const dateParts = item.endOfMonth.split('T')[0].split('-');
+        const year = dateParts[0];
+        const month = parseInt(dateParts[1]); 
+        
+        // Get month name using the numeric month (subtract 1 as JavaScript months are 0-indexed)
+        const monthName = new Date(2000, month - 1, 1).toLocaleDateString('en-US', { month: 'short' });
+        
         return {
-            name: month,
+            name: `${monthName} ${year}`,
             Users: item.amount,
             Businesses: businessData[index]?.amount || 0,
             Locations: locationData[index]?.amount || 0
@@ -253,8 +260,6 @@ function UserGrowthLineChart({ userData, businessData, locationData }: { userDat
                 <Bar dataKey="Locations" fill="#22C55E" name="Locations"/>
             </BarChart>
         </ResponsiveContainer>
-         
-       
     );
 }
 

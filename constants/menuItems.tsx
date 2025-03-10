@@ -77,11 +77,11 @@ const data = {
           url: "/subscriptions",
           requiredPermission: "view:requests",
         },
-        {
-          title: "Requests",
-          url: "/requests",
-          requiredPermission: "view:subscriptions",
-        },
+        // {
+        //   title: "Requests",
+        //   url: "/requests",
+        //   requiredPermission: "view:subscriptions",
+        // },
       ],
     },
     {
