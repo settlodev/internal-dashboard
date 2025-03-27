@@ -27,6 +27,7 @@ import { ActiveSubscription } from "@/types/location/type";
 import { useState } from "react";
 import { SubscriptionDialog } from "./dialog";
 import { LocationSubscriptions } from "./subscriptionPaymentsTable";
+import { getLocationSubscriptionPayments } from "@/lib/actions/location";
 
 const FeatureItem = ({ enabled, title, icon: Icon }: { enabled: boolean; title: string; icon: any }) => (
     <div className="flex items-center gap-2 text-sm">
@@ -44,21 +45,25 @@ const FeatureItem = ({ enabled, title, icon: Icon }: { enabled: boolean; title: 
 
 const LocationDetailClient = ({ location, payments, activeSubscription }: { location: any; payments: any; activeSubscription: ActiveSubscription | null }) => {
     const [, setIsModalOpen] = useState<boolean>(false);
-    const [, setCurrentPage] = useState(0);
+    // const [, setCurrentPage] = useState(0);
+    const [, setInitialPayments] = useState(payments);
     const breadcrumbItems = [
         { title: "locations", link: "/locations" },
         { title: location.name, link: "" },
     ];
-
-    console.log("The subscription payments are", activeSubscription)
+    // console.log("The subscription payments are", activeSubscription)
 
     const handleRequestSubscription = () => {
         setIsModalOpen(true);
     }
     const handlePageChange = async (page: number) => {
-        setCurrentPage(page);
-        // Here you would typically fetch new data for the page
-        // For example: await fetchPayments(location.id, page, 10);
+        try {
+            const newPayments = await getLocationSubscriptionPayments(location?.id, page, 10);
+            setInitialPayments(newPayments);
+        } catch (error) {
+            console.error("Failed to fetch payments:", error);
+            // Handle error state
+        }
     };
 
     const getSubscriptionStatusBadge = (status: string) => {

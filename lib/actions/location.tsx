@@ -52,10 +52,10 @@ export const deleteLocation = async (id: string) => {
     redirect("/locations")
 }
 
-export const getLocationSubscriptionPayments = async (id: string) => {
+export const getLocationSubscriptionPayments = async (id: string, page:number = 0, size:number = 10) => {
     try {
         const apiClient = new ApiClient();
-        const data = await apiClient.post(`/api/subscription-payments/${id}`, {});
+        const data = await apiClient.post(`/api/subscription-payments/${id}`, {page,size});
         return parseStringify(data);
     } catch (error) {
         throw error;

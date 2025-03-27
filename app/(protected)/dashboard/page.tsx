@@ -20,7 +20,7 @@ export default function Dashboard() {
     const [stats, setStats] = useState<SummaryResponse >();
     const [isLoading, setLoading] = useState(true);
     const [dateRange, setDateRange] = useState<DateRange>({
-        from: new Date(new Date().getFullYear(), new Date().getMonth(), 1), // First day of current month
+        from: new Date(new Date().getFullYear(), new Date().getMonth(), 1), 
         to: new Date()
       });
     

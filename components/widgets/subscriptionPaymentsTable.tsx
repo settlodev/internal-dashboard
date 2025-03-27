@@ -30,15 +30,7 @@ import { Card, CardContent, CardHeader } from "../ui/card";
       onPageChange(page);
     };
     
-    // Function to format currency based on location settings
-    // const formatCurrency = (amount: number) => {
-    //   return new Intl.NumberFormat('en-US', {
-    //     style: 'currency',
-    //     currency: 'TZS', // This should come from location settings
-    //     minimumFractionDigits: 0,
-    //   }).format(amount);
-    // };
-  
+    
     // Generate pagination items
     const renderPaginationItems = () => {
       const items = [];
@@ -181,7 +173,7 @@ import { Card, CardContent, CardHeader } from "../ui/card";
           </Table>
         </div>
   
-        {totalPages > 1 && (
+        {/* {totalPages > 1 && (
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
               Showing {pageable.pageNumber * pageable.pageSize + 1} to{" "}
@@ -208,7 +200,36 @@ import { Card, CardContent, CardHeader } from "../ui/card";
               </PaginationContent>
             </Pagination>
           </div>
-        )}
+        )} */}
+
+{totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-500">
+            Showing {pageable.pageNumber * pageable.pageSize + 1} to{" "}
+            {Math.min((pageable.pageNumber + 1) * pageable.pageSize, totalElements)} of{" "}
+            {totalElements} entries
+          </p>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
+                  className={currentPage === 0 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+              
+              {renderPaginationItems()}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => handlePageChange(Math.min(totalPages - 1, currentPage + 1))}
+                  className={currentPage === totalPages - 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
       </div>
     );
   };
