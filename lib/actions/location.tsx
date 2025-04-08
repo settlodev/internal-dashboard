@@ -56,6 +56,7 @@ export const getLocationSubscriptionPayments = async (id: string, page:number = 
     try {
         const apiClient = new ApiClient();
         const data = await apiClient.post(`/api/subscription-payments/${id}`, {page,size});
+      
         return parseStringify(data);
     } catch (error) {
         throw error;
@@ -66,6 +67,26 @@ export const getActiveSubscription = async (id: string) => {
     try {
         const apiClient = new ApiClient();
         const data = await apiClient.get(`/api/location-subscriptions/${id}/active`);
+        return parseStringify(data);
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getLocationSummary = async (id: string) => {
+    try {
+        const apiClient = new ApiClient();
+        const data = await apiClient.get(`/api/reports/${id}/statistics`);
+        return parseStringify(data);
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getLocationActivityLogs = async (id: string) => {
+    try {
+        const apiClient = new ApiClient();
+        const data = await apiClient.get(`/api/reports/${id}/latest-creation-dates`);
         return parseStringify(data);
     } catch (error) {
         throw error;

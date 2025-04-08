@@ -35,7 +35,13 @@ interface SettingsUsage {
     ecommerceEnabled: number;
 }
 
-const LocationsAnalyticsDashboard = ({ locations }: { locations: Location[] }) => {
+const LocationsAnalyticsDashboard = ({ 
+  locations,
+ 
+ }: { 
+  locations: Location[],
+  
+ }) => {
   // console.log(locations)
   // Derived metrics
   const metrics = useMemo(() => {

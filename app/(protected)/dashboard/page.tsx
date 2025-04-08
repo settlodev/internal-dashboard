@@ -32,11 +32,11 @@ export default function Dashboard() {
             dateRange?.from,
             dateRange?.to
           );
-          console.log("The data is", data)
+          
           setStats(data as SummaryResponse);
         } catch (error) {
           console.error("Error fetching dashboard data:", error);
-          // toast.error("Failed to load dashboard data");
+          
         } finally {
           setLoading(false);
         }

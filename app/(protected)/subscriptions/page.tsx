@@ -57,6 +57,7 @@ export default function Subscription() {
     try {
       const subs = await getAllSubscriptions();
       const sortedSubs = subs.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+      
       setSubscriptions(sortedSubs);
       filterSubscriptions(subs, dateRange, selectedFilters);
     } catch (error) {

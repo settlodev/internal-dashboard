@@ -18,7 +18,10 @@ export declare interface Location{
     locationBusinessType:string,
     locationBusinessTypeName:string,
     subscriptionStatus:string,
+    subscriptionStartDate:Date,
+    subscriptionEndDate:Date,
     settings:Settings
+    dateCreated:Date,
     status: boolean,
     canDelete: boolean,
     isArchived: boolean

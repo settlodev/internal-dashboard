@@ -70,8 +70,50 @@ export const columns: ColumnDef<Location>[] = [
     },
     {
       accessorKey:"subscriptionStatus",
-      header:"Subscription Status"
+      header:"Sub. Status"
     },
+    {
+      accessorKey: "subscriptionStartDate",
+      header: "Sub. Start Date",
+      cell: ({ row }) => {
+          const date = new Date(row.getValue("subscriptionStartDate"));
+          return date.toLocaleDateString('en-US', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+          });
+      }
+  },
+  {
+    accessorKey: "subscriptionEndDate",
+    header: "Sub. End Date",
+    cell: ({ row }) => {
+        const date = new Date(row.getValue("subscriptionEndDate"));
+        return date.toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+},
+    {
+      accessorKey: "dateCreated",
+      header: "Date Created",
+      cell: ({ row }) => {
+          const date = new Date(row.getValue("dateCreated"));
+          return date.toLocaleDateString('en-US', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+          });
+      }
+  },
     {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />,
