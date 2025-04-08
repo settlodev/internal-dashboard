@@ -21,9 +21,9 @@ export function UniversalFilters({
   selectedFilters = {} 
 }: UniversalFiltersProps) {
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="hidden lg:flex flex-wrap items-center gap-3 w-full">
       {filters.map((filter) => (
-        <div key={filter.key} className="flex items-center gap-2 min-w-fit">
+        <div key={filter.key} className="flex items-center gap-2">
           <span className="text-sm font-medium whitespace-nowrap">{filter.label}:</span>
           <Select 
             value={selectedFilters[filter.key] || 'all'} 

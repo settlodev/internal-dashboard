@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Footer } from "@/components/footer";
 // import { Toaster } from "@/components/ui/toaster";
@@ -11,6 +11,12 @@ export const metadata: Metadata = {
   icons: "/favicon.png",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className='antialiased'
+        className='p-2 antialiased'
       >
        <main> {children}</main>
        <Toaster position="top-right"/>
