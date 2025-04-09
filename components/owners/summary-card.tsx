@@ -5,7 +5,7 @@ import { BadgePlus, CheckCircle, Store } from 'lucide-react'
 
 export default function SummaryCard({ metrics }: any) {
 
-  console.log("The metrics are ", metrics )
+  // console.log("The metrics are ", metrics )
 
   // Define the card data with all needed properties
   const cardData = [

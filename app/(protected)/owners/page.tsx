@@ -134,57 +134,58 @@ export default function page() {
         <Unauthorized />}
     >
       <div className='flex flex-col w-full h-full px-4 sm:px-6 md:px-8'>
-        <div className='flex flex-col space-y-4 md:space-y-6 mb-3 w-full'>
-          <div className='w-full mt-2'>
-            <BreadcrumbNav items={breadcrumbItems} />
-          </div>
+  <div className='flex flex-col space-y-4 md:space-y-6 mb-3 w-full'>
+    <div className='w-full mt-2'>
+      <BreadcrumbNav items={breadcrumbItems} />
+    </div>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full'>
-            <div className='w-full col-span-1 lg:col-span-2'>
-              <UniversalFilters
-                filters={BUSINESS_OWNER_FILTERS}
-                onFilterChange={handleFilterChange}
-                selectedFilters={selectedFilters}
-              />
-            </div>
-
-            <div className='w-full'>
-              <DatePickerWithRange
-                value={{
-                  from: dateRange.from,
-                  to: dateRange.to
-                }}
-                onChange={(newRange) => {
-                  if (newRange?.from && newRange?.to) {
-                    handleDateRangeChange({ from: newRange.from, to: newRange.to });
-                  }
-                }}
-                className="w-full"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className='w-full mb-6'>
-          <BusinessOwnerSummary
-            owners={businessOwners}
-            dateRange={dateRange}
-            selectedFilters={selectedFilters}
-          />
-        </div>
-
-        <div className='w-full overflow-x-auto'>
-          <Card className="w-full">
-            <CardContent className="p-2 sm:p-4 md:p-6">
-              <DataTable
-                columns={columns}
-                data={filteredBusinessOwners}
-                searchKey='firstName'
-              />
-            </CardContent>
-          </Card>
-        </div>
+    {/* Filters section - converted to stack on mobile, side-by-side on larger screens */}
+    <div className='flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 w-full'>
+      <div className='w-full lg:w-1/2'>
+        <UniversalFilters
+          filters={BUSINESS_OWNER_FILTERS}
+          onFilterChange={handleFilterChange}
+          selectedFilters={selectedFilters}
+        />
       </div>
+
+      <div className='w-full lg:w-1/2 lg:flex lg:justify-end'>
+        <DatePickerWithRange
+          value={{
+            from: dateRange.from,
+            to: dateRange.to
+          }}
+          onChange={(newRange) => {
+            if (newRange?.from && newRange?.to) {
+              handleDateRangeChange({ from: newRange.from, to: newRange.to });
+            }
+          }}
+          className="w-full"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div className='w-full mb-6'>
+    <BusinessOwnerSummary
+      owners={businessOwners}
+      dateRange={dateRange}
+      selectedFilters={selectedFilters}
+    />
+  </div>
+
+  <div className='w-full overflow-x-auto'>
+    <Card className="w-full">
+      <CardContent className="p-2 sm:p-4 md:p-6">
+        <DataTable
+          columns={columns}
+          data={filteredBusinessOwners}
+          searchKey='firstName'
+        />
+      </CardContent>
+    </Card>
+  </div>
+</div>
     </ProtectedComponent>
   )
 }

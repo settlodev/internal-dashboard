@@ -16,7 +16,10 @@ export default function SummaryCard({metrics}: any) {
     {
       title: "Active Subscription",
       value: metrics.activeSubscription,
-      suffix: `(${((metrics.activeSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
+      // suffix: `(${((metrics.activeSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
+      suffix: `(${!metrics.activeSubscription || metrics.totalBusinesses === 0
+        ? '0'
+        : ((metrics.activeSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
       icon: CheckCircle,
       bgColor: "bg-green-100",
       textColor: "text-green-600"
@@ -24,7 +27,9 @@ export default function SummaryCard({metrics}: any) {
     {
       title: "Trial Subscription",
       value: metrics.trialSubscription,
-      suffix: `(${((metrics.trialSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
+      suffix: `(${!metrics.trialSubscription || metrics.totalBusinesses === 0
+        ? '0'
+        : ((metrics.trialSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
       icon: Tag,
       bgColor: "bg-gray-100",
       textColor: "text-red-300"
@@ -33,7 +38,9 @@ export default function SummaryCard({metrics}: any) {
     {
       title: "Almost Due Subscription",
       value: metrics.almostDueSubscription,
-      suffix: `(${((metrics.almostDueSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
+      suffix: `(${!metrics.almostDueSubscription || metrics.totalBusinesses === 0
+        ? '0'
+        : ((metrics.almostDueSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
       icon: AlertTriangle,
       bgColor: "bg-yellow-600",
       textColor: "text-white"
@@ -41,7 +48,9 @@ export default function SummaryCard({metrics}: any) {
     {
       title: "Due Subscription",
       value: metrics.dueSubscription,
-      suffix: `(${((metrics.dueSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
+      suffix: `(${!metrics.dueSubscription || metrics.totalBusinesses === 0
+        ? '0'
+        : ((metrics.dueSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
       icon: AlertTriangle,
       bgColor: "bg-orange-500",
       textColor: "text-white"
@@ -49,7 +58,9 @@ export default function SummaryCard({metrics}: any) {
     {
       title: "Expired Subscription",
       value: metrics.expiredSubscription,
-      suffix: `(${((metrics.expiredSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
+      suffix: `(${!metrics.expiredSubscription || metrics.totalBusinesses === 0
+        ? '0'
+        : ((metrics.expiredSubscription / metrics.totalBusinesses) * 100).toFixed(1)}%)`,
       icon: AlertTriangle,
       bgColor: "bg-red-600",
       textColor: "text-white"

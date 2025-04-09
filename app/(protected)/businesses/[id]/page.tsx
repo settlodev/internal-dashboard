@@ -20,10 +20,12 @@ import {
 import { Location } from "@/types/location/type";
 import { ProtectedComponent } from "@/components/auth/protectedComponent";
 import Unauthorized from "@/components/code/401";
+import Link from "next/link";
 
 
 const BusinessDetailPage =async ({params}:{params:{id:string}}) => {
     const business = await getBusiness(params.id as UUID)
+    
     const breadcrumbItems = [
         { title: "Businesses", link: "/businesses" },
         { title: business.name, link: "" },
@@ -115,7 +117,8 @@ const BusinessDetailPage =async ({params}:{params:{id:string}}) => {
             <h3 className="text-lg font-semibold mb-4">Business Locations</h3>
             <div className="grid md:grid-cols-2 gap-4">
               {business.allLocations.map((location:Location) => (
-                <Card key={location.id}>
+                <Link href={`/locations/${location.id}`} key={location.id}>
+                  <Card key={location.id}>
                   <CardContent className="pt-6">
                     <div className="flex items-start justify-between">
                       <div>
@@ -175,6 +178,7 @@ const BusinessDetailPage =async ({params}:{params:{id:string}}) => {
                     </div>
                   </CardContent>
                 </Card>
+                </Link>
               ))}
             </div>
           </div>

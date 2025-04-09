@@ -36,6 +36,7 @@ export declare interface Business {
     owner:UUID
     countryName: string
     allocations:Location[]
+    dateCreated:Date
     status: boolean
     canDeleted: boolean
     isArchived:boolean

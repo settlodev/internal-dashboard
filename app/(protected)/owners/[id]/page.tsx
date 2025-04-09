@@ -3,11 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Mail, Phone, Shield, Building, User, UserRound, AlertTriangle } from 'lucide-react';
+import { MapPin, Mail, Phone, Shield, Building, User, UserRound, AlertTriangle, Eye } from 'lucide-react';
 import { getBusinessOwner } from '@/lib/actions/business-owners';
 import { UUID } from 'crypto';
 import { BreadcrumbNav } from '@/components/layout/breadcrumbs';
 import { ProtectedComponent } from '@/components/auth/protectedComponent';
+import Link from 'next/link';
+import { Business } from '@/types/business/types';
 
 // Define a proper type for the business owner
 interface BusinessOwner {
@@ -35,11 +37,11 @@ interface BusinessOwner {
   status: boolean;
   referredByCode?: string;
   theme: string;
+  businesses?: Business[];
 }
 
-// Separate the profile display into a client component
 const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => {
-  // Functions that were previously in the main component
+
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
@@ -98,7 +100,19 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                   </Badge>
                 )}
               </div>
+              
             </div>
+            <div>
+                {businessOwner.businesses && businessOwner.businesses[0] && (
+                  <Link href={`/businesses/${businessOwner.businesses[0]}`}>
+                    <Badge variant="outline" className="bg-black text-white p-4 items-center w-full">
+                      <Eye className="h-4 w-4 mr-2" /> 
+                      <span>View Business Details</span>
+                    </Badge>
+                  </Link>
+                )}
+               
+              </div>
           </div>
         </CardHeader>
 
