@@ -9,7 +9,7 @@ import {
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { UserForm } from "@/components/forms/user/user-form";
 import React from "react";
-import { User } from "@/types/users/type";
+import { Profile} from "@/types/users/type";
 import { fetchProfileDataById } from "@/lib/actions/user-actions";
 
 interface UserPageParams {
@@ -18,11 +18,11 @@ interface UserPageParams {
 
 export default async function UserPage({ params }: UserPageParams) {
   const isNewItem = params.id === "new";
-  let item: User | null | undefined = null;
+  let item: Profile | null | undefined = null;
 
   if (!isNewItem) {
     try {
-      item = await fetchProfileDataById(params.id as UUID);
+      item  = await fetchProfileDataById(params.id as UUID);
     } catch (error) {
       console.log(error);
       throw new Error("Failed to load user details");
@@ -51,7 +51,7 @@ const UserCard = ({
   item,
 }: {
   isNewItem: boolean;
-  item: User | null | undefined;
+  item: Profile | null | undefined;
 }) => (
   <Card>
     <CardHeader>
