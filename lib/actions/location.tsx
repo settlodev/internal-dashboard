@@ -120,7 +120,10 @@ export const requestSubscription = async (
             payment_type: validRequest.data.payment_type,
             location: validRequest.data.location,
             location_name: validRequest.data.location_name,
-            user_id: authUserId, // Use the authenticated user ID
+            phone: validRequest.data.phone,
+            email: validRequest.data.email,
+            packageId: validRequest.data.packageId,
+            user_id: authUserId,
             status: "pending",
         };
 
@@ -177,20 +180,67 @@ export const getRequestSubscriptionById = async (id: string): Promise<RequestSub
 }
 
 // In @/lib/actions/location.ts
-export const approveSubscriptionRequest = async (id: string) => {
-
+export const approveSubscriptionRequest = async (id: string, request: RequestSubscription): Promise<{ success: boolean; subscriptionId?: string; error?: string }> => {
+    // Input validation
+    if (!id) throw new Error('Subscription request ID is required');
+    if (!request?.location || !request?.packageId) throw new Error('Invalid subscription request data');
+  
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await supabase
+    const apiClient = new ApiClient();
+    
+    try {
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error('Authentication failed');
+      
+      // Prepare API payload
+      const payload = {
+        packageId: request.packageId,
+        phone: request.phone,
+        email: request.email,
+        quantity: request.quantity || 1, 
+        locationId: request.location,
+      };
+      
+      // Make API call first to create the subscription
+      const response = await apiClient.post(
+        `/api/subscription-payments/${request.location}/manually-subscribe`, 
+        payload
+      ) as { status: string; statusText?: string };
+
+   
+      
+      // Check if API call was successful
+      if (!response || response.status !== 'SUCCESS') {
+        throw new Error(`API call failed: ${response?.statusText || 'Unknown error'}`);
+      }
+      
+      // If API call succeeded, update the database record
+      const { error: updateError } = await supabase
         .from('internal_location_subscriptions')
         .update({ 
-            status: 'approved', 
-            approved_by: user?.id 
+          status: 'approved', 
+          approved_by: user.id,
+          approved_at: new Date().toISOString(),
+        
         })
         .eq('id', id);
-
-    if (error) throw error;
-};
+      
+      if (updateError) throw updateError;
+      
+      // Return success with subscription details
+      return { 
+        success: true,  
+      };
+      
+    } catch (error) {
+      console.error('Failed to approve subscription:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+      };
+    }
+  };
 
 export const rejectSubscriptionRequest = async (id: string) => {
     const supabase = await createClient();
@@ -205,7 +255,5 @@ export const rejectSubscriptionRequest = async (id: string) => {
     if (error) throw error;
 };
 
-// const paySubscription = async (id: string) => {
-    
-// } 
+
 

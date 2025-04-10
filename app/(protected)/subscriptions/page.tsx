@@ -56,8 +56,8 @@ export default function Subscription() {
   const fetchSubscriptions = async () => {
     try {
       const subs = await getAllSubscriptions();
+      // For newest first
       const sortedSubs = subs.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
-      
       setSubscriptions(sortedSubs);
       filterSubscriptions(subs, dateRange, selectedFilters);
     } catch (error) {
@@ -86,8 +86,13 @@ export default function Subscription() {
       return isWithinDateRange && passesAdditionalFilters;
     });
 
-    setFilteredSubscriptions(filtered);
+    const sortedFiltered = filtered.sort((a, b) => 
+      new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
+    );
+
+    setFilteredSubscriptions(sortedFiltered);
   }
+
 
   useEffect(() => {
     fetchSubscriptions()

@@ -108,6 +108,9 @@ export declare interface RequestSubscription{
     quantity:number,
     description:string,
     payment_type:string,
+    phone:string,
+    email:string,
+    packageId:UUID
     location:UUID
     user_id:UUID
     approved_by:UUID

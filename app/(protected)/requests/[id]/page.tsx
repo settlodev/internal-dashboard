@@ -45,8 +45,9 @@ const RequestSubscriptionDetailPage = ({ params }: { params: { id: string } }) =
     React.useEffect(() => {
         const fetchRequest = async () => {
             try {
-                const fetchedRequest = await getRequestSubscriptionById(params.id);
-                setRequest(fetchedRequest);
+                const requestedSubscription = await getRequestSubscriptionById(params.id);
+                console.log("The fetched request", requestedSubscription)
+                setRequest(requestedSubscription);
                 setIsLoading(false);
             } catch (error) {
                 // toast.error('Failed to fetch subscription request');
@@ -70,7 +71,7 @@ const RequestSubscriptionDetailPage = ({ params }: { params: { id: string } }) =
     const handleApprove = async () => {
         setIsPending(true);
         try {
-            await approveSubscriptionRequest(params.id);
+            await approveSubscriptionRequest(params.id,request);
             // toast.success('Subscription request approved');
             router.push('/requests');
         } catch (error) {

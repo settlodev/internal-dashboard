@@ -17,7 +17,9 @@ import PaymentMeansSelector from "../widgets/select";
 import { Alert, AlertDescription } from "../ui/alert";
 import toast from "react-hot-toast";
 
-function RequestSubscriptionForm({ location }: { location: Location }) {
+function RequestSubscriptionForm({ location, activeSubscription }: { location: Location , activeSubscription: any}) {
+    console.log("The location requesting for subscription ", location)
+    console.log("The active subscription ", activeSubscription)
     const [isPending, startTransition] = useTransition()
     const [formError, setFormError] = useState<string | null>(null);
 
@@ -30,6 +32,9 @@ function RequestSubscriptionForm({ location }: { location: Location }) {
         defaultValues: {
             location: location.id,
             location_name: location.name,
+            phone: location.phone,
+            email: location.email,
+            packageId: activeSubscription.subscription.id,
             payment_type: ""
         }
     })

@@ -10,7 +10,7 @@ import { Plus } from "lucide-react";
 import RequestSubscriptionForm from "../forms/request_subscription_form";
 import { Location } from "@/types/location/type";
 
-export function SubscriptionDialog({location}:{location:Location}) {
+export function SubscriptionDialog({location,activeSubscription}:{location:Location,activeSubscription:any}) {
 const locationId = location
 console.log("The location id to be passed is",locationId.id)
   return (
@@ -26,7 +26,7 @@ console.log("The location id to be passed is",locationId.id)
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <RequestSubscriptionForm location={locationId}/>
+          <RequestSubscriptionForm location={location} activeSubscription={activeSubscription}/>
         </div>
        
       </DialogContent>

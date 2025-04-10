@@ -155,7 +155,7 @@ const LocationDetailClient = ({ location, payments, activeSubscription, statisti
             </div>
           </div>
           <div className="hidden lg:block p-3 bg-gray-100 rounded-lg">
-            <SubscriptionDialog location={location} />
+            <SubscriptionDialog location={location} activeSubscription={activeSubscription} />
           </div>
         </div>
       </div>

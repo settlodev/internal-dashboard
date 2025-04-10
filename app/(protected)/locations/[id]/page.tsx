@@ -13,7 +13,7 @@ const LocationDetailPage = async ({params}: {params: {id: string}}) => {
     const activityLogs = await getLocationActivityLogs(params.id as UUID);
 
  
-    
+    console.log("The active subscription", activeSubscription)
     
     return (
         <ProtectedComponent 
