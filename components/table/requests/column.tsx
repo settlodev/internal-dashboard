@@ -58,8 +58,12 @@ export const columns: ColumnDef<RequestSubscription>[] = [
         header: "Payment Type",
     },
     {
-      accessorKey: "user_id",
+      accessorKey: "userData",
       header: "Requested By",
+      cell: ({ row }) => {
+        const userData = row.getValue("userData") as { first_name: string; last_name: string } | null;
+        return userData ? `${userData.first_name} ${userData.last_name}` : "";
+      },
     },
     {
         accessorKey: "status",

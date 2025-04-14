@@ -31,11 +31,6 @@ const data = {
           url: "/users",
           requiredPermission: "view:users",
         },
-        {
-          title: "Profile",
-          url: "/profile",
-          requiredPermission: "view:profile",
-        },
       ],
     },
     {
@@ -48,11 +43,6 @@ const data = {
           url: "/businesses",
           requiredPermission: "view:businesses",
         },
-        // {
-        //   title: "Business Types",
-        //   url: "/business-types",
-        //   requiredPermission: "manage_business_types",
-        // },
       ],
     },
     {
@@ -75,12 +65,12 @@ const data = {
         {
           title: "Subscriptions",
           url: "/subscriptions",
-          requiredPermission: "view:requests",
+          requiredPermission: "view:subscriptions",
         },
         {
           title: "Requests",
           url: "/requests",
-          requiredPermission: "view:subscriptions",
+          requiredPermission: "view:requests",
         },
       ],
     },

@@ -7,7 +7,6 @@ export const fetchAllBusinessOwners = async (): Promise<Owner[]> => {
     try {
         const apiClient = new ApiClient();
         const data = await apiClient.get("/api/users");
-        // console.log("The data is", data)
         return parseStringify(data);
 
     } catch (error) {

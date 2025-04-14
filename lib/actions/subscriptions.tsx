@@ -18,3 +18,4 @@ export const getAllSubscriptions = async (): Promise<Payment[]> => {
         throw error;
     }
 }
+

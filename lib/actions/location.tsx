@@ -8,6 +8,7 @@ import { RequestSubscriptionSchema } from "@/types/location/schema";
 import { z } from "zod";
 import { FormResponse } from "@/types/types";
 import { createClient } from "../supabase/server";
+import { RequestSubscriptionEmail } from "./email/send";
 
 // interface Profiles {
 //     id: string;
@@ -66,7 +67,8 @@ export const getLocationSubscriptionPayments = async (id: string, page:number = 
 export const getActiveSubscription = async (id: string) => {
     try {
         const apiClient = new ApiClient();
-        const data = await apiClient.get(`/api/location-subscriptions/${id}/active`);
+        const data = await apiClient.get(`/api/location-subscriptions/${id}/last-active`);
+        console.log("The active subscription", data )
         return parseStringify(data);
     } catch (error) {
         throw error;
@@ -97,7 +99,9 @@ export const requestSubscription = async (
     request: z.infer<typeof RequestSubscriptionSchema>,
 ): Promise<FormResponse> => {
     const validRequest = RequestSubscriptionSchema.safeParse(request);
-    console.log("The valid request", validRequest )
+
+    // console.log("The valid request", validRequest )
+
     if (!validRequest.success) {
         return parseStringify({
             responseType:"error",
@@ -127,7 +131,9 @@ export const requestSubscription = async (
             status: "pending",
         };
 
-        console.log("The subscription data", subscriptionData)
+     
+
+       
         
         const { error } = await supabase
         .from('internal_location_subscriptions')
@@ -143,6 +149,22 @@ export const requestSubscription = async (
             })
         }
 
+        const emailPayload = {
+            quantity: validRequest.data.quantity,
+            description: validRequest.data.description,
+            payment_type: validRequest.data.payment_type,
+            location_name: validRequest.data.location_name,
+            phone: validRequest.data.phone,
+            email: validRequest.data.email,
+            packageId: validRequest.data.packageId,
+            packageName: validRequest.data.packageName,
+            user
+        };
+
+        // console.log("The email payload", emailPayload)
+
+        await RequestSubscriptionEmail(emailPayload)
+
         return parseStringify({
             responseType:"success",
             message:"Subscription request sent successfully",
@@ -153,18 +175,66 @@ export const requestSubscription = async (
     }
 }
 
-export const fetchAllRequestSubscription = async (): Promise<RequestSubscription[]> => {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-        .from('internal_location_subscriptions')
-        .select('*')
-        .order('created_at', { ascending: false });
 
-    if (error) {
-        console.error(error);
-    }
-    return parseStringify(data)
-}
+
+export const fetchAllRequestSubscription = async (
+    userId: string, 
+    role: string
+  ): Promise<RequestSubscription[]> => {
+      const supabase = await createClient();
+      
+      // Start with the query builder
+      let query = supabase
+          .from('internal_location_subscriptions')
+          .select('*')
+          .order('created_at', { ascending: false });
+      
+      // Filter by user_id if the user is not an admin
+      if (role !== 'admin') {
+          query = query.eq('user_id', userId);
+      }
+      
+      // Execute the query
+      const { data: requests, error } = await query;
+  
+      if (error) {
+          console.error(error);
+          throw error;
+      }
+  
+      if (!requests || requests.length === 0) {
+          return parseStringify([]);
+      }
+  
+      // Fetch all unique user IDs from the requests
+      const userIds = requests.map(request => request.user_id).filter((id, index, self) => self.indexOf(id) === index);
+      
+      // Fetch user data for all users at once
+      const { data: usersData, error: usersError } = await supabase
+          .from('internal_profiles')
+          .select(`
+              id,
+              first_name,
+              last_name
+          `)
+          .in('id', userIds);
+  
+      if (usersError) {
+          console.error(usersError);
+          throw usersError;
+      }
+  
+      // Combine requests with user data
+      const result = requests.map(request => {
+          const userData = usersData.find(user => user.id === request.user_id);
+          return {
+              ...request,
+              userData
+          };
+      });
+  
+      return parseStringify(result);
+  }
 
 export const getRequestSubscriptionById = async (id: string): Promise<RequestSubscription> => {
     const supabase = await createClient();

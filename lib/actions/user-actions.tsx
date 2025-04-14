@@ -109,24 +109,7 @@ export async function fetchProfileData(): Promise<ProfileData> {
   }
 }
 
-// export async function fetchProfileDataById(id: string): Promise<User | undefined> {
-//   const supabase = await createClient();
 
-//   try {
-//     const { data: profile, error: profileError } = await supabase
-//       .from('internal_profiles')
-//       .select('*')
-//       .eq('id', id)
-//       .single();
-
-//     if (profileError) throw profileError;
-
-//     return parseStringify(profile);
-//   } catch (error) {
-//     console.error('Error fetching profile data:', error);
-    
-//   }
-// }
 
 export async function fetchProfileDataById(id: string): Promise<Profile | null> {
   const supabase = await createClient();

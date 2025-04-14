@@ -17,7 +17,7 @@ const LocationDetailPage = async ({params}: {params: {id: string}}) => {
     
     return (
         <ProtectedComponent 
-        requiredPermission="view:business-details" 
+        requiredPermission="view:location-details" 
         fallback={
             <Unauthorized />
         }

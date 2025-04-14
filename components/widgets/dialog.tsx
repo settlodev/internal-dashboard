@@ -11,8 +11,7 @@ import RequestSubscriptionForm from "../forms/request_subscription_form";
 import { Location } from "@/types/location/type";
 
 export function SubscriptionDialog({location,activeSubscription}:{location:Location,activeSubscription:any}) {
-const locationId = location
-console.log("The location id to be passed is",locationId.id)
+
   return (
     <Dialog>
       <DialogTrigger asChild>

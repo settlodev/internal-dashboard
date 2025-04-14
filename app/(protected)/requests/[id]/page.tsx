@@ -13,8 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getRequestSubscriptionById, approveSubscriptionRequest, rejectSubscriptionRequest } from '@/lib/actions/location';
 import { BreadcrumbNav } from '@/components/layout/breadcrumbs';
-import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 
 const STATUS_CONFIG = {
@@ -154,7 +154,7 @@ const RequestSubscriptionDetailPage = ({ params }: { params: { id: string } }) =
                                         <DetailRow 
                                             icon={MapPinIcon} 
                                             label="Location" 
-                                            value={request.location} 
+                                            value={request.location_name} 
                                         />
                                     </div>
                                 </div>
@@ -187,23 +187,20 @@ const RequestSubscriptionDetailPage = ({ params }: { params: { id: string } }) =
                             <div className="mt-6 flex space-x-4 justify-end">
                                 <div className="flex h-5 items-center space-x-4 mt-10">
                                     
-                                    <div className="flex space-x-2">
-                                        <button 
-                                            onClick={handleReject}
-                                            disabled={isPending}
-                                            className="text-red-500 hover:bg-red-50 px-4 py-2 rounded"
-                                        >
-                                            Reject
-                                        </button>
-                                        <Separator orientation="vertical" />
-                                        <button 
-                                            onClick={handleApprove}
-                                            disabled={isPending}
-                                            className="bg-green-500 text-white hover:bg-green-600 px-4 py-2 rounded"
-                                        >
-                                            {isPending ? 'Processing...' : 'Approve'}
-                                        </button>
-                                    </div>
+                                    {request.status === 'pending' ? (
+                                        <>
+                                            <Button variant="outline" onClick={handleApprove} disabled={isPending}>
+                                                {isPending ? 'Approving...' : 'Approve'}
+                                            </Button>
+                                            <Button variant="destructive" onClick={handleReject} disabled={isPending}>
+                                                {isPending ? 'Rejecting...' : 'Reject'}
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <div className="text-sm text-muted-foreground">
+                                            Request has been {request.status}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </CardContent>
