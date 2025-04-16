@@ -232,6 +232,7 @@ export const fetchAllRequestSubscription = async (
               userData
           };
       });
+      console.log("The subscription list is",result)
   
       return parseStringify(result);
   }

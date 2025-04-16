@@ -45,7 +45,7 @@ export const columns: ColumnDef<Invoice>[] = [
   },
   {
     accessorKey: "billed_name",
-    header: "Billed To",
+    header: "Invoiced To",
   },
   {
     accessorKey: "invoice_date",
@@ -56,13 +56,14 @@ export const columns: ColumnDef<Invoice>[] = [
     header: "Due Date",
   },
   {
-    accessorKey: "status",
-    header: "Billed By",
+    accessorKey: "userData",
+    header: "Invoiced By",
+    cell: ({ row }) => {
+      const userData = row.getValue("userData") as { first_name: string; last_name: string } | null;
+      return userData ? `${userData.first_name} ${userData.last_name}` : "";
+    },
   },
-  {
-    accessorKey: "total",
-    header: "Total Amount",
-  },
+  
   {
     id: "actions",
     cell: ({ row }) => <CellAction data={row.original} />,

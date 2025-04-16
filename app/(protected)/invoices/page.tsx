@@ -5,6 +5,7 @@ import { columns } from '@/components/table/invoices/column';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Loading from '@/components/widgets/loader';
+import { getCurrentUser } from '@/lib/actions/auth/signIn';
 import { fetchInvoices } from '@/lib/actions/invoice-action';
 import { Invoice } from '@/types/invoice/type';
 import Link from 'next/link';
@@ -18,9 +19,13 @@ export default function page() {
     const [invoices, setInvoices] = useState<Invoice[]>([])
     const getInvoices = async () => {
         try {
-          const list = await fetchInvoices()
-          console.log("Invoices", list)
+          
+          const currentUser = await getCurrentUser();
+        if (currentUser.user?.id) {
+          const list = await fetchInvoices(currentUser.user.id, currentUser.role)
           setInvoices(list)
+
+        }
         } catch (error) {
           throw error
         }

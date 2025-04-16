@@ -165,7 +165,7 @@ const InvoicePreview = ({ params }: { params: { id: string } }) => {
 
               {/* TIN */}
               <div className="flex items-center mt-6">  
-                <p className="text-sm mt-1 text-gray-600">TAX IDENTIFICATION NUMBER (TIN): {invoice.tin || 'Not provided'}</p>
+                <p className="text-sm mt-1 text-gray-600">TAX IDENTIFICATION NUMBER (TIN): 153-112-053</p>
               </div>
 
               {/* Footer */}

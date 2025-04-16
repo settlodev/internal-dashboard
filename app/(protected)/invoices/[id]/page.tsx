@@ -61,7 +61,7 @@ const InvoiceCard = ({
         {isNewItem ? "Create Invoice" : "Edit Invoice details"}
       </CardTitle>
       <CardDescription>
-        {isNewItem ? "Create a new invoice " : "Edit invoice details"}
+        {isNewItem ? "Fill in the details to create a new invoice " : "Edit invoice details"}
       </CardDescription>
     </CardHeader>
     <CardContent>

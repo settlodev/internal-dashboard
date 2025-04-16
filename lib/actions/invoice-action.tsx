@@ -6,38 +6,87 @@ import { z } from "zod";
 import { createClient } from "../supabase/server";
 import { fetchDeviceById } from "./devices";
 
-export async function fetchInvoices(): Promise<Invoice[]> {
+export async function fetchInvoices(
+    userId: string, 
+    role: string
+): Promise<Invoice[]> {
     const supabase = await createClient()
-    const { data, error } = await supabase.from('internal_invoices').select('*').order('created_at', { ascending: false })
-    // console.log(data)
-    if (error) {
-        console.log(error)
-    }
-    return parseStringify(data)
+    // const { data, error } = await supabase.from('internal_invoices').select('*').order('created_at', { ascending: false })
+   
+    // Start with the query builder
+    let query = supabase
+    .from('internal_invoices')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+// Filter by user_id if the user is not an admin
+if (role !== 'admin') {
+    query = query.eq('user_id', userId);
+}
+
+// Execute the query
+const { data: invoices, error } = await query;
+
+if (error) {
+    console.error(error);
+    throw error;
+}
+
+if (!invoices || invoices.length === 0) {
+    return parseStringify([]);
+}
+
+// Fetch all unique user IDs from the requests
+const userIds = invoices.map(invoice => invoice.user_id).filter((id, index, self) => self.indexOf(id) === index);
+
+// Fetch user data for all users at once
+const { data: usersData, error: usersError } = await supabase
+    .from('internal_profiles')
+    .select(`
+        id,
+        first_name,
+        last_name
+    `)
+    .in('id', userIds);
+
+if (usersError) {
+    console.error(usersError);
+    throw usersError;
+}
+
+// Combine requests with user data
+const invoiceList = invoices.map(invoice => {
+    const userData = usersData.find(user => user.id === invoice.user_id);
+    return {
+        ...invoice,
+        userData
+    };
+});
+// console.log("The invoice list is",invoiceList)
+return parseStringify(invoiceList);
 }
 
 
 export async function createInvoice(values: z.infer<typeof invoiceSchema>) {
     const supabase = await createClient();
-    
+
     // Validate data
     const validData = invoiceSchema.safeParse(values);
-    // console.log(validData)
+    console.log(validData);
     if (!validData.success) {
         return {
             responseType: "error",
             message: "Please fill all required fields before submitting",
-            error: validData.error.message, // Return error message as string instead of Error object
+            error: validData.error.message,
             status: 400
         };
     }
 
-    
+    const parsed = validData.data;
 
-    // Use timestamp to ensure uniqueness
-        const timestamp = Date.now().toString().slice(-6);
-        const invoiceNumber = `INV-${timestamp}`;
-       
+    // Generate unique invoice number
+    const timestamp = Date.now().toString().slice(-6);
+    const invoiceNumber = `INV-${timestamp}`;
 
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -49,26 +98,26 @@ export async function createInvoice(values: z.infer<typeof invoiceSchema>) {
         };
     }
 
-    if (typeof validData.data.owner === 'object') {
-        console.log("The billed customer", validData.data.owner.firstName, validData.data.owner.lastName)
-    }
-    // Start inserting invoice
-    let invoiceId;
+    // Insert invoice record
+    let invoiceId: string | null = null;
     try {
         const { data, error } = await supabase
             .from("internal_invoices")
             .insert([
                 {
                     invoice_number: invoiceNumber,
-                    due_date: validData.data.due_date,
+                    due_date: parsed.due_date,
                     status: "draft",
                     user_id: user.id,
-                    owner: typeof validData.data.owner === 'object' ? validData.data.owner.id : null,
-                    billed_name: typeof validData.data.owner === 'object' ? validData.data.owner.firstName + " " + validData.data.owner.lastName : null,
-                    billed_email: typeof validData.data.owner === 'object' ? validData.data.owner.email : null,
-                    billed_phone: typeof validData.data.owner === 'object' ? validData.data.owner.phoneNumber : null,
-                    billed_address: typeof validData.data.owner === 'object' ? validData.data.owner.countryName : null,
-                    invoice_date: validData.data.invoice_date
+                    owner: typeof parsed.owner === 'object' ? parsed.owner.id : null,
+                    billed_name: typeof parsed.owner === 'object' ? `${parsed.owner.firstName} ${parsed.owner.lastName}` : null,
+                    billed_email: typeof parsed.owner === 'object' ? parsed.owner.email : null,
+                    billed_phone: typeof parsed.owner === 'object' ? parsed.owner.phoneNumber : null,
+                    billed_address: typeof parsed.owner === 'object' ? parsed.owner.countryName : null,
+                    invoice_date: parsed.invoice_date,
+                    // note: parsed.note || null,
+                    discount: parsed.discount || 0,
+                    vat_inclusive: parsed.vat_inclusive || false
                 }
             ])
             .select("id")
@@ -77,40 +126,43 @@ export async function createInvoice(values: z.infer<typeof invoiceSchema>) {
         if (error) throw error;
         invoiceId = data.id;
     } catch (error: any) {
-        console.log("Error code:", error.code);
-        console.log("Error message:", error.message);
-        console.log("Error details:", error.details);
-
+        console.error("Error creating invoice:", error);
         return {
             responseType: "error",
             message: "Failed to create invoice",
-            error: typeof error === 'object' ? error.message : String(error), // Ensure it's a string
+            error: error?.message || "Unknown error",
             status: 500
         };
     }
-    // Insert invoice items
-    let itemData = null;
-    if (typeof validData.data.device === 'object' && typeof validData.data.device.id === 'string') {
-        itemData = await fetchDeviceById(validData.data.device.id);
-    }
-    const items = {
-        invoice_id: invoiceId,
-        item_name: itemData?.device_type,
-        brand: itemData?.brand,
-        note: validData.data.note || null,
-        quantity: validData.data.quantity,
-        unit_price: itemData?.selling_price
-    };
+
+    // Insert all device items
+    const itemsToInsert = await Promise.all(
+        parsed.devices.map(async (entry) => {
+            const deviceId = typeof entry.device === 'object' ? entry.device.id : null;
+            const deviceInfo = deviceId ? await fetchDeviceById(deviceId) : null;
+            return {
+                invoice_id: invoiceId,
+                item_name: deviceInfo?.device_type || "Unknown",
+                brand: deviceInfo?.brand || "Unknown",
+                quantity: entry.quantity,
+                unit_price: deviceInfo?.selling_price || 0,
+                note: parsed.note || null
+            };
+        })
+    );
 
     try {
-        const { error } = await supabase.from("internal_invoice_items").insert(items);
+        const { error } = await supabase
+            .from("internal_invoice_items")
+            .insert(itemsToInsert);
+
         if (error) throw error;
     } catch (error: any) {
-        console.log("Error inserting invoice items:", error);
+        console.error("Error inserting invoice items:", error);
         return {
             responseType: "error",
-            message: "Failed to create invoice",
-            error: typeof error === 'object' ? error.message : String(error), // Ensure it's a string
+            message: "Failed to save invoice items",
+            error: error?.message || "Unknown error",
             status: 500
         };
     }

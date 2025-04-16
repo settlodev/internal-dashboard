@@ -2,9 +2,6 @@
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import {
@@ -14,7 +11,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { FieldErrors, useForm } from "react-hook-form"
+import { FieldErrors, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useCallback, useTransition } from "react"
@@ -31,27 +28,39 @@ import { createInvoice } from "@/lib/actions/invoice-action"
 import InvoicePreview from "../invoice/invoicePreview"
 import { Owner } from "@/types/owners/type"
 import { PosDevices } from "@/types/devices/type"
+import { Checkbox } from "../ui/checkbox"
+import { Button } from "../ui/button"
+import { X } from "lucide-react"
 
 
 function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
     const [isPending, startTransition] = useTransition()
 
+    
+
+    // Initialize form with default devices array
     const form = useForm<z.infer<typeof invoiceSchema>>({
         resolver: zodResolver(invoiceSchema),
         defaultValues: {
             owner: item?.owner || '',
-            device: item?.device || '',
-            quantity: item?.quantity || 0,
+            devices: item?.devices?.length ? item.devices : [{ device: '', quantity: 1}],
             note: item?.note || '',
             due_date: item?.due_date || '',
-            invoice_date: new Date().toISOString()
+            invoice_date: new Date().toISOString(),
+            discount: item?.discount || 0,
+            vat_inclusive: item?.vat_inclusive || false
         }
     })
+
+    // Get the devices fields array for rendering
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "devices"
+    });
 
     // Watch form values for preview
     const watchedValues = form.watch();
    
-
     const onInvalid = useCallback((errors: FieldErrors) => {
         console.log(errors)
     }, [])
@@ -60,11 +69,15 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
         
         const simplifiedValues = {
             owner: typeof values.owner === 'object' ? values.owner : values.owner,
-            device: typeof values.device === 'object' ? values.device : values.device,
-            quantity: values.quantity,
+            devices: values.devices.map(item => ({
+                device: typeof item.device === 'object' ? item.device : item.device,
+                quantity: item.quantity
+            })),
             note: values.note,
             due_date: values.due_date,
-            invoice_date: new Date().toISOString()
+            invoice_date: new Date().toISOString(),
+            discount: values.discount,
+            vat_inclusive: values.vat_inclusive
         };
 
         startTransition(async () => {
@@ -88,15 +101,16 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
         });
     }, []);
 
+    // Function to add a new device item
+    const addDeviceItem = () => {
+        append({ device: '', quantity: 1});
+    };
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Form Section */}
             <Card>
-                <CardHeader>
-                    <CardTitle className="text-2xl">Create Invoice</CardTitle>
-                    <CardDescription>Fill in the details to create a new invoice</CardDescription>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="mt-3">
                     <Form {...form}>
                         {(form.formState.errors.root || Object.keys(form.formState.errors).length > 0) && (
                             <Alert variant="destructive" className="mb-6">
@@ -108,7 +122,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                         )}
                         <form onSubmit={form.handleSubmit(onSubmitData, onInvalid)}>
                             <div className="flex flex-col gap-6">
-                                {/* First row */}
+                                {/* Owner field */}
                                 <div className="grid gap-2">
                                     <FormField
                                         control={form.control}
@@ -129,48 +143,86 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div className="grid gap-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="device"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Device</FormLabel>
-                                                    <FormControl>
-                                                        <DeviceSelector
-                                                            {...field}
-                                                            placeholder="Select device"
-                                                            label="Device Condition"
-                                                            value={field.value as string | PosDevices | undefined}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
+                                {/* Devices section with add/remove capabilities */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-lg font-medium">Devices</h3>
+                                        <Button 
+                                            type="button" 
+                                            variant="outline" 
+                                            size="sm"
+                                            onClick={addDeviceItem}
+                                        >
+                                            Add Device
+                                        </Button>
                                     </div>
-                                    <div className="grid gap-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="quantity"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Quantity</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            {...field} 
-                                                            placeholder="How many devices do you have?"
-                                                            onChange={(e) => field.onChange(parseInt(e.target.value) || '')}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                                    
+                                    {fields.map((field, index) => (
+                                        <div key={field.id} className="space-y-4 p-4 border rounded-md relative">
+                                            <div className="absolute top-2 right-2">
+                                                {index > 0 && (
+                                                    <Button 
+                                                        type="button" 
+                                                        variant="ghost" 
+                                                        size="sm"
+                                                        onClick={() => remove(index)}
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                            </div>
+                                            
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`devices.${index}.device`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Device</FormLabel>
+                                                            <FormControl>
+                                                                <DeviceSelector
+                                                                    {...field}
+                                                                    placeholder="Select device"
+                                                                    label="Device Type"
+                                                                    value={field.value as string | PosDevices | undefined}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`devices.${index}.quantity`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Quantity</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    placeholder="How many?"
+                                                                    value={field.value}
+                                                                    onChange={(e) => field.onChange(parseInt(e.target.value) || '')}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                            
+                                            </div>
+                                        </div>
+                                    ))}
+                                    
+                                    {form.formState.errors.devices && (
+                                        <p className="text-sm font-medium text-destructive">
+                                            {form.formState.errors.devices.message}
+                                        </p>
+                                    )}
                                 </div>
+
+                                {/* Remaining fields */}
                                 <div className="grid gap-2">
                                     <FormField
                                         control={form.control}
@@ -191,48 +243,89 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                         )}
                                     />
                                 </div>
+                                
                                 <div className="grid grid-cols-2 gap-2">
-                                <div className="grid gap-2">
-                                    <FormField
-                                        control={form.control}
-                                        name="invoice_date"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Invoice Date</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="date"
-                                                        {...field}
-                                                        placeholder="Select invoice date"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <FormField
-                                        control={form.control}
-                                        name="due_date"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Due Date</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="date"
-                                                        {...field}
-                                                        placeholder="Select due date"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
+                                    <div className="grid gap-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="invoice_date"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Invoice Date</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="date"
+                                                            {...field}
+                                                            placeholder="Select invoice date"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="due_date"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Due Date</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="date"
+                                                            {...field}
+                                                            placeholder="Select due date"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
                                 </div>
                                 
-
+                                <div className="grid grid-cols-2 gap-2 items-center">
+                                    <div className="grid gap-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="discount"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Discount (optional)</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            {...field}
+                                                            placeholder="Enter discount"
+                                                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="vat_inclusive"
+                                            render={({ field }) => (
+                                                <FormItem className="flex flex-col items-start">
+                                                    <FormLabel>VAT Inclusive</FormLabel>
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+                                
                                 <div className="flex h-5 items-center space-x-4 mt-10">
                                     <CancelButton />
                                     <Separator orientation="vertical" />

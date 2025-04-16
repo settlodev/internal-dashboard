@@ -13,9 +13,16 @@ export declare interface Invoice {
     created_at: string;
     updated_at: string;
     items: InvoiceItem[];
-    device: UUID;
-    quantity: number;
+    devices:deviceItem[];
+   
     note: string;
+    discount: number;
+    vat_inclusive: boolean
+}
+interface deviceItem{
+    device:UUID,
+    quantity:number
+
 }
 
 export declare interface InvoiceItem {
