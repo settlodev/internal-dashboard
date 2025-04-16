@@ -15,6 +15,20 @@ import { checkUserPermissions } from "@/lib/actions/auth/signIn"
 import Loading from "@/app/(auth)/loading"
 import { getUserWithProfile } from "@/lib/actions/user-actions"
 
+
+interface NavItem {
+  title: string;
+  url: string;
+  requiredPermission?: string; // Make it optional with the ? mark
+}
+
+interface NavCategory {
+  title: string;
+  url: string;
+  icon: any; // You might want to define a more specific type for your icons
+  items: NavItem[];
+  isActive?: boolean;
+}
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [permissions, setPermissions] = React.useState<string[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
@@ -25,7 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       const { permissions, error } = await checkUserPermissions()
       const user = await getUserWithProfile()
 
-      // console.log("The permissions", permissions)
+      console.log("The permissions", permissions)
       if (error) {
         console.error("Permission error:", error)
       }
@@ -39,13 +53,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   // Filter navigation items based on user permissions
   const filteredNavItems = data.navMain
-    .map((category) => ({
-      ...category,
-      items: category.items.filter(
-        (item) => !item.requiredPermission || permissions.includes(item.requiredPermission)
-      ),
-    }))
-    .filter((category) => category.items.length > 0) // Remove empty categories
+  .map((category: NavCategory) => ({
+    ...category,
+    items: category.items.filter(
+      (item: NavItem) => item.requiredPermission ? permissions.includes(item.requiredPermission) : true
+    ),
+  }))
+  .filter((category) => category.items.length > 0)
 
     // console.log(filteredNavItems)
 
@@ -62,8 +76,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={filteredNavItems} />
       </SidebarContent>
       <SidebarFooter>
-        {/* Add footer content if needed */}
-        {/* <NavUser/> */}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

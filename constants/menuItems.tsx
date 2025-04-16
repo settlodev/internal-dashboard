@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, CalendarSync, ChartColumn, MapPin, Settings2,Users } from "lucide-react"
+import { BriefcaseBusiness, CalendarSync, ChartColumn, MapPin, Receipt, Settings2,Tablet,Users } from "lucide-react"
 
 const data = {
   navMain: [
@@ -71,6 +71,31 @@ const data = {
           title: "Requests",
           url: "/requests",
           requiredPermission: "view:requests",
+        },
+      ],
+    },
+    {
+      title: "Invoices",
+      url: "#",
+      icon: Receipt,
+      items: [
+        {
+          title: "invoices",
+          url: "/invoices",
+          // requiredPermission: "view:requests",
+        },
+       
+      ],
+    },
+    {
+      title: "Devices",
+      url: "#",
+      icon: Tablet,
+      items: [
+        {
+          title: "Devices",
+          url: "/devices",
+          // requiredPermission: "view:requests",
         },
       ],
     },
