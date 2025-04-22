@@ -24,67 +24,160 @@ import { Invoice } from "@/types/invoice/type"
 import { invoiceSchema } from "@/types/invoice/schema"
 import BusinessOwnerSelector from "../widgets/businessOwnerSelector"
 import DeviceSelector from "../widgets/deviceSelector"
-import { createInvoice } from "@/lib/actions/invoice-action"
+import { createInvoice,updateInvoice } from "@/lib/actions/invoice-action"
 import InvoicePreview from "../invoice/invoicePreview"
 import { Owner } from "@/types/owners/type"
 import { PosDevices } from "@/types/devices/type"
 import { Checkbox } from "../ui/checkbox"
 import { Button } from "../ui/button"
 import { X } from "lucide-react"
+import { useMemo } from "react"
+import { Subscription } from "@/types/location/type"
+import SubscriptionPackageSelector from "../widgets/subscriptionPackageSelector"
+
 
 
 function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
-    const [isPending, startTransition] = useTransition()
+    // console.log("The item to be updated",item)
+    const [isPending, startTransition] = useTransition();
 
+    const transformItemForForm = useCallback((invoiceItem: any) => {
+        if (!invoiceItem) return null;
+        
+        // Get devices and subscriptions from the nested structure
+        const itemsData = invoiceItem.items?.[0]?.items_data || {};
+        
+        // Map devices to the expected structure
+        const devices = itemsData.devices?.map((deviceItem: any) => {
+            return {
+                device: {
+                    id: deviceItem.device_id,
+                    item_name: deviceItem.device_type,
+                    device_type: deviceItem.device_type,
+                    brand: deviceItem.brand,
+                    selling_price: deviceItem.selling_price
+                },
+                quantity: deviceItem.quantity
+            };
+        }) || [];
+        
+        // Map subscriptions to the expected structure
+        const subscriptions = itemsData.subscriptions?.map((subItem: any) => {
+            return {
+                subscription: {
+                    id: subItem.subscription_id,
+                    subscription_name: subItem.package_name,
+                    package_code: subItem.package_code,
+                    amount: subItem.amount
+                },
+                quantity: subItem.quantity
+            };
+        }) || [];
     
+        // Include billing details for the preview
+        const billingDetails = {
+            billed_name: invoiceItem.billed_name,
+            billed_email: invoiceItem.billed_email,
+            billed_phone: invoiceItem.billed_phone,
+            billed_address: invoiceItem.billed_address
+        };
+    
+        return {
+            owner: invoiceItem.owner,
+            devices: devices.length ? devices : [{ device: '', quantity: 1 }],
+            subscriptions: subscriptions.length ? subscriptions : [{ subscription: '', quantity: 1 }],
+            note: invoiceItem.items?.[0]?.note || '',
+            due_date: invoiceItem.due_date || '',
+            invoice_date: invoiceItem.invoice_date || new Date().toISOString(),
+            discount: invoiceItem.discount || 0,
+            vat_inclusive: invoiceItem.vat_inclusive || false,
+            billingDetails: billingDetails,
+            invoice_number: invoiceItem.invoice_number
+        };
+    }, []);
 
-    // Initialize form with default devices array
+    // Get the transformed item data
+    const transformedItem = useMemo(() => transformItemForForm(item), [item, transformItemForForm]);
+
+    // Initialize form with transformed item data or defaults
     const form = useForm<z.infer<typeof invoiceSchema>>({
         resolver: zodResolver(invoiceSchema),
         defaultValues: {
-            owner: item?.owner || '',
-            devices: item?.devices?.length ? item.devices : [{ device: '', quantity: 1}],
-            note: item?.note || '',
-            due_date: item?.due_date || '',
-            invoice_date: new Date().toISOString(),
-            discount: item?.discount || 0,
-            vat_inclusive: item?.vat_inclusive || false
+            owner: transformedItem?.owner || '',
+            devices: transformedItem?.devices || [{ device: '', quantity: 1 }],
+            subscriptions: transformedItem?.subscriptions || [{ subscription: '', quantity: 1 }],
+            note: transformedItem?.note || '',
+            due_date: transformedItem?.due_date || '',
+            invoice_date: transformedItem?.invoice_date || new Date().toISOString(),
+            discount: transformedItem?.discount || 0,
+            vat_inclusive: transformedItem?.vat_inclusive || false
         }
-    })
-
-    // Get the devices fields array for rendering
-    const { fields, append, remove } = useFieldArray({
-        control: form.control,
-        name: "devices"
     });
 
-    // Watch form values for preview
+    // Create a merged object for the preview that includes both form values and
+// additional data, prioritizing newly selected form values over original data
+const previewData = useMemo(() => {
     const watchedValues = form.watch();
+    
+    // Get current owner information (could be newly selected)
+    const currentOwner = typeof watchedValues.owner === 'object' && watchedValues.owner 
+        ? watchedValues.owner
+        : null;
+    
+    // If user has selected a new owner, use that data instead of the original billing details
+    const effectiveBillingDetails = currentOwner ? {
+        billed_name: `${currentOwner.firstName} ${currentOwner.lastName}`,
+        billed_email: currentOwner.email,
+        billed_phone: currentOwner.phoneNumber,
+        billed_address: currentOwner.countryName
+    } : transformedItem?.billingDetails;
+    
+    return {
+        ...watchedValues,
+        billingDetails: effectiveBillingDetails,
+        invoice_number: transformedItem?.invoice_number,
+        isUpdating: !!item,
+        ownerChanged: !!currentOwner
+    };
+}, [form.watch(), transformedItem, item]);
+    
+console.log("Preview Data", previewData )
    
     const onInvalid = useCallback((errors: FieldErrors) => {
-        console.log(errors)
-    }, [])
+        console.log(errors);
+    }, []);
 
     const onSubmitData = useCallback(async (values: z.infer<typeof invoiceSchema>) => {
-        
         const simplifiedValues = {
             owner: typeof values.owner === 'object' ? values.owner : values.owner,
             devices: values.devices.map(item => ({
                 device: typeof item.device === 'object' ? item.device : item.device,
-                quantity: item.quantity
+                quantity: item.quantity,
+                // price: item.price
+            })),
+            subscriptions: values.subscriptions.map(item => ({
+                subscription: typeof item.subscription === 'object' ? item.subscription : item.subscription,
+                quantity: item.quantity,
+                
             })),
             note: values.note,
             due_date: values.due_date,
-            invoice_date: new Date().toISOString(),
+            invoice_date: values.invoice_date, 
             discount: values.discount,
             vat_inclusive: values.vat_inclusive
         };
 
+        console.log("Simplified Values", simplifiedValues )
+
         startTransition(async () => {
-            const result = await createInvoice(simplifiedValues);
+            
+            const result = item 
+                ? 
+                await updateInvoice(item.id, simplifiedValues)
+                : await createInvoice(simplifiedValues);
 
             if (result?.error) {
-                console.error("Failed to create invoice:", result.error);
+                console.error(`Failed to ${item ? 'update' : 'create'} invoice:`, result.error);
 
                 if (result.status === 400) {
                     form.setError("root", { message: "Invalid data provided." });
@@ -99,12 +192,27 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                 window.location.href = result.redirectTo;
             }
         });
-    }, []);
+    }, [item]);
 
-    // Function to add a new device item
-    const addDeviceItem = () => {
-        append({ device: '', quantity: 1});
-    };
+    // Get the devices fields array for rendering
+const { fields: deviceFields, append: appendDevice, remove: removeDevice } = useFieldArray({
+    control: form.control,
+    name: "devices"
+});
+
+// Get the subscriptions fields array for rendering
+const { fields: subscriptionFields, append: appendSubscription, remove: removeSubscription } = useFieldArray({
+    control: form.control,
+    name: "subscriptions"
+});
+
+const addDeviceItem = () => {
+    appendDevice({ device: '', quantity: 1 });
+};
+
+const addSubscriptionItem = () => {
+    appendSubscription({ subscription: '', quantity: 1 });
+};
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -157,7 +265,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                         </Button>
                                     </div>
                                     
-                                    {fields.map((field, index) => (
+                                    {deviceFields.map((field, index) => (
                                         <div key={field.id} className="space-y-4 p-4 border rounded-md relative">
                                             <div className="absolute top-2 right-2">
                                                 {index > 0 && (
@@ -165,7 +273,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                                         type="button" 
                                                         variant="ghost" 
                                                         size="sm"
-                                                        onClick={() => remove(index)}
+                                                        onClick={() => removeDevice(index)}
                                                     >
                                                         <X className="h-4 w-4" />
                                                     </Button>
@@ -210,7 +318,6 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                                         </FormItem>
                                                     )}
                                                 />
-                            
                                             </div>
                                         </div>
                                     ))}
@@ -218,6 +325,84 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                     {form.formState.errors.devices && (
                                         <p className="text-sm font-medium text-destructive">
                                             {form.formState.errors.devices.message}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Devices section with add/remove capabilities */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-lg font-medium">Subscriptions</h3>
+                                        <Button 
+                                            type="button" 
+                                            variant="outline" 
+                                            size="sm"
+                                            onClick={addSubscriptionItem}
+                                        >
+                                            Add Subscription
+                                        </Button>
+                                    </div>
+                                    
+                                    {subscriptionFields.map((field, index) => (
+                                        <div key={field.id} className="space-y-4 p-4 border rounded-md relative">
+                                            
+                                            <div className="absolute top-2 right-2">
+                                                {index > 0 && (
+                                                    <Button 
+                                                        type="button" 
+                                                        variant="ghost" 
+                                                        size="sm"
+                                                        onClick={() => removeSubscription(index)}
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`subscriptions.${index}.subscription`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Subscription Package</FormLabel>
+                                                            <FormControl>
+                                                                <SubscriptionPackageSelector
+                                                                    {...field}
+                                                                    placeholder="Select subscription package"
+                                                                    label="Subscription Package"
+                                                                    value={field.value as string | Subscription | undefined}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`subscriptions.${index}.quantity`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Quantity</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    placeholder="How many month(s) would you like?"
+                                                                    value={field.value}
+                                                                    onChange={(e) => field.onChange(parseInt(e.target.value) || '')}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    
+                                    {form.formState.errors.subscriptions && (
+                                        <p className="text-sm font-medium text-destructive">
+                                            {form.formState.errors.subscriptions.message}
                                         </p>
                                     )}
                                 </div>
@@ -317,6 +502,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                                         <Checkbox
                                                             checked={field.value}
                                                             onCheckedChange={field.onChange}
+                                                            disabled
                                                         />
                                                     </FormControl>
                                                     <FormMessage />
@@ -342,10 +528,10 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
 
             {/* Preview Section */}
             <div className="hidden lg:block">
-                <InvoicePreview formData={watchedValues} />
+                <InvoicePreview formData={previewData} />
             </div>
         </div>
-    )
+    );
 }
 
-export default InvoiceForm
+export default InvoiceForm;

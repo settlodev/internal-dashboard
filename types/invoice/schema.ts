@@ -11,6 +11,15 @@ export const invoiceSchema = object({
         quantity: z.number().min(1, "Quantity must be at least 1"),
       })
     ).min(1, "At least one device is required"),
+    subscriptions: z.array(
+      z.object({
+        subscription: z.union([
+          z.string().min(1, "Subscription is required"),
+          z.object({ id: z.string().uuid() }).passthrough(),
+        ]),
+        quantity: z.number().min(1, "Quantity must be at least 1 month"),
+      })
+    ).min(1, "At least one month is required"),
     
     due_date: string().min(1, "Due date is required"),
     invoice_date: string().min(1, "Invoice date is required"),

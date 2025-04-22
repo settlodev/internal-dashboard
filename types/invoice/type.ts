@@ -14,6 +14,7 @@ export declare interface Invoice {
     updated_at: string;
     items: InvoiceItem[];
     devices:deviceItem[];
+    subscriptions:subscriptionItem[];
    
     note: string;
     discount: number;
@@ -21,6 +22,11 @@ export declare interface Invoice {
 }
 interface deviceItem{
     device:UUID,
+    quantity:number
+
+}
+interface subscriptionItem{
+    subscription:UUID,
     quantity:number
 
 }

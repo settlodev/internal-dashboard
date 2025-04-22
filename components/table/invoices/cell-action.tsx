@@ -47,6 +47,9 @@ export function CellAction({ data }: CellActionProps) {
                     <DropdownMenuItem onClick={() => router.push(`/invoices/details/${data?.id}`)}>
                         View Details
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push(`/invoices/${data?.id}`)}>
+                        Edit Invoice
+                    </DropdownMenuItem>
                    
                     {/* <DropdownMenuItem onClick={() => handleDeleteUser(data.id)} disabled={isDeleting}>
                         {isDeleting ? "Deleting..." : "Delete"}
