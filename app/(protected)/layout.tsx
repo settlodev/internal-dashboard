@@ -5,7 +5,7 @@ import { getUserWithProfile} from "@/lib/actions/user-actions";
 
 export default async function MainLayout({children,}: Readonly<{children: React.ReactNode;}>) {
     const user = await getUserWithProfile();
-    console.log(user)
+  
     return (
         <SidebarProvider>
             <div className="flex w-full">

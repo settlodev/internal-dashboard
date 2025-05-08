@@ -21,7 +21,9 @@ export default function SummaryCard({metrics}: any) {
     {
       title: "Active Locations",
       value: metrics.activeLocations,
-      suffix: `(${((metrics.activeLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
+      suffix: `(${!metrics.activeLocations || metrics.totalLocations === 0
+        ? '0'
+        : ((metrics.activeLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
       icon: CheckCircle,
       bgColor: "bg-green-100",
       textColor: "text-green-600",
@@ -30,7 +32,9 @@ export default function SummaryCard({metrics}: any) {
     {
       title: "Trial Locations",
       value: metrics.trialLocations,
-      suffix: `(${((metrics.trialLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
+      suffix: `(${!metrics.trialLocations || metrics.totalLocations === 0
+        ? '0'
+        : ((metrics.trialLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
       icon: Tag,
       bgColor: "bg-gray-100",
       textColor: "text-red-300",
@@ -39,7 +43,9 @@ export default function SummaryCard({metrics}: any) {
     {
       title: "Almost Due Locations",
       value: metrics.almostDueLocations,
-      suffix: `(${((metrics.almostDueLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
+      suffix: `(${!metrics.almostDueLocations || metrics.totalLocations === 0
+        ? '0'
+        : ((metrics.almostDueLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
       icon: AlertTriangle,
       bgColor: "bg-yellow-500",
       textColor: "text-white",
@@ -48,7 +54,9 @@ export default function SummaryCard({metrics}: any) {
     {
       title: "Due Locations",
       value: metrics.dueLocations,
-      suffix: `(${((metrics.dueLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
+      suffix: `(${!metrics.dueLocations || metrics.totalLocations === 0
+        ? '0'
+        : ((metrics.dueLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
       icon: AlertTriangle,
       bgColor: "bg-orange-500",
       textColor: "text-white",
@@ -57,7 +65,10 @@ export default function SummaryCard({metrics}: any) {
     {
       title: "Expired Locations",
       value: metrics.expiredLocations,
-      suffix: `(${((metrics.expiredLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
+      // suffix: `(${((metrics.expiredLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
+      suffix: `(${!metrics.expiredLocations || metrics.totalLocations === 0
+        ? '0'
+        : ((metrics.expiredLocations / metrics.totalLocations) * 100).toFixed(1)}%)`,
       icon: AlertTriangle,
       bgColor: "bg-red-500",
       textColor: "text-white",

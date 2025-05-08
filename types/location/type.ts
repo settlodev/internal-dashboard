@@ -18,7 +18,10 @@ export declare interface Location{
     locationBusinessType:string,
     locationBusinessTypeName:string,
     subscriptionStatus:string,
+    subscriptionStartDate:Date,
+    subscriptionEndDate:Date,
     settings:Settings
+    dateCreated:Date,
     status: boolean,
     canDelete: boolean,
     isArchived: boolean
@@ -105,6 +108,9 @@ export declare interface RequestSubscription{
     quantity:number,
     description:string,
     payment_type:string,
+    phone:string,
+    email:string,
+    packageId:UUID
     location:UUID
     user_id:UUID
     approved_by:UUID

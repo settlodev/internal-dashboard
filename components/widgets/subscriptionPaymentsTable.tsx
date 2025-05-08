@@ -135,7 +135,7 @@ import { Card, CardContent, CardHeader } from "../ui/card";
                 content.map((payment, index) => (
                   <TableRow key={payment.id}>
                     <TableCell>{index + 1}</TableCell>
-                    <TableCell className="font-medium">{payment.externalTransactionId ? payment.externalTransactionId.substring(0, 8) : "Migrated"}</TableCell>
+                    <TableCell className="font-medium">{payment.externalTransactionId ? payment.externalTransactionId.substring(0, 8) : "No Transaction ID"}</TableCell>
                     <TableCell className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-500" />
                       {payment.dateCreated
@@ -235,7 +235,7 @@ import { Card, CardContent, CardHeader } from "../ui/card";
   };
   export const LocationSubscriptions = ({ payments, onPageChange }: SubscriptionPaymentsProps) => {
     return (
-      <Card>
+      <Card className="w-[45%] lg:w-full">
         <CardHeader>
           <h3 className="font-semibold flex items-center gap-2">
             <CreditCard className="w-5 h-5" />

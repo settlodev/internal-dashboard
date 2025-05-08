@@ -14,7 +14,7 @@ export declare interface User{
     user_type:string
 
 }
-interface role {
+export interface role {
     id:UUID,
     name:string
 }
@@ -24,11 +24,20 @@ export interface Profile {
     first_name: string;
     last_name: string;
     avatar_url?: string;
-    role: { name: string };
+    role:role,
     businesses_registered?: number;
     commission_earned?: number;
     referral_code?: string;
     businesses?: Business[];
+    email:string,
+    phone:string,
+    password:string,
+    status:string,
+    canDeleted:boolean,
+    isArchived:boolean
+    created_at:string,
+    updated_at:string
+    user_type:string
   }
   
   export interface Business {

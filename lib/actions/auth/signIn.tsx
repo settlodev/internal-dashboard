@@ -65,7 +65,7 @@ export const SignIn = async (
       return parseStringify({
         responseType: "success",
         message: "Signed in successfully",
-        redirectTo: "/profile"
+        redirectTo: `/profile/${internal_profile?.id}`
       });
     } else {
       return parseStringify({
@@ -242,13 +242,36 @@ export async function getCurrentUser() {
     
     const { data: { user }, error } = await supabase.auth.getUser();
 
-    // console.log("The user", user)
-    
+  
     if (error || !user) {
       return { user: null, error: error?.message };
     }
 
-    return { user, error: null };
+    
+    // console.log("The user", user)
+    const { data: internal_profile, error: profileError } = await supabase
+      .from('internal_profiles')
+      .select(`
+        *,
+        role:internal_roles(name)
+      `)
+      .eq('id', user.id)
+      .single();
+
+ 
+      // console.log("The profile", internal_profile)
+    if (profileError) {
+      console.log("The error", profileError)
+      return ({
+        responseType: "error",
+        message: profileError.message,
+        error: new Error(profileError.message), status: 400
+      })
+    }
+
+    const role = internal_profile?.role?.name
+
+    return { user, error: null, role };
   } catch (error) {
     console.error('Error getting user:', error);
     return { user: null, error: 'Failed to get user' };
@@ -277,22 +300,23 @@ export async function checkUserPermissions() {
       `)
       .eq('user_id', user.id);
   
-
-      // console.log("The data has this role", data )
-
     if (permError) {
       return { permissions: [], error: permError.message };
     }
 
     // Flatten permissions from all roles
-    const permissions = new Set<string>();
-    data?.forEach(({ role }:any) => {
-      role.permissions.forEach(({ permission }: { permission: { slug: string } }) => {
-        permissions.add(permission.slug);
+    const permissions: string[] = [];
+    data?.forEach(({ role }) => {
+      (role as any)?.permissions.forEach(({ permission }: { permission: { slug: string } }) => {
+        if (permission?.slug) {
+          permissions.push(permission.slug);
+        }
       });
     });
+    
 
-    return { permissions: Array.from(permissions), error: null };
+    // console.log("Flattened permissions:", permissions); 
+    return { permissions, error: null, };
   } catch (error) {
     console.error('Error checking permissions:', error);
     return { permissions: [], error: 'Failed to check permissions' };
@@ -300,38 +324,51 @@ export async function checkUserPermissions() {
 }
 
 
+
+
 export async function deleteUser(userId: string) {
   try {
-      const supabase = await createClient();
+    const supabase = await createClient();
 
-      const { data: user, error: fetchError } = await supabase.auth.admin.getUserById(userId);
-      if (fetchError || !user) {
-          return { error: "User not found in authentication system." };
-      }
+    const { data: user, error: fetchError } = await supabase.auth.admin.getUserById(userId);
+    if (fetchError || !user) {
+      return { error: "User not found in authentication system." };
+    }
 
-      // Delete the user profile from the database 
-      const { error: profileError } = await supabase
-          .from("internal_profiles") 
-          .delete()
-          .eq("id", userId); 
+    // Step 1: Delete from internal_user_role
+    const { error: roleError } = await supabase
+      .from("internal_user_roles")
+      .delete()
+      .eq("user_id", userId);
 
-      if (profileError) {
-          console.error("Error deleting user profile:", profileError);
-          return { error: "Failed to delete user profile." };
-      }
+    if (roleError) {
+      console.error("Error deleting user role:", roleError);
+      return { error: "Failed to delete user role." };
+    }
 
-      // Delete the user from Supabase Auth
-      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+    // Step 2: Delete the user profile
+    const { error: profileError } = await supabase
+      .from("internal_profiles")
+      .delete()
+      .eq("id", userId);
 
-      if (authError) {
-          console.error("Error deleting user from auth:", authError);
-          return { error: "Failed to delete user from authentication." };
-      }
+    if (profileError) {
+      console.error("Error deleting user profile:", profileError);
+      return { error: "Failed to delete user profile." };
+    }
 
-      return { error: null }; // Success
+    // Step 3: Delete the user from Supabase Auth
+    const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+
+    if (authError) {
+      console.error("Error deleting user from auth:", authError);
+      return { error: "Failed to delete user from authentication." };
+    }
+
+    return { error: null }; // Success
   } catch (error) {
-      console.error("Unexpected error deleting user:", error);
-      return { error: "An unexpected error occurred while deleting the user." };
+    console.error("Unexpected error deleting user:", error);
+    return { error: "An unexpected error occurred while deleting the user." };
   }
 }
 
@@ -361,3 +398,4 @@ export async function updateUserProfile(userId: string, data: any) {
     return { error: "An unexpected error occurred while updating the user.", status: 500 };
   }
 }
+

@@ -19,6 +19,10 @@ export function CellAction({ data }: CellActionProps) {
     const [isDeleting, setIsDeleting] = useState(false);
     const router = useRouter();
 
+    const handleViewProfile = (userId: string) => {
+        router.push(`/profile/${userId}`);
+    };
+
     const handleDeleteUser = async (userId: string) => {
         const confirmDelete = window.confirm(
             `Are you sure you want to delete user ${data.email}? This action cannot be undone.`
@@ -47,9 +51,13 @@ export function CellAction({ data }: CellActionProps) {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => router.push(`/users/${data?.id}`)}>
-                        View Details
+                <DropdownMenuItem onClick={() => handleViewProfile(data.id)}>
+                        View Profile
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push(`/users/${data?.id}`)}>
+                        Edit Details
+                    </DropdownMenuItem>
+                   
                     <DropdownMenuItem onClick={() => setIsModalOpen(true)}>
                         Update password
                     </DropdownMenuItem>

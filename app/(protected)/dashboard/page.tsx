@@ -32,11 +32,11 @@ export default function Dashboard() {
             dateRange?.from,
             dateRange?.to
           );
-          console.log("The data is", data)
+          
           setStats(data as SummaryResponse);
         } catch (error) {
           console.error("Error fetching dashboard data:", error);
-          // toast.error("Failed to load dashboard data");
+          
         } finally {
           setLoading(false);
         }
@@ -97,7 +97,7 @@ export default function Dashboard() {
         >
             <div className="flex flex-col space-y-6 md:p-8 p-4 w-full bg-gray-50 min-h-screen">
                 {/* Header section with breadcrumb and date filter */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-2">
                     <div className="flex-1 md:max-w-md">
                         <BreadcrumbNav items={breadcrumbItems} />
                         <h1 className="text-2xl font-bold text-gray-800 mt-2">Quick Analytics</h1>
@@ -109,7 +109,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Summary metrics row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-2">
                     <MetricCard 
                         title="Total Users"
                         value={stats?.totalUsers || 0}
@@ -138,7 +138,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Subscription status section */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-2">
                     <div className="bg-white p-4 rounded-lg shadow col-span-2">
                         <h2 className="text-lg font-semibold mb-4">Monthly Growth Trends</h2>
                         <UserGrowthLineChart 
@@ -169,7 +169,7 @@ export default function Dashboard() {
                 
 
                 {/* Additional metrics section */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-2">
                     <MetricCard 
                         title="Users with Active Sub"
                         value={stats?.totalUsersWithActiveSubscriptions || 0}

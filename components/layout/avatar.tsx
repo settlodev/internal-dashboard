@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation"
 
 interface userProps {
     user:{
+        id: string,
         email: string,
         last_signed_in_at: string,
     },
@@ -55,7 +56,7 @@ export function UserAvatar({user}:{user: userProps}) {
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     Dashboard
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={ ()=> router.push("/profile")}>
+                <DropdownMenuItem onClick={ ()=> router.push(`/profile/${user?.user.id}`)}>
                     <User className="mr-2 h-4 w-4" />
                     Profile
                 </DropdownMenuItem>

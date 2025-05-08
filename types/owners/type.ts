@@ -22,6 +22,7 @@ export declare interface Owner  {
         phoneNumberVerified: Date;
         totalLocations: number;
         country: string;
+        countryName: string;
         isMigrated: boolean;
         status: boolean;
         canDeleted: boolean;
@@ -30,4 +31,5 @@ export declare interface Owner  {
         businessComplete:boolean
         locationComplete:boolean
         gender:string
+        dateCreated:Date
     }

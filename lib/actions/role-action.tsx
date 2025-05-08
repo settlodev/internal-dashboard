@@ -108,7 +108,7 @@ export async function getRoleById(id: string): Promise<Role | undefined> {
           isSelected: selectedPermissionIds.has(permission.id)
         }
       }));
-    //   console.log(formattedPermissions)
+      console.log(formattedPermissions)
   
       return parseStringify({
         ...role,

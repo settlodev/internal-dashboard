@@ -21,7 +21,7 @@ import { useCallback, useEffect, useState, useTransition } from "react"
 import { getUserEmailById, signUp, updateUserProfile} from "@/lib/actions/auth/signIn"
 import RoleSelect from "@/components/widgets/roleSelector"
 import { UserSchema } from "@/types/users/schema"
-import { User } from "@/types/users/type"
+import { Profile} from "@/types/users/type"
 import UserTypeSelect from "@/components/widgets/userTypeSelector"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import CancelButton from "@/components/widgets/cancel-button"
@@ -29,7 +29,7 @@ import { Separator } from "@/components/ui/separator"
 import SubmitButton from "@/components/widgets/submit-button"
 
 
-export function UserForm({ item }: { item: User | null | undefined }) {
+export function UserForm({ item }: { item: Profile | null | undefined }) {
   const [isPending, startTransition] = useTransition()
   const [userEmail, setUserEmail] = useState("")
   const [, setIsLoading] = useState(false);

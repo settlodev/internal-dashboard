@@ -17,19 +17,20 @@ import PaymentMeansSelector from "../widgets/select";
 import { Alert, AlertDescription } from "../ui/alert";
 import toast from "react-hot-toast";
 
-function RequestSubscriptionForm({ location }: { location: Location }) {
+function RequestSubscriptionForm({ location, activeSubscription }: { location: Location , activeSubscription: any}) {
+   
     const [isPending, startTransition] = useTransition()
     const [formError, setFormError] = useState<string | null>(null);
-
-
-    console.log("The location requesting for subscription ", location)
-
 
     const form = useForm<z.infer<typeof RequestSubscriptionSchema>>({
         resolver: zodResolver(RequestSubscriptionSchema),
         defaultValues: {
             location: location.id,
             location_name: location.name,
+            phone: location.phone,
+            email: location.email,
+            packageId: activeSubscription.subscription.id,
+            packageName: activeSubscription.subscription.packageName,
             payment_type: ""
         }
     })
@@ -55,8 +56,8 @@ function RequestSubscriptionForm({ location }: { location: Location }) {
                     if (data?.error) {
                         console.error('Request subscription error:', data.error);
                         // Handle specific database error codes
-                        if (data.error instanceof Error && data.error.message.includes('23505') && data.error.message.includes('reference')) {
-                            setFormError("This reference number has already been used. Please enter a different reference number.");
+                        if (data.error instanceof Error && data.error.message.includes('Reference number')) {
+                            setFormError(data.error.message);
                         } else if (data.error instanceof Error && data.error.message) {
                             // Use the error message if available
                             setFormError(data.error.message);
@@ -65,6 +66,19 @@ function RequestSubscriptionForm({ location }: { location: Location }) {
                         }
                     } else {
                         toast.success("Subscription request submitted successfully")
+                        setFormError(null)
+                        form.reset({
+                            location: "",
+                            location_name: "",
+                            phone: "",
+                            email: "",
+                            packageId: "",                            
+                            packageName: "",
+                            payment_type: "",
+                            reference: "",
+                            quantity: 1,
+                            description: ""
+                        })
                     }
                 })
                 .catch((error) => {
@@ -72,7 +86,7 @@ function RequestSubscriptionForm({ location }: { location: Location }) {
                     setFormError("An unexpected error occurred. Please try again later.");
                 });
         });
-    }, [toast]);
+    }, [toast, location, activeSubscription, form]);
     return (
         <Form {...form}>
             <div className="w-full max-w-sm mx-auto">
@@ -116,7 +130,7 @@ function RequestSubscriptionForm({ location }: { location: Location }) {
                                     </FormControl>
                                     <FormMessage />
                                     <FormDescription>
-                                        Specify how many months you‘d like to request for
+                                        Specify how many months you'd like to request for
                                     </FormDescription>
                                 </FormItem>
                             )}

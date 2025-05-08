@@ -1,5 +1,5 @@
 'use server'
-import { ProfileData, User } from "@/types/users/type"
+import { Profile, ProfileData, User } from "@/types/users/type"
 import { parseStringify } from "../utils"
 import { createClient } from "../supabase/server"
 import { fetchAllBusiness } from "./business"
@@ -109,22 +109,48 @@ export async function fetchProfileData(): Promise<ProfileData> {
   }
 }
 
-export async function fetchProfileDataById(id: string): Promise<User | undefined> {
+
+
+export async function fetchProfileDataById(id: string): Promise<Profile | null> {
   const supabase = await createClient();
 
   try {
+    // Fetch profile data
     const { data: profile, error: profileError } = await supabase
-      .from('internal_profiles')
-      .select('*')
-      .eq('id', id)
-      .single();
+    .from('internal_profiles')
+          .select('*')
+          .eq('id', id)
+          .single();
 
-    if (profileError) throw profileError;
+    if (profileError) {
+      console.error('Supabase error:', profileError);
+      return null;
+    }
+
+    if (!profile) {
+      return null;
+    }
+
+    // Fetch role information to include role name
+    if (profile.role) {
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('name')
+        .eq('id', profile.role)
+        .single();
+        
+      if (!roleError && roleData) {
+        profile.role = {
+          id: profile.role,
+          name: roleData.name
+        };
+      }
+    }
 
     return parseStringify(profile);
   } catch (error) {
     console.error('Error fetching profile data:', error);
-    
+    return null;
   }
 }
 

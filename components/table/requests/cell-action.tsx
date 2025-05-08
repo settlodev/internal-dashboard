@@ -1,5 +1,6 @@
 
 'use client';
+import { ProtectedComponent } from "@/components/auth/protectedComponent";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { RequestSubscription } from "@/types/location/type";
@@ -13,6 +14,9 @@ export function CellAction({ data }: CellActionProps) {
     const router = useRouter();
 
     return (
+      <ProtectedComponent 
+        requiredPermissions={['view:request-details']}
+        >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
@@ -31,5 +35,6 @@ export function CellAction({ data }: CellActionProps) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </ProtectedComponent>
     );
 }

@@ -65,9 +65,23 @@ export const columns: ColumnDef<Owner>[] = [
         header: "Gender"
     },
     {
-        accessorKey: "referredByCode",
-        header: "Referral Code" 
+        accessorKey: "dateCreated",
+        header: "Date Registered",
+        cell: ({ row }) => {
+            const date = new Date(row.getValue("dateCreated"));
+            return date.toLocaleDateString('en-US', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
     },
+    {
+      accessorKey: "referredByCode",
+      header: "Referral Code" 
+  },
    
     {
         id: "actions",
