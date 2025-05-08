@@ -311,7 +311,8 @@ export async function fetchInvoiceById(id: string): Promise<Invoice | null> {
         .select("*")
         .eq("id", id)
         .single();
-    console.log("The invoice is",invoice)
+
+        
     if (invoiceError) {
         console.error(invoiceError);
         return null;

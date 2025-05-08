@@ -12,6 +12,8 @@ interface CellActionProps {
 export function CellAction({ data }: CellActionProps) {
     const router = useRouter();
 
+    // console.log(data)
+
     return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -24,7 +26,7 @@ export function CellAction({ data }: CellActionProps) {
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
             onClick={() => {
-                router.push(`/locations/${data?.id}`);
+                router.push(`/locations/${data?.location}`);
             }}
             >
               View Details

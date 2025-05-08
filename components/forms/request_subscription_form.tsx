@@ -54,10 +54,10 @@ function RequestSubscriptionForm({ location, activeSubscription }: { location: L
             requestSubscription(values)
                 .then((data) => {
                     if (data?.error) {
-                        console.error('Request subscription error:', data.error );
+                        console.error('Request subscription error:', data.error);
                         // Handle specific database error codes
-                        if (data.error instanceof Error && data.error.message.includes('23505') && data.error.message.includes('reference')) {
-                            setFormError("This reference number has already been used. Please enter a different reference number.");
+                        if (data.error instanceof Error && data.error.message.includes('Reference number')) {
+                            setFormError(data.error.message);
                         } else if (data.error instanceof Error && data.error.message) {
                             // Use the error message if available
                             setFormError(data.error.message);

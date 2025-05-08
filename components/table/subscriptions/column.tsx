@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Payment } from "@/types/location/type"
+import { CellAction } from "./cell-action"
 
 
 export const columns: ColumnDef<Payment>[] = [
@@ -99,5 +100,9 @@ export const columns: ColumnDef<Payment>[] = [
         );
       },
     },
+    {
+      id: "actions",
+      cell: ({ row }) => <CellAction data={row.original} />,
+  },
   
 ]

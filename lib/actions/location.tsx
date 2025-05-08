@@ -10,16 +10,7 @@ import { FormResponse } from "@/types/types";
 import { createClient } from "../supabase/server";
 import { RequestSubscriptionEmail } from "./email/send";
 
-// interface Profiles {
-//     id: string;
-//     email: string;
-//     first_name?: string;
-//     last_name?: string;
-//     phone?: string;
-// }
-// interface RequestSubscriptionWithUser extends RequestSubscription {
-//     profile: Profiles;
-// }
+
 export const fetchAllLocation = async (): Promise<Location[]> => {
     try {
         const apiClient = new ApiClient();
@@ -56,7 +47,22 @@ export const deleteLocation = async (id: string) => {
 export const getLocationSubscriptionPayments = async (id: string, page:number = 0, size:number = 10) => {
     try {
         const apiClient = new ApiClient();
-        const data = await apiClient.post(`/api/subscription-payments/${id}`, {page,size});
+
+        const query = {
+            filters: [],
+            sorts: [
+                {
+                    key: "dateCreated",
+                    direction: "DESC",
+                },
+            ],
+            page: page ? page - 1 : 0,
+            size: size ? size : 10,
+        };
+
+        const data = await apiClient.post(`/api/subscription-payments/${id}`, query);
+       
+        
       
         return parseStringify(data);
     } catch (error) {
@@ -140,13 +146,12 @@ export const requestSubscription = async (
         .insert([subscriptionData]);
 
         if (error) {
-            console.error("Request subscription error:", error );
-            return parseStringify({
-                responseType:"error",
-                message:"Subscription request failed",
-                error: new Error(error.message),
-                status:400
-            })
+            console.error("Request subscription error:", error);
+            // Check if it's a unique constraint violation
+            if (error.code === '23505' && error.message.includes('reference')) {
+                throw new Error(`Reference number ${validRequest.data.reference} has already been used. Please use a different reference number.`);
+            }
+            throw new Error(error.message);
         }
 
         const emailPayload = {
@@ -232,7 +237,6 @@ export const fetchAllRequestSubscription = async (
               userData
           };
       });
-      console.log("The subscription list is",result)
   
       return parseStringify(result);
   }
@@ -322,7 +326,6 @@ export const rejectSubscriptionRequest = async (id: string) => {
             approved_by: 'current-user-id' 
         })
         .eq('id', id);
-
     if (error) throw error;
 };
 

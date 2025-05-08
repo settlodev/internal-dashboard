@@ -30,18 +30,27 @@ const InvoiceDetails = ({ params }: { params: { id: string } }) => {
   const downloadPDF = () => {
     const element = document.getElementById('invoice-content');
     if (element) {
-      html2pdf()
-        .set({ 
-          margin: 0.5,
-          filename: `invoice-${invoice?.invoice_number}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        })
-        .from(element)
-        .save();
+      const opt = {
+        margin: [0.5, 0.5, 0.5, 0.5] as [number, number, number, number], // Explicitly type as tuple
+        filename: `invoice-${invoice?.invoice_number}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          letterRendering: true
+         },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait' as 'portrait' | 'landscape', 
+          compressPDF: true 
+        }
+      };
+  
+      html2pdf().set(opt).from(element).save();
     }
   };
+  
 
   // Extract devices and subscriptions from items if they exist
   const devices = invoice?.items?.[0]?.items_data?.devices || [];
@@ -123,9 +132,9 @@ const InvoiceDetails = ({ params }: { params: { id: string } }) => {
 
   return (
     <div className="flex flex-col gap-4 p-2 sm:p-4 max-w-full">
-      <div id="invoice" className="w-full">
+      <div id="invoice" className="w-full max-w-[794px] mx-auto">
         <Card className="w-full bg-white shadow-md mb-3">
-          <CardContent id="invoice-content" className="p-2 sm:p-6">
+          <CardContent id="invoice-content" className="p-6">
             <div className="space-y-4 sm:space-y-6">
               {/* Header */}
               <div className="flex flex-col sm:flex-row justify-between gap-4">

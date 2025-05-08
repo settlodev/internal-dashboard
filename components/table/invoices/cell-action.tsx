@@ -6,37 +6,21 @@ import { MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Invoice } from "@/types/invoice/type";
+import { ProtectedComponent } from "@/components/auth/protectedComponent";
 
 interface CellActionProps {
     data: Invoice;
 }
 
 export function CellAction({ data }: CellActionProps) {
-    // const [isModalOpen, setIsModalOpen] = useState(false);
-    // const [isDeleting, setIsDeleting] = useState(false);
+   
     const router = useRouter();
-
-    // const handleDeleteUser = async (userId: string) => {
-    //     const confirmDelete = window.confirm(
-    //         `Are you sure you want to delete user ${data.email}? This action cannot be undone.`
-    //     );
-
-    //     if (!confirmDelete) return;
-
-    //     setIsDeleting(true);
-    //     const response = await deleteUser(userId);
-
-    //     if (!response.error) {
-    //         alert(`User ${data.email} has been deleted successfully.`);
-    //         router.refresh(); // Refresh the list after deletion
-    //     } else {
-    //         alert(`Failed to delete user: ${response.error}`);
-    //     }
-    //     setIsDeleting(false);
-    // };
 
     return (
         <>
+         <ProtectedComponent 
+        requiredPermissions={['view:invoice-actions']}
+        >
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -56,8 +40,7 @@ export function CellAction({ data }: CellActionProps) {
                     </DropdownMenuItem> */}
                 </DropdownMenuContent>
             </DropdownMenu>
-
-            
+            </ProtectedComponent> 
         </>
     );
 }

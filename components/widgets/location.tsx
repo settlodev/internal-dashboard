@@ -54,9 +54,7 @@ const LocationDetailClient = ({ location, payments, activeSubscription, statisti
     ];
     
 
-    // const handleRequestSubscription = () => {
-    //     setIsModalOpen(true);
-    // }
+  
     const handlePageChange = async (page: number) => {
         try {
             const newPayments = await getLocationSubscriptionPayments(location?.id, page, 10);

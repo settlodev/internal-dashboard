@@ -69,12 +69,7 @@ export const columns: ColumnDef<RequestSubscription>[] = [
         accessorKey: "status",
         header: "Status",
     },
-    // {
-    //     accessorKey: "approved_by",
-    //     header: "Approved By",
-    //     cell: ({ row }) => row.getValue("approved_by")?.name,
-        
-    // },
+   
     {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />,

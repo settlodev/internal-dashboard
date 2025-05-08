@@ -1,4 +1,6 @@
 'use client'
+import { ProtectedComponent } from '@/components/auth/protectedComponent';
+import Unauthorized from '@/components/code/401';
 import { BreadcrumbNav } from '@/components/layout/breadcrumbs';
 import { DataTable } from '@/components/table/data-table';
 import { columns } from '@/components/table/devices/column';
@@ -43,6 +45,9 @@ export default function page() {
         );
       }
   return (
+    <ProtectedComponent 
+    requiredPermissions={['view:devices','view:device-details']}
+    fallback={<Unauthorized />}>
     <div className="flex-1 space-y-2 md:p-8 pt-4">
     <div className='flex items-center justify-between mb-3 pl-2 pr-2'>
         <div className='relative '>
@@ -83,5 +88,6 @@ export default function page() {
         )
     }
 </div>
+</ProtectedComponent>
   )
 }

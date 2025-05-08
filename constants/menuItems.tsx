@@ -82,7 +82,7 @@ const data = {
         {
           title: "invoices",
           url: "/invoices",
-          // requiredPermission: "view:requests",
+          requiredPermission: "view:invoices",
         },
        
       ],
@@ -95,7 +95,7 @@ const data = {
         {
           title: "Devices",
           url: "/devices",
-          // requiredPermission: "view:requests",
+          requiredPermission: "view:devices",
         },
       ],
     },

@@ -1,5 +1,3 @@
-
-
 "use client"
 import { CreditCard, ShoppingCart,Package,Box} from "lucide-react"
 
@@ -7,18 +5,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface LocationActivityLogsProps {
   activityLogs: {
-    latestOrderDate: number
-    latestProductDate: number
-    latestVariantDate: number
-    latestStockDate: number
-    latestStockVariantDate: number
-    latestStockIntakeDate: number
-    latestStaffDate: number
-    
+    latestOrderDate: string | null
+    latestProductDate: string | null
+    latestVariantDate: string | null
+    latestStockDate: string | null
+    latestStockVariantDate: string | null
+    latestStockIntakeDate: string | null
+    latestStaffDate: string | null
   }
 }
 
-const formatDate = (date: number) => {
+const formatDate = (date: string | null) => {
+  if (!date) return "-";
   const options: Intl.DateTimeFormatOptions = {
     day: "2-digit",
     month: "short",
@@ -28,6 +26,7 @@ const formatDate = (date: number) => {
   };
   return new Date(date).toLocaleDateString("en-US", options);
 }
+
 export const LocationActivity = ({ activityLogs }: LocationActivityLogsProps) => {
   return (
     <div className="space-y-4">
@@ -42,7 +41,6 @@ export const LocationActivity = ({ activityLogs }: LocationActivityLogsProps) =>
           </CardHeader>
           <CardContent>
             <div className="text-lg font-bold">{formatDate(activityLogs.latestOrderDate)}</div>
-          
           </CardContent>
         </Card>
 

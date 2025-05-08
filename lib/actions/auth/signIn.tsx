@@ -315,7 +315,7 @@ export async function checkUserPermissions() {
     });
     
 
-    console.log("Flattened permissions:", permissions); 
+    // console.log("Flattened permissions:", permissions); 
     return { permissions, error: null, };
   } catch (error) {
     console.error('Error checking permissions:', error);
@@ -324,38 +324,51 @@ export async function checkUserPermissions() {
 }
 
 
+
+
 export async function deleteUser(userId: string) {
   try {
-      const supabase = await createClient();
+    const supabase = await createClient();
 
-      const { data: user, error: fetchError } = await supabase.auth.admin.getUserById(userId);
-      if (fetchError || !user) {
-          return { error: "User not found in authentication system." };
-      }
+    const { data: user, error: fetchError } = await supabase.auth.admin.getUserById(userId);
+    if (fetchError || !user) {
+      return { error: "User not found in authentication system." };
+    }
 
-      // Delete the user profile from the database 
-      const { error: profileError } = await supabase
-          .from("internal_profiles") 
-          .delete()
-          .eq("id", userId); 
+    // Step 1: Delete from internal_user_role
+    const { error: roleError } = await supabase
+      .from("internal_user_roles")
+      .delete()
+      .eq("user_id", userId);
 
-      if (profileError) {
-          console.error("Error deleting user profile:", profileError);
-          return { error: "Failed to delete user profile." };
-      }
+    if (roleError) {
+      console.error("Error deleting user role:", roleError);
+      return { error: "Failed to delete user role." };
+    }
 
-      // Delete the user from Supabase Auth
-      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+    // Step 2: Delete the user profile
+    const { error: profileError } = await supabase
+      .from("internal_profiles")
+      .delete()
+      .eq("id", userId);
 
-      if (authError) {
-          console.error("Error deleting user from auth:", authError);
-          return { error: "Failed to delete user from authentication." };
-      }
+    if (profileError) {
+      console.error("Error deleting user profile:", profileError);
+      return { error: "Failed to delete user profile." };
+    }
 
-      return { error: null }; // Success
+    // Step 3: Delete the user from Supabase Auth
+    const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+
+    if (authError) {
+      console.error("Error deleting user from auth:", authError);
+      return { error: "Failed to delete user from authentication." };
+    }
+
+    return { error: null }; // Success
   } catch (error) {
-      console.error("Unexpected error deleting user:", error);
-      return { error: "An unexpected error occurred while deleting the user." };
+    console.error("Unexpected error deleting user:", error);
+    return { error: "An unexpected error occurred while deleting the user." };
   }
 }
 
@@ -385,3 +398,4 @@ export async function updateUserProfile(userId: string, data: any) {
     return { error: "An unexpected error occurred while updating the user.", status: 500 };
   }
 }
+

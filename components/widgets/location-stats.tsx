@@ -21,6 +21,7 @@ interface LocationStatisticsProps {
 }
 
 export const LocationStatistics = ({ statistics }: LocationStatisticsProps) => {
+  console.log(statistics)
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold">Location Statistics</h2>
@@ -79,7 +80,7 @@ export const LocationStatistics = ({ statistics }: LocationStatisticsProps) => {
                     style: "currency",
                     currency: "TZS",
                     minimumFractionDigits: 2,
-                  }).format(statistics.totalTransactionsAmount / 100)}
+                  }).format(statistics.totalTransactionsAmount)}
                 </span>
               </div>
             </div>
