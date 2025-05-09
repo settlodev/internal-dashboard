@@ -12,9 +12,7 @@ const LocationDetailPage = async ({params}: {params: {id: string}}) => {
     const statistics = await getLocationSummary(params.id as UUID);
     const activityLogs = await getLocationActivityLogs(params.id as UUID);
 
- 
-    console.log("The active subscription", activeSubscription)
-    
+
     return (
         <ProtectedComponent 
         requiredPermission="view:location-details" 

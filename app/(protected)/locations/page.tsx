@@ -163,8 +163,8 @@ export default function Dashboard() {
     );
   }
   return (
-    <ProtectedComponent
-      requiredPermission="view:locations"
+    <ProtectedComponent 
+        requiredPermissions={['view:locations']}
       loading={
         <div className="flex items-center justify-center">
           <Loading />
@@ -196,6 +196,8 @@ export default function Dashboard() {
                 }
               }}
             />
+             <ProtectedComponent 
+        requiredPermissions={['export:report']}>
            <ExportButton 
               data={filteredLocations}
               columns={exportColumns}
@@ -210,6 +212,7 @@ export default function Dashboard() {
                 "Expired Subscriptions": summaryData.expiredSubscriptions
               }}
             />
+            </ProtectedComponent>
           </div>
           </div>
            {/* For standalone usage */}

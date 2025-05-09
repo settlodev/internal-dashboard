@@ -74,7 +74,7 @@ export const getActiveSubscription = async (id: string) => {
     try {
         const apiClient = new ApiClient();
         const data = await apiClient.get(`/api/location-subscriptions/${id}/last-active`);
-        console.log("The active subscription", data )
+       
         return parseStringify(data);
     } catch (error) {
         throw error;

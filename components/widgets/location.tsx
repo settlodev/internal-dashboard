@@ -30,6 +30,7 @@ import { LocationSubscriptions } from "./subscriptionPaymentsTable";
 import { getLocationSubscriptionPayments } from "@/lib/actions/location";
 import { LocationStatistics } from "./location-stats";
 import { LocationActivity } from "./location-logs";
+import { ProtectedComponent } from "../auth/protectedComponent";
 
 const FeatureItem = ({ enabled, title, icon: Icon }: { enabled: boolean; title: string; icon: any }) => (
     <div className="flex items-center gap-2 text-sm">
@@ -243,7 +244,12 @@ const LocationDetailClient = ({ location, payments, activeSubscription, statisti
       </Card>
 
       {/* Stats, Activity, Subscriptions */}
-      <LocationStatistics statistics={statistics} />
+      <ProtectedComponent 
+        requiredPermissions={['view:location-statistics']}
+      >
+        <LocationStatistics statistics={statistics} />
+      </ProtectedComponent>
+      
       <LocationActivity activityLogs={activityLogs} />
       <LocationSubscriptions payments={payments} onPageChange={handlePageChange} />
     </CardContent>
