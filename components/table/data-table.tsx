@@ -1,3 +1,4 @@
+
 "use client"
 
 import {
@@ -30,6 +31,7 @@ import { Input } from "../ui/input"
 import { useRouter, useSearchParams } from "next/navigation"
 
 
+
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
@@ -43,13 +45,18 @@ interface DataTableProps<TData, TValue> {
         label: string;
         options: { label: string; value: string | boolean }[];
     }[];
+    // Added export options
+    exportOptions?: {
+        filename?: string;
+        includeTimestamp?: boolean;
+    };
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
     searchKey,
-    filters
+    filters,
 }: DataTableProps<TData, TValue>) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -58,15 +65,15 @@ export function DataTable<TData, TValue>({
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     
-    // Track selected values for each filter
+    // Track selected filters for export description
     const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({});
 
     // Get page index from URL (default to 0 if not set)
     const pageIndexFromUrl = Number(searchParams.get("page")) || 0;
     const [pageIndex, setPageIndex] = useState(pageIndexFromUrl);
 
-      // Add state for page size (default to 10)
-      const [pageSize, setPageSize] = useState(10);
+    // Add state for page size (default to 10)
+    const [pageSize, setPageSize] = useState(10);
 
     // Handle filter change for a specific filter key
     const handleFilterChange = (filterKey: string, value: string) => {
@@ -92,10 +99,26 @@ export function DataTable<TData, TValue>({
                     return [...prev, { id: filterKey, value }];
                 }
             });
-
-            console.log(`Setting filter ${filterKey} to value:`, value);
         }
     }
+
+    // Create filter description for export
+    // const getFilterDescription = () => {
+    //     const activeFilters = Object.entries(selectedFilters)
+    //         .filter(([_, value]) => value !== 'all')
+    //         .map(([key, value]) => {
+    //             const filterDef = filters?.find(f => f.key === key);
+    //             const optionLabel = filterDef?.options.find(o => o.value.toString() === value)?.label;
+    //             return `${filterDef?.label || key}: ${optionLabel || value}`;
+    //         });
+
+    //     const searchValue = table.getColumn(searchKey)?.getFilterValue() as string;
+    //     if (searchValue) {
+    //         activeFilters.push(`Search: "${searchValue}"`);
+    //     }
+
+    //     return activeFilters.join(', ');
+    // };
 
     const table = useReactTable({
         data,
@@ -123,7 +146,6 @@ export function DataTable<TData, TValue>({
                 pageSize
             }
         },
-        // globalFilterFn: "exactMatch",
         onPaginationChange: (updater) => {
             if (typeof updater === "function") {
                 const newState = updater({
@@ -141,43 +163,97 @@ export function DataTable<TData, TValue>({
         }
     })
 
+   //Extract column information for export with improved handling
+// const exportColumns = columns
+//   .filter(col => {
+//     const id = String(col.id || '');
+//     // Skip select and actions columns
+//     return id !== 'select' && id !== 'actions';
+//   })
+//   .map(column => {
+//     const id = String(column.accessorKey || column.id || '');
+//     const headerValue = column.header;
+    
+//     // Get header text for different header types
+//     let headerText = id;
+//     if (typeof headerValue === 'string') {
+//       headerText = headerValue;
+//     } else if (headerValue && typeof headerValue === 'object' && 'name' in headerValue) {
+//       headerText = headerValue.name;
+//     } else if (column.id === 'name') {
+//       headerText = 'Business Location';
+//     }
+
+//     // Create format function for date fields
+//     let format;
+//     if (id.includes('date') || id.includes('Date')) {
+//       format = (value: any) => {
+//         if (!value) return '';
+//         try {
+//           const date = new Date(value);
+//           return date.toLocaleDateString('en-US', {
+//             day: '2-digit',
+//             month: 'short',
+//             year: 'numeric'
+//           });
+//         } catch (e) {
+//           return String(value);
+//         }
+//       };
+//     }
+
+//     return {
+//       id,
+//       header: headerText,
+//       accessorKey: column.accessorKey,
+//       format
+//     };
+//   });
+
+// Get filtered data for export (all rows, not just current page)
+// const exportData = table.getFilteredRowModel().rows.map(row => row.original);
+
     return (
         <div className="flex flex-col gap-2">
         {/* Search and filters section - made responsive */}
-        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4 py-4">
-            <Input
-                placeholder={`Search ...`}
-                value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-                onChange={(event) =>
-                    table.getColumn(searchKey)?.setFilterValue(event.target.value)
-                }
-                className="w-full sm:max-w-sm"
-            />
-            
-            {/* Filters in a scrollable container on mobile */}
-            <div className="w-full flex flex-wrap gap-3">
-                {filters && filters.map((filter) => (
-                    <div key={filter.key} className="flex items-center gap-2 min-w-fit">
-                        <span className="text-sm font-medium whitespace-nowrap">{filter.label}:</span>
-                        <Select 
-                            value={selectedFilters[filter.key] || 'all'} 
-                            onValueChange={(value) => handleFilterChange(filter.key, value)}
-                        >
-                            <SelectTrigger className="w-36 min-w-fit">
-                                <SelectValue placeholder={`Select ${filter.label.toLowerCase()}`} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All</SelectItem>
-                                {filter.options.map((option) => (
-                                    <SelectItem key={option.value.toString()} value={option.value.toString()}>
-                                        {option.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                ))}
+        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-4 py-4">
+            <div className="flex flex-wrap items-center gap-3">
+                <Input
+                    placeholder={`Search ...`}
+                    value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+                    onChange={(event) =>
+                        table.getColumn(searchKey)?.setFilterValue(event.target.value)
+                    }
+                    className="w-full sm:max-w-sm"
+                />
+                
+                {/* Filters in a scrollable container on mobile */}
+                <div className="w-full flex flex-wrap gap-3">
+                    {filters && filters.map((filter) => (
+                        <div key={filter.key} className="flex items-center gap-2 min-w-fit">
+                            <span className="text-sm font-medium whitespace-nowrap">{filter.label}:</span>
+                            <Select 
+                                value={selectedFilters[filter.key] || 'all'} 
+                                onValueChange={(value) => handleFilterChange(filter.key, value)}
+                            >
+                                <SelectTrigger className="w-36 min-w-fit">
+                                    <SelectValue placeholder={`Select ${filter.label.toLowerCase()}`} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All</SelectItem>
+                                    {filter.options.map((option) => (
+                                        <SelectItem key={option.value.toString()} value={option.value.toString()}>
+                                            {option.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    ))}
+                </div>
             </div>
+            
+           
         </div>
         
         {/* Responsive table with horizontal scroll on small screens */}

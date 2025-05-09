@@ -157,7 +157,7 @@ const LocationsAnalyticsDashboard = ({
   {/* Charts - First Row */}
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
     {/* Subscription Status */}
-    <Card className="w-full">
+    <Card className="hidden w-full lg:block">
       <CardHeader className="p-4 md:p-6">
         <CardTitle className="text-lg md:text-xl">Subscription Status</CardTitle>
         <CardDescription className="text-sm">Distribution of location subscription statuses</CardDescription>
@@ -193,7 +193,7 @@ const LocationsAnalyticsDashboard = ({
     </Card>
     
     {/* Business Type */}
-    <Card className="w-full">
+    <Card className="hidden w-full lg:block">
       <CardHeader className="p-4 md:p-6">
         <CardTitle className="text-lg md:text-xl">Business Type Distribution</CardTitle>
         <CardDescription className="text-sm">Breakdown of locations by business type</CardDescription>
@@ -232,7 +232,7 @@ const LocationsAnalyticsDashboard = ({
   {/* Charts - Second Row */}
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
     {/* Feature Usage */}
-    <Card className="w-full">
+    <Card className="hidden w-full lg:block">
       <CardHeader className="p-4 md:p-6">
         <CardTitle className="text-lg md:text-xl">Feature Adoption Rate</CardTitle>
         <CardDescription className="text-sm">Percentage of locations using each feature</CardDescription>
@@ -261,7 +261,7 @@ const LocationsAnalyticsDashboard = ({
     </Card>
     
     {/* Operating Hours */}
-    <Card className="w-full">
+    <Card className="hidden w-full lg:block">
       <CardHeader className="p-4 md:p-6">
         <CardTitle className="text-lg md:text-xl">Operating Hours</CardTitle>
         <CardDescription className="text-sm">Distribution of business operating schedules</CardDescription>
