@@ -211,7 +211,7 @@ const SubscriptionAnalytics = ({
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Revenue By Package Type */}
-        <Card className="col-span-1">
+        <Card className="hidden md:block lg:block col-span-1">
           <CardHeader>
             <CardTitle>Revenue by Package Type</CardTitle>
             <CardDescription>Distribution of revenue across subscription packages</CardDescription>
@@ -261,7 +261,7 @@ const SubscriptionAnalytics = ({
         </Card>
 
         {/* Subscriptions Over Time */}
-        <Card className="col-span-1">
+        <Card className="hidden md:block lg:block col-span-1">
           <CardHeader>
             <CardTitle>Subscriptions Over Time</CardTitle>
             <CardDescription>Trend of subscription activity and revenue</CardDescription>
@@ -304,7 +304,7 @@ const SubscriptionAnalytics = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Payment Provider Distribution */}
-        <Card className="col-span-1">
+        <Card className="hidden md:block lg:block col-span-1">
           <CardHeader>
             <CardTitle>Payment Provider Distribution</CardTitle>
             <CardDescription>Breakdown of subscriptions by payment method</CardDescription>
@@ -334,7 +334,7 @@ const SubscriptionAnalytics = ({
         </Card>
 
         {/* Top Locations by Revenue */}
-        <Card className="col-span-1">
+        <Card className="hidden md:block lg:block col-span-1">
           <CardHeader>
             <CardTitle>Top Locations by Revenue</CardTitle>
             <CardDescription>Highest revenue generating locations</CardDescription>
@@ -354,8 +354,6 @@ const SubscriptionAnalytics = ({
         </Card>
       </div>
 
-      {/* Rest of the component remains the same as in the previous version */}
-      {/* ... (all the chart components) ... */}
     </div>
   );
 };

@@ -78,7 +78,7 @@ export default function SummaryCard({metrics}: any) {
 
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
         {cardData.map((card, index) => (
           <Card key={index}>
             <CardContent className="pt-6">
@@ -97,10 +97,10 @@ export default function SummaryCard({metrics}: any) {
                   </div>
                   <h3 className="text-2xl font-bold">
                     {card.value}
-                    {card.suffix && <span className="text-sm text-gray-500"> {card.suffix}</span>}
+                    {card.suffix && <span className="text-sm text-gray-500 hidden md:block lg:block"> {card.suffix}</span>}
                   </h3>
                 </div>
-                <div className={`${card.bgColor} p-3 rounded-full`}>
+                <div className={`hidden md:block lg:block ${card.bgColor} p-3 rounded-full`}>
                   <card.icon className={`w-6 h-6 ${card.textColor}`} />
                 </div>
               </div>

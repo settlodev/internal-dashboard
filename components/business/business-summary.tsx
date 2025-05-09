@@ -83,7 +83,7 @@ export default function BusinessSummary({ businesses }: { businesses: Business[]
        {/* Charts - First Row */}
        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Subscription Status */}
-        <Card>
+        <Card className='hidden md:block lg:block'>
           <CardHeader>
             <CardTitle>Subscription Status</CardTitle>
             <CardDescription>Distribution of subscription statuses on business locations</CardDescription>
@@ -113,7 +113,7 @@ export default function BusinessSummary({ businesses }: { businesses: Business[]
         </Card>
         
         {/* Business Type */}
-        <Card>
+        <Card className='hidden md:block lg:block'>
           <CardHeader>
             <CardTitle>Business Type Distribution</CardTitle>
             <CardDescription>Breakdown of businesses by business type</CardDescription>

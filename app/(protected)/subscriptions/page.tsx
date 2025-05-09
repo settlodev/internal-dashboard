@@ -3,7 +3,7 @@
 import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { columns } from "@/components/table/subscriptions/column";
 import { DataTable } from "@/components/table/data-table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader} from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { format } from 'date-fns';
 import Loading from "@/components/widgets/loader";
@@ -133,8 +133,8 @@ export default function Subscription() {
         </div>
       }
       fallback={<Unauthorized />}>
-      <div className='flex-1 space-y-2 md:p-8 pt-4 px-4'>
-        <div className={`flex items-center justify-between mb-2`}>
+      <div className='flex-1 space-y-2 md:p-8 pt-4 px-4 gap-2'>
+        <div className={`flex flex-col lg:flex-row items-start justify-between mb-4 gap-2`}>
           <div className={`relative flex-1 md:max-w-md`}>
             <BreadcrumbNav items={breadcrumbItems} />
           </div>
@@ -164,14 +164,14 @@ export default function Subscription() {
           selectedFilters={selectedFilters}
         />
         
-        <Card>
+        <Card className="w-full mt-2 mb-4">
           <CardHeader>
-            <CardTitle className="text-2xl">
+            <p className="text-2xl">
               Subscriptions 
               <span className="text-sm text-muted-foreground ml-2">
                 ({format(dateRange.from, 'MMM d, yyyy')} - {format(dateRange.to, 'MMM d, yyyy')})
               </span>
-            </CardTitle>
+            </p>
           </CardHeader>
           <CardContent>
             <DataTable

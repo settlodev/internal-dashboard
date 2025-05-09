@@ -5,13 +5,15 @@ import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { fetchAllLocation } from "@/lib/actions/location";
 import { Location } from "@/types/location/type";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Loading from "@/components/widgets/loader";
 import { ProtectedComponent } from "@/components/auth/protectedComponent";
 import LocationsAnalyticsDashboard from "@/components/location/location-summary";
 import Unauthorized from "@/components/code/401";
 import { FilterOption, UniversalFilters } from "@/components/filter/universalfilter";
 import { DatePickerWithRange } from "@/components/widgets/date-range-picker";
+import { useExportColumns } from "@/hooks/useExportColumns";
+import { ExportButton } from "@/components/export/export-button";
 
 const breadcrumbItems = [
   { title: "Locations", link: "/locations" },
@@ -49,10 +51,41 @@ export default function Dashboard() {
   });
   // State to track selected filters
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({});
+  
+  // Use our hook to get export columns
+  const exportColumns = useExportColumns(columns);
+  
+  // Calculate summary statistics for export
+  const summaryData = useMemo(() => {
+    if (!filteredLocations.length) return { total: 0 };
+    
+    // Count locations by type
+    const byBusinessType = filteredLocations.reduce((acc, location) => {
+      const type = location.locationBusinessTypeName || 'Unknown';
+      acc[type] = (acc[type] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    // Count locations by subscription status
+    const bySubscriptionStatus = filteredLocations.reduce((acc, location) => {
+      const status = location.subscriptionStatus || 'Unknown';
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    return {
+      total: filteredLocations.length,
+      byBusinessType,
+      bySubscriptionStatus,
+      activeSubscriptions: bySubscriptionStatus.OK || 0,
+      expiredSubscriptions: bySubscriptionStatus.EXPIRED || 0
+    };
+  }, [filteredLocations]);
+
   const fetchBusinessLocations = async () => {
     try {
       const location = await fetchAllLocation()
-      const sortedLocations = location.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+      const sortedLocations = location.sort((a, b) => new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime());
       setLocations(sortedLocations)
     } catch (error) {
       throw error
@@ -60,7 +93,6 @@ export default function Dashboard() {
     finally {
       setLoading(false)
     }
-
   }
 
   const filterLocations = (
@@ -104,6 +136,22 @@ export default function Dashboard() {
       [filterKey]: value
     }));
   }
+  
+  // Get filter description for export
+  const getFilterDescription = () => {
+    const activeFilters = Object.entries(selectedFilters)
+      .filter(([_, value]) => value !== 'all')
+      .map(([key, value]) => {
+        const filterDef = LOCATION_FILTERS.find(f => f.key === key);
+        const optionLabel = filterDef?.options.find(o => o.value.toString() === value)?.label;
+        return `${filterDef?.label || key}: ${optionLabel || value}`;
+      });
+    
+    // Add date range to filter description
+    const dateRangeStr = `Date: ${dateRange.from.toLocaleDateString()} to ${dateRange.to.toLocaleDateString()}`;
+    
+    return [...activeFilters, dateRangeStr].join(', ');
+  }
 
   if (isLoading) {
     return (
@@ -125,7 +173,7 @@ export default function Dashboard() {
       fallback={
         <Unauthorized />
       }>
-      <div className="flex-1 space-y-2 md:p-8 pt-4">
+      <div className="flex-1 space-y-2 md:p-8 pt-4 pb-4">
         <div className="flex flex-col  justify-between mb-2 gap-3">
           <div className="relative flex-1 md:max-w-md pl-2">
             <BreadcrumbNav items={breadcrumbItems} />
@@ -136,7 +184,8 @@ export default function Dashboard() {
               onFilterChange={handleFilterChange}
               selectedFilters={selectedFilters}
             />
-            <DatePickerWithRange
+          <div className="flex justify-end gap-2">
+           <DatePickerWithRange
               value={{
                 from: dateRange.from,
                 to: dateRange.to
@@ -147,7 +196,24 @@ export default function Dashboard() {
                 }
               }}
             />
+           <ExportButton 
+              data={filteredLocations}
+              columns={exportColumns}
+              exportOptions={{
+                filename: "Locations Report",
+                includeTimestamp: true,
+              }}
+              filterDescription={getFilterDescription()}
+              summaryData={{
+                total: summaryData.total,
+                "Active Subscriptions": summaryData.activeSubscriptions,
+                "Expired Subscriptions": summaryData.expiredSubscriptions
+              }}
+            />
           </div>
+          </div>
+           {/* For standalone usage */}
+          
           <LocationsAnalyticsDashboard
             locations={filteredLocations}
 
