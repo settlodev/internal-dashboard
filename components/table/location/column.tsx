@@ -76,8 +76,9 @@ export const columns: ColumnDef<Location>[] = [
       accessorKey: "subscriptionStartDate",
       header: "Sub. Start Date",
       cell: ({ row }) => {
-          const date = new Date(row.getValue("subscriptionStartDate"));
-          return date.toLocaleDateString('en-US', {
+          const date = row.getValue("subscriptionStartDate") as string | null;
+          if (!date) return "-";
+          return new Date(date).toLocaleDateString('en-US', {
               day: '2-digit',
               month: 'short',
               year: 'numeric',
@@ -90,15 +91,16 @@ export const columns: ColumnDef<Location>[] = [
     accessorKey: "subscriptionEndDate",
     header: "Sub. End Date",
     cell: ({ row }) => {
-        const date = new Date(row.getValue("subscriptionEndDate"));
-        return date.toLocaleDateString('en-US', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
+      const date = row.getValue("subscriptionEndDate") as string | null;
+      if (!date) return "-";
+      return new Date(date).toLocaleDateString('en-US', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+      });
+  }
 },
     {
       accessorKey: "dateCreated",

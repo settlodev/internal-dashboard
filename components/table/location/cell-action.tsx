@@ -11,7 +11,7 @@ interface CellActionProps {
 
 export function CellAction({ data }: CellActionProps) {
     const router = useRouter();
-    // console.log(data)
+   
 
     return (
         <DropdownMenu>

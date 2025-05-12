@@ -51,8 +51,28 @@ const data = {
       icon: MapPin,
       items: [
         {
-          title: "Locations",
+          title: "All Locations",
           url: "/locations",
+          requiredPermission: "view:locations",
+        },
+        {
+          title: "Trial Locations",
+          url: "/trial-locations",
+          requiredPermission: "view:locations",
+        },
+        {
+          title: "Almost Due Locations",
+          url: "/almost-due-locations",
+          requiredPermission: "view:locations",
+        },
+        {
+          title: "Due Locations",
+          url: "/due-locations",
+          requiredPermission: "view:locations",
+        },
+        {
+          title: "Expired Locations",
+          url: "/expired-locations",
           requiredPermission: "view:locations",
         },
       ],
