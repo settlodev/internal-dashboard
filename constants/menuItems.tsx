@@ -16,7 +16,7 @@ const data = {
       ],
     },
     {
-      title: "User Management",
+      title: "Business Owners",
       url: "#",
       icon: Users,
       // isActive: true,
@@ -26,11 +26,7 @@ const data = {
           url: "/owners",
           requiredPermission: "view:owners",
         },
-        {
-          title: "Users",
-          url: "/users",
-          requiredPermission: "view:users",
-        },
+
       ],
     },
     {
@@ -116,6 +112,20 @@ const data = {
           title: "Devices",
           url: "/devices",
           requiredPermission: "view:devices",
+        },
+      ],
+    },
+    {
+      title: "Staff Management",
+      url: "#",
+      icon: Users,
+      // isActive: true,
+      items: [
+        
+        {
+          title: "Staffs",
+          url: "/users",
+          requiredPermission: "view:users",
         },
       ],
     },

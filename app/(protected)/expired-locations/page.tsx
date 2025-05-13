@@ -5,204 +5,164 @@ import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { fetchAllLocation } from "@/lib/actions/location";
 import { Location } from "@/types/location/type";
-import { useEffect,useMemo,useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Loading from "@/components/widgets/loader";
 import { ProtectedComponent } from "@/components/auth/protectedComponent";
 import Unauthorized from "@/components/code/401";
-import { FilterOption } from "@/components/filter/universalfilter";
 import { DatePickerWithRange } from "@/components/widgets/date-range-picker";
 import { useExportColumns } from "@/hooks/useExportColumns";
 import { ExportButton } from "@/components/export/export-button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
 
 const breadcrumbItems = [
-  { title: "Locations", link: "/locations" },
-]
-
-const LOCATION_FILTERS: FilterOption[] = [
-  
-  {
-    key: "subscriptionStatus",
-    label: "Subscription Status",
-    options: [
-      { label: "Trial", value: "TRIAL" },
-      { label: "Expired", value: "EXPIRED" },
-      { label: "Active", value: "OK" },
-      { label: "Pending", value: "PENDING" },
-      { label: "Due", value: "DUE" },
-      { label: "Almost Due", value: "ALMOST_DUE" }
-    ]
-  },
+  { title: "Due Locations", link: "/due-locations" },
 ];
-export default function ExpiredLocations() {
-  const [locations, setLocations] = useState<Location[]>([])
+
+// Default date range - last 30 days to today
+const getDefaultDateRange = () => {
+  const today = new Date();
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(today.getDate() - 30);
+  thirtyDaysAgo.setHours(0, 0, 0, 0);
+  today.setHours(23, 59, 59, 999);
+  
+  return {
+    from: thirtyDaysAgo,
+    to: today
+  };
+};
+
+export default function DueLocations() {
+  const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setLoading] = useState(true);
-  const [filteredLocations, setFilteredLocations] = useState<Location[]>([])
-  const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
-    from: new Date(new Date().setHours(0, 0, 0, 0)),
-    to: new Date()
-  });
-  // State to track selected filters
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({});
+  const [error, setError] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState(getDefaultDateRange());
   
   // Use our hook to get export columns
   const exportColumns = useExportColumns(columns);
   
+  // Fetch locations with proper error handling
+  const fetchLocations = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const allLocations = await fetchAllLocation();
+      // Filter for almost due locations
+      const expiredLocations = allLocations
+        .filter(loc => loc.subscriptionStatus === 'EXPIRED')
+        .sort((a, b) => new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime());
+      
+      setLocations(expiredLocations);
+    } catch (error) {
+      console.error("Failed to fetch locations:", error);
+      setError("Failed to load locations. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filtered locations based on date range
+  const filteredLocations = useMemo(() => {
+    return locations.filter(location => {
+      const creationDate = new Date(location.dateCreated);
+      return creationDate >= dateRange.from && creationDate <= dateRange.to;
+    });
+  }, [locations, dateRange]);
+  
   // Calculate summary statistics for export
   const summaryData = useMemo(() => {
-    if (!filteredLocations.length) return { total: 0 };
-    
-  
-    // Count locations by subscription status
-    const bySubscriptionStatus = filteredLocations.reduce((acc, location) => {
-      const status = location.subscriptionStatus || 'Unknown';
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
     return {
       total: filteredLocations.length,
-      bySubscriptionStatus,
-      expiredSubscriptions: bySubscriptionStatus.EXPIRED || 0
+      expiredSubscriptions: filteredLocations.length,
     };
   }, [filteredLocations]);
 
-  const fetchBusinessLocations = async () => {
-    try {
-      const location = await fetchAllLocation()
-      const expiredLocations = location.filter(loc => loc.subscriptionStatus === 'EXPIRED');
-      const sortedLocations = expiredLocations.sort((a, b) => new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime());
-      console.log(sortedLocations)
-      setLocations(sortedLocations)
-    } catch (error) {
-      throw error
-    }
-    finally {
-      setLoading(false)
-    }
-  }
-
-  const filterLocations = (
-    data: Location[],
-    range: { from: Date; to: Date },
-    filters: Record<string, string>
-  ) => {
-    const filtered = data.filter(sub => {
-      // Date range filter
-      const isWithinDateRange =
-        new Date(sub.dateCreated) >= range.from &&
-        new Date(sub.dateCreated) <= range.to;
-
-      // Additional filters
-      const passesAdditionalFilters = Object.entries(filters).every(([key, value]) =>
-        value === 'all' || sub[key as keyof Location] === value
-      );
-
-      return isWithinDateRange && passesAdditionalFilters;
-    });
-
-    setFilteredLocations(filtered);
-  }
-
   useEffect(() => {
-    fetchBusinessLocations()
-  }, [])
-
-  useEffect(() => {
-    filterLocations(locations, dateRange, selectedFilters);
-  }, [dateRange, locations, selectedFilters])
+    fetchLocations();
+  }, []);
 
   const handleDateRangeChange = (newRange: { from: Date; to: Date }) => {
-    setDateRange(newRange);
-  }
-
+    if (newRange?.from && newRange?.to) {
+      setDateRange({ from: newRange.from, to: newRange.to });
+    }
+  };
 
   const getFilterDescription = () => {
-    const activeFilters = Object.entries(selectedFilters)
-      .filter(([_, value]) => value !== 'all')
-      .map(([key, value]) => {
-        const filterDef = LOCATION_FILTERS.find(f => f.key === key);
-        const optionLabel = filterDef?.options.find(o => o.value.toString() === value)?.label;
-        return `${filterDef?.label || key}: ${optionLabel || value}`;
-      });
-    
-    // Add date range to filter description
-    const dateRangeStr = `Date: ${dateRange.from.toLocaleDateString()} to ${dateRange.to.toLocaleDateString()}`;
-    
-    return [...activeFilters, dateRangeStr].join(', ');
-  }
+    return `Subscription Status: Due, Date: ${dateRange.from.toLocaleDateString()} to ${dateRange.to.toLocaleDateString()}`;
+  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">
-          <Loading />
-        </div>
+        <Loading />
       </div>
     );
   }
+
   return (
     <ProtectedComponent 
-        requiredPermissions={['view:locations']}
-      loading={
-        <div className="flex items-center justify-center">
-          <Loading />
-        </div>
-      }
-      fallback={
-        <Unauthorized />
-      }>
-      <div className="flex-1 space-y-2 md:p-8 pt-4 pb-4">
-        <div className="flex flex-col  justify-between mb-2 gap-3">
+      requiredPermissions={['view:locations']}
+      loading={<div className="flex items-center justify-center"><Loading /></div>}
+      fallback={<Unauthorized />}>
+      <div className="flex-1 space-y-4 md:p-8 pt-4 pb-4">
+        <div className="flex flex-col gap-4">
           <div className="relative flex-1 md:max-w-md pl-2">
             <BreadcrumbNav items={breadcrumbItems} />
           </div>
-          <div className="flex  justify-between gap-4">
-
-            <h3 className="font-semibold">List of Locations Expired</h3>
-          <div className="flex justify-end gap-2">
-           <DatePickerWithRange
-              value={{
-                from: dateRange.from,
-                to: dateRange.to
-              }}
-              onChange={(newRange) => {
-                if (newRange?.from && newRange?.to) {
-                  handleDateRangeChange({ from: newRange.from, to: newRange.to });
-                }
-              }}
-            />
-             <ProtectedComponent 
-        requiredPermissions={['export:report']}>
-           <ExportButton 
-              data={filteredLocations}
-              columns={exportColumns}
-              exportOptions={{
-                filename: "Locations Report",
-                includeTimestamp: true,
-              }}
-              filterDescription={getFilterDescription()}
-              summaryData={{
-                total: summaryData.total,
-                "Expired Subscriptions": summaryData.expiredSubscriptions,
-                
-              }}
-            />
-            </ProtectedComponent>
-          </div>
-          </div>
-           {/* For standalone usage */}
           
-         
-
+          <div className="flex flex-col md:flex-row justify-between gap-4">
+            <h3 className="text-xl font-semibold">Locations with Expired Subscriptions</h3>
+            <div className="flex flex-col md:flex-row gap-2">
+              <DatePickerWithRange
+                value={dateRange}
+                onChange={(newRange) => {
+                  if (newRange?.from && newRange?.to) {
+                    handleDateRangeChange({ from: newRange.from, to: newRange.to });
+                  }
+                }}
+              />
+              <ProtectedComponent requiredPermissions={['export:report']}>
+                <ExportButton 
+                  data={filteredLocations}
+                  columns={exportColumns}
+                  exportOptions={{
+                    filename: "Expired Locations Report",
+                    includeTimestamp: true,
+                  }}
+                  filterDescription={getFilterDescription()}
+                  summaryData={{
+                    total: summaryData.total,
+                    "Expired Subscriptions": summaryData.expiredSubscriptions,
+                  }}
+                />
+              </ProtectedComponent>
+            </div>
+          </div>
         </div>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {!error && filteredLocations.length === 0 && (
+          <Alert>
+            <AlertDescription>
+              No expired locations found for the selected date range.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <Card className="w-full">
           <CardContent>
-
             <DataTable
               columns={columns}
               data={filteredLocations}
               searchKey="name"
+             
             />
           </CardContent>
         </Card>

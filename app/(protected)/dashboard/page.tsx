@@ -10,6 +10,7 @@ import { UserIcon, MapPinIcon, UserPlusIcon, UserMinusIcon, MinusIcon, ArrowUpIc
 import Unauthorized from "@/components/code/401";
 import { DatePickerWithRange } from "@/components/widgets/date-range-picker";
 import { DateRange } from "react-day-picker";
+import Link from "next/link";
 
 
 const breadcrumbItems = [
@@ -95,7 +96,7 @@ export default function Dashboard() {
             requiredPermission="view:analytics" 
             fallback={<Unauthorized />}
         >
-            <div className="flex flex-col space-y-6 md:p-8 p-4 w-full bg-gray-50 min-h-screen">
+            <div className="flex flex-col space-y-6 md:p-8 lg:p-12 p-4 w-full bg-gray-50 min-h-screen">
                 {/* Header section with breadcrumb and date filter */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-2">
                     <div className="flex-1 md:max-w-md">
@@ -110,31 +111,46 @@ export default function Dashboard() {
 
                 {/* Summary metrics row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-2">
-                    <MetricCard 
-                        title="Total Users"
-                        value={stats?.totalUsers || 0}
-                        trend={Number(userGrowth)}
-                        icon={<UserIcon className="h-6 w-6 text-blue-500" />}
-                        className="bg-blue-50" trendLabel={""} secondaryLabel={""}                    />
-                    <MetricCard 
-                        title="Total Businesses"
-                        value={stats?.totalBusinesses || 0}
-                        trend={Number(businessGrowth)}
-                        icon={<MapPinIcon className="h-6 w-6 text-purple-500" />}
-                        className="bg-purple-50" trendLabel={""} secondaryLabel={""}                    />
-                    <MetricCard 
-                        title="Total Locations"
-                        value={stats?.totalLocations || 0}
-                        trend={Number(locationGrowth)}
-                        icon={<MapPinIcon className="h-6 w-6 text-red-500" />}
-                        className="bg-red-50" trendLabel={""} secondaryLabel={""}                    />
-                    <MetricCard 
-                        title="Active Subscriptions"
-                        value={stats?.totalActiveSubscriptions || 0}
-                        trend={activeSubscriptionPercentage}
-                        trendLabel="of total"
-                        icon={<MapPinIcon className="h-6 w-6 text-green-500" />}
-                        className="bg-green-50" secondaryLabel={""}                    />
+                    <Link href="/owners" className="block">
+                        <MetricCard 
+                            title="Total Business Owners"
+                            value={stats?.totalUsers || 0}
+                            trend={Number(userGrowth)}
+                            icon={<UserIcon className="h-6 w-6 text-blue-500" />}
+                            className="bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer" 
+                            trendLabel={""} 
+                            secondaryLabel={""}/>
+                    </Link>
+                    <Link href="/businesses" className="block">
+                        <MetricCard 
+                            title="Total Businesses"
+                            value={stats?.totalBusinesses || 0}
+                            trend={Number(businessGrowth)}
+                            icon={<MapPinIcon className="h-6 w-6 text-purple-500" />}
+                            className="bg-purple-50 hover:bg-purple-100 transition-colors cursor-pointer" 
+                            trendLabel={""} 
+                            secondaryLabel={""}/>
+                    </Link>
+                    <Link href="/locations" className="block">
+                        <MetricCard 
+                            title="Total Locations"
+                            value={stats?.totalLocations || 0}
+                            trend={Number(locationGrowth)}
+                            icon={<MapPinIcon className="h-6 w-6 text-red-500" />}
+                            className="bg-red-50 hover:bg-red-100 transition-colors cursor-pointer" 
+                            trendLabel={""} 
+                            secondaryLabel={""}/>
+                    </Link>
+                    <Link href="" className="block">
+                        <MetricCard 
+                            title="Active Subscriptions"
+                            value={stats?.totalActiveSubscriptions || 0}
+                            trend={activeSubscriptionPercentage}
+                            trendLabel="of total"
+                            icon={<MapPinIcon className="h-6 w-6 text-green-500" />}
+                            className="bg-green-50 hover:bg-green-100 transition-colors cursor-pointer" 
+                            secondaryLabel={""}/>
+                    </Link>
                 </div>
 
                 {/* Subscription status section */}
@@ -155,11 +171,11 @@ export default function Dashboard() {
                         />
                         <div className="mt-4 grid grid-cols-2 gap-2 text-center">
                             <div className="p-2 bg-blue-50 rounded-lg">
-                                <p className="text-sm text-gray-500">Active Users</p>
+                                <p className="text-sm text-gray-500">Active Business Owners</p>
                                 <p className="text-xl font-bold text-emerald-600">{stats?.totalUsersWithActiveSubscriptions || 0}</p>
                             </div>
                             <div className="p-2 bg-orange-50 rounded-lg">
-                                <p className="text-sm text-gray-500">Inactive Users</p>
+                                <p className="text-sm text-gray-500">Inactive Business Owners</p>
                                 <p className="text-xl font-bold text-red-600">{stats?.totalUsersWithInActiveSubscriptions || 0}</p>
                             </div>
                         </div>
@@ -171,13 +187,13 @@ export default function Dashboard() {
                 {/* Additional metrics section */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-2">
                     <MetricCard 
-                        title="Users with Active Sub"
+                        title="Owners with Active Sub"
                         value={stats?.totalUsersWithActiveSubscriptions || 0}
                         secondaryLabel={`${((stats?.totalUsersWithActiveSubscriptions || 0) / (stats?.totalUsers || 1) * 100).toFixed(1)}% of total users`}
                         icon={<UserPlusIcon className="h-6 w-6 text-green-500" />}
                         className="bg-white" trend={0} trendLabel={""}                    />
                     <MetricCard 
-                        title="Users with Inactive Sub"
+                        title="Owners with Inactive Sub"
                         value={stats?.totalUsersWithInActiveSubscriptions || 0}
                         secondaryLabel={`${((stats?.totalUsersWithInActiveSubscriptions || 0) / (stats?.totalUsers || 1) * 100).toFixed(1)}% of total users`}
                         icon={<UserMinusIcon className="h-6 w-6 text-orange-500" />}
