@@ -16,7 +16,7 @@ const data = {
       ],
     },
     {
-      title: "User Management",
+      title: "Business Owners",
       url: "#",
       icon: Users,
       // isActive: true,
@@ -26,11 +26,7 @@ const data = {
           url: "/owners",
           requiredPermission: "view:owners",
         },
-        {
-          title: "Users",
-          url: "/users",
-          requiredPermission: "view:users",
-        },
+
       ],
     },
     {
@@ -51,8 +47,28 @@ const data = {
       icon: MapPin,
       items: [
         {
-          title: "Locations",
+          title: "All Locations",
           url: "/locations",
+          requiredPermission: "view:locations",
+        },
+        {
+          title: "Trial Locations",
+          url: "/trial-locations",
+          requiredPermission: "view:locations",
+        },
+        {
+          title: "Almost Due Locations",
+          url: "/almost-due-locations",
+          requiredPermission: "view:locations",
+        },
+        {
+          title: "Due Locations",
+          url: "/due-locations",
+          requiredPermission: "view:locations",
+        },
+        {
+          title: "Expired Locations",
+          url: "/expired-locations",
           requiredPermission: "view:locations",
         },
       ],
@@ -96,6 +112,20 @@ const data = {
           title: "Devices",
           url: "/devices",
           requiredPermission: "view:devices",
+        },
+      ],
+    },
+    {
+      title: "Staff Management",
+      url: "#",
+      icon: Users,
+      // isActive: true,
+      items: [
+        
+        {
+          title: "Staffs",
+          url: "/users",
+          requiredPermission: "view:users",
         },
       ],
     },
