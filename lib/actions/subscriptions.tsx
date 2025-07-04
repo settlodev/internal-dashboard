@@ -10,7 +10,7 @@ export const fetchSubscriptions = async (): Promise<Subscriptions[]> => {
         const apiClient = new ApiClient();
         const response = await apiClient.get<Subscriptions[]>("/api/subscriptions/");
         const sortedSubscriptions = response.sort((a, b) => a.amount - b.amount);
-        console.log("The subscription records", sortedSubscriptions)
+        
         return parseStringify(sortedSubscriptions);
     } catch (error) {
         throw error;

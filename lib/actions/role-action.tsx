@@ -9,6 +9,7 @@ import { RoleSchema } from "@/types/role/schema"
 export const fetchAllRoles = async (): Promise<Role[]> => {
     const supabase = await createClient()
     const { data, error } = await supabase.from('internal_roles').select('*').order('name', { ascending: true })
+    
     if (error) {
         console.log(error)
     }
@@ -95,7 +96,6 @@ export async function getRoleById(id: string): Promise<Role | undefined> {
         .select('permission_id')
         .eq('role_id', id);
   
-        console.log(rolePermissions)
       if (rolePermError) throw rolePermError;
   
       // Create a Set of permission IDs that are associated with the role
@@ -108,7 +108,8 @@ export async function getRoleById(id: string): Promise<Role | undefined> {
           isSelected: selectedPermissionIds.has(permission.id)
         }
       }));
-      console.log(formattedPermissions)
+  
+      // console.log('Formatted permissions:', formattedPermissions);
   
       return parseStringify({
         ...role,
@@ -152,11 +153,11 @@ export async function getRoleById(id: string): Promise<Role | undefined> {
             )
             .map(([permId]) => permId);
 
-        console.log("Sending to Supabase:", {
-            role_id_param: roleId,
-            permissions_to_add: permissionsToAdd, 
-            permissions_to_remove: permissionsToRemove,
-        });
+        // console.log("Sending to Supabase:", {
+        //     role_id_param: roleId,
+        //     permissions_to_add: permissionsToAdd, 
+        //     permissions_to_remove: permissionsToRemove,
+        // });
 
         // Call Supabase function
         const { error: updateError } = await supabase.rpc('update_role_permissions', {

@@ -338,7 +338,7 @@ export async function fetchInvoiceById(id: string): Promise<Invoice | null> {
         ...invoice,
         items: invoiceItems || []
     };
-    console.log(invoiceWithItems);
+   
     
     return parseStringify(invoiceWithItems);
 }
