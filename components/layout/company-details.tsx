@@ -32,7 +32,7 @@ export function CompanyDetail({ user }: Readonly<{ user: any }>) {
                 <span className="truncate font-semibold">
                   Settlo Internal Dashboard
                 </span>
-                <span className="truncate text-xs">Signed In as: {user?.profile.role.name.toUpperCase()}</span>
+                {/* <span className="truncate text-xs">Signed In as: {user?.profile.role.name.toUpperCase()}</span> */}
                 <span className="truncate text-xs">
                   Last signedIn: {user?.user.last_sign_in_at
                     ? new Date(user.user.last_sign_in_at).toLocaleString()

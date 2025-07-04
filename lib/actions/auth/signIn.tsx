@@ -38,18 +38,21 @@ export const SignIn = async (
       })
     }
     const user = data.user;
-    // console.log("The user", user)
+
+    console.log("The user", user)
+
     const { data: internal_profile, error: profileError } = await supabase
       .from('internal_profiles')
       .select(`
         *,
-        role:internal_roles(name)
+        role:internal_roles!role(name)
       `)
       .eq('id', user.id)
       .single();
 
  
-      // console.log("The profile", internal_profile)
+      console.log("The profile", internal_profile)
+
     if (profileError) {
       console.log("The error", profileError)
       return ({
@@ -287,44 +290,24 @@ export async function checkUserPermissions() {
     }
 
     const supabase = await createClient();
-    const { data, error: permError } = await supabase
-      .from('internal_user_roles')
-      .select(`
-        role:internal_roles (
-          permissions:internal_role_permissions (
-            permission:internal_permissions (
-              slug
-            )
-          )
-        )
-      `)
-      .eq('user_id', user.id);
-  
-    if (permError) {
-      return { permissions: [], error: permError.message };
+    
+    // You can create this RPC function in Supabase
+    const { data, error: rpcError } = await supabase
+      .rpc('get_user_permissions', { user_id: user.id });
+
+    if (rpcError) {
+      // console.log("❌ RPC Error:", rpcError);
+      return { permissions: [], error: rpcError.message };
     }
 
-    // Flatten permissions from all roles
-    const permissions: string[] = [];
-    data?.forEach(({ role }) => {
-      (role as any)?.permissions.forEach(({ permission }: { permission: { slug: string } }) => {
-        if (permission?.slug) {
-          permissions.push(permission.slug);
-        }
-      });
-    });
     
+    return { permissions: data || [], error: null };
 
-    // console.log("Flattened permissions:", permissions); 
-    return { permissions, error: null, };
   } catch (error) {
-    console.error('Error checking permissions:', error);
-    return { permissions: [], error: 'Failed to check permissions' };
+    console.error('💥 Error in RPC permission check:', error);
+    return { permissions: [], error: 'Failed to check permissions via RPC' };
   }
 }
-
-
-
 
 export async function deleteUser(userId: string) {
   try {
