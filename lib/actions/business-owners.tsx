@@ -10,7 +10,7 @@ export const fetchAllBusinessOwners = async (): Promise<Owner[]> => {
         return parseStringify(data);
 
     } catch (error) {
-
+    console.log("The error received while fetching ownres is",error);
         throw error;
     }
 }
