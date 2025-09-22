@@ -30,7 +30,6 @@ export const ProtectedComponent = ({
     const checkAuth = async () => {
       try {
         const { permissions, error } = await checkUserPermissions();
-        console.log("Received permissions:", permissions);
         
         if (error) {
           console.error('Auth error:', error);
@@ -40,7 +39,7 @@ export const ProtectedComponent = ({
 
         setPermissions(permissions || []);
       } catch (error) {
-        console.error('Error checking permissions:', error);
+        // console.error('Error checking permissions:', error);
         router.push('/login');
       } finally {
         setIsLoading(false);

@@ -50,7 +50,7 @@ export async function createDevice(values:z.infer<typeof posDeviceSchema>) {
     }
 
    } catch (error) {
-    
+    console.log("The error while creating device is",error)
     return parseStringify({
         responseType:"error",
         message:"Something went wrong",
