@@ -39,7 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       const { permissions, error } = await checkUserPermissions()
       const user = await getUserWithProfile()
 
-      console.log("The permissions", permissions)
+      // console.log("The permissions", permissions)
       if (error) {
         console.error("Permission error:", error)
       }

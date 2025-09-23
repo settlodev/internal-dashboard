@@ -1,5 +1,4 @@
 'use server'
-import { ApiResponse } from "@/types/types";
 import ApiClient from "../api-client";
 import { parseStringify } from "../utils";
 import { Owner } from "@/types/owners/type";
@@ -38,7 +37,7 @@ export const searchBusinessOwners = async (): Promise<Owner[]> => {
         // Handle different response structures
         const data = response.content || response.data || response;
         
-        console.log("List of business owner records", data)
+        // console.log("List of business owner records", data)
         
         if (!Array.isArray(data)) {
             throw new Error('Expected array but got: ' + typeof data);

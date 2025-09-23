@@ -55,7 +55,7 @@ export default function page() {
 
       const sortedOwners = data.sort((a, b) => new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime());
 
-      console.log("The sorted business owner",sortedOwners)
+      // console.log("The sorted business owner",sortedOwners)
 
       setBusinessOwners(sortedOwners);
       // console.log("The selected Filter is", selectedFilters)
@@ -74,7 +74,7 @@ export default function page() {
     range: { from: Date; to: Date },
     filters: Record<string, string>
   ) => {
-    console.log("The data on filter is",data)
+  
     const filteredOwners = data.filter(sub => {
       // Date range filter
       const isWithinDateRange =

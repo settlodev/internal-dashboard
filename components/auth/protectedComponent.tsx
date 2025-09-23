@@ -53,12 +53,12 @@ export const ProtectedComponent = ({
     return loading;
   }
 
-  console.log("Checking permissions:", {
-    requiredPermission,
-    requiredPermissions,
-    requireAll,
-    userPermissions: permissions
-  });
+  // console.log("Checking permissions:", {
+  //   requiredPermission,
+  //   requiredPermissions,
+  //   requireAll,
+  //   userPermissions: permissions
+  // });
 
   // Single permission check
   if (requiredPermission && !permissions.includes(requiredPermission)) {

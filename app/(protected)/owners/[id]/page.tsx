@@ -63,15 +63,15 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
         <CardHeader className="pb-4">
           <div className="flex flex-col sm:flex-row items-start gap-6">
             <Avatar className="h-24 w-24">
-              <AvatarImage 
-                src={businessOwner.avatar} 
-                alt={`Profile photo of ${businessOwner.firstName} ${businessOwner.lastName}`} 
+              <AvatarImage
+                src={businessOwner.avatar}
+                alt={`Profile photo of ${businessOwner.firstName} ${businessOwner.lastName}`}
               />
               <AvatarFallback aria-label={`${businessOwner.firstName} ${businessOwner.lastName} initials`}>
                 {getInitials(businessOwner.firstName, businessOwner.lastName)}
               </AvatarFallback>
             </Avatar>
-            
+
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 <h2 className="text-2xl font-bold">
@@ -83,11 +83,11 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                   </Badge>
                 )}
               </div>
-              
+
               {businessOwner.bio && (
                 <p className="text-gray-500 mb-3">{businessOwner.bio}</p>
               )}
-              
+
               <div className="flex flex-wrap gap-2 mt-2">
                 {businessOwner.businessComplete && (
                   <Badge variant="outline" className="bg-green-100 text-green-800">
@@ -100,19 +100,23 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                   </Badge>
                 )}
               </div>
-              
+
             </div>
             <div>
-                {businessOwner.businesses && businessOwner.businesses[0] && (
-                  <Link href={`/businesses/${businessOwner.businesses[0]}`}>
-                    <Badge variant="outline" className="bg-black text-white p-4 items-center w-full">
-                      <Eye className="h-4 w-4 mr-2" /> 
-                      <span>View Business Details</span>
-                    </Badge>
-                  </Link>
-                )}
-               
-              </div>
+              {businessOwner.businesses && businessOwner.businesses[0] ? (
+                <Link href={`/businesses/${businessOwner.businesses[0]}`}>
+                  <Badge variant="outline" className="bg-black text-white p-4 items-center w-full">
+                    <Eye className="h-4 w-4 mr-2" />
+                    <span>View Business Details</span>
+                  </Badge>
+                </Link>
+              ) : (
+                <Badge variant="outline" className="bg-gray-100 text-gray-500 p-4 items-center w-full">
+                  <span>No Business</span>
+                </Badge>
+              )}
+
+            </div>
           </div>
         </CardHeader>
 
@@ -124,7 +128,7 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                 <User className="h-5 w-5" />
                 Personal Information
               </h3>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-gray-500" />
@@ -139,7 +143,7 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                     </Badge>
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-gray-500" />
                   <span>{businessOwner.phoneNumber}</span>
@@ -153,12 +157,12 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                     </Badge>
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <UserRound className="h-4 w-4 text-gray-500" />
                   <span>Gender: {businessOwner.gender || 'Not specified'}</span>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <Shield className="h-4 w-4 text-gray-500" />
                   <span>ID: {businessOwner.identificationId || 'Not provided'}</span>
@@ -172,7 +176,7 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                 <Building className="h-5 w-5" />
                 Location Details
               </h3>
-              
+
               <div className="space-y-3">
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-gray-500 mt-1" />
@@ -197,19 +201,19 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                 <p className="text-gray-500 mb-1">Account Number</p>
                 <p className="font-medium">{businessOwner.accountNumber}</p>
               </div>
-              
+
               <div>
                 <p className="text-gray-500 mb-1">Status</p>
                 <Badge variant={businessOwner.status ? "default" : "destructive"}>
                   {businessOwner.status ? "Active" : "Inactive"}
                 </Badge>
               </div>
-              
+
               <div>
                 <p className="text-gray-500 mb-1">Referral Code</p>
                 <p className="font-medium">{businessOwner.referredByCode || "None"}</p>
               </div>
-              
+
               <div>
                 <p className="text-gray-500 mb-1">Theme</p>
                 <p className="font-medium capitalize">{businessOwner.theme || "Default"}</p>
@@ -255,7 +259,7 @@ const BusinessOwnerProfile = ({ params }: { params: { id: string } }) => {
         setIsLoading(true);
         const data = await getBusinessOwner(params.id as UUID);
         setBusinessOwner(data);
-        
+
         // Update breadcrumbs AFTER we have the data
         setBreadcrumbItems([
           { title: "Business Owners", link: "/owners" },
@@ -294,18 +298,18 @@ const BusinessOwnerProfile = ({ params }: { params: { id: string } }) => {
   }
 
   return (
-    <ProtectedComponent 
-            requiredPermission="view:owners" 
-            fallback={<div className="p-8 text-center text-lg">You are not authorized to view this page</div>}
-        >
-    <div className="container mx-auto p-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="relative flex-1">
-          <BreadcrumbNav items={breadcrumbItems} />
+    <ProtectedComponent
+      requiredPermission="view:owners"
+      fallback={<div className="p-8 text-center text-lg">You are not authorized to view this page</div>}
+    >
+      <div className="container mx-auto p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="relative flex-1">
+            <BreadcrumbNav items={breadcrumbItems} />
+          </div>
         </div>
+        <ProfileDisplay businessOwner={businessOwner} />
       </div>
-      <ProfileDisplay businessOwner={businessOwner} />
-    </div>
     </ProtectedComponent>
   );
 };

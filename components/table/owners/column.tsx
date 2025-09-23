@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { CellAction } from "./cell-action"
 import { Owner } from "@/types/owners/type"
 
-
 export const columns: ColumnDef<Owner>[] = [
     {
         id: "select",
@@ -29,13 +28,13 @@ export const columns: ColumnDef<Owner>[] = [
         ),
         enableSorting: false,
         enableHiding: false,
-      },
+    },
     {
         accessorKey: "firstName",
         header: ({ column }) => {
             return (
-                  <Button
-          variant="ghost"
+                <Button
+                    variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     First Name
@@ -49,17 +48,30 @@ export const columns: ColumnDef<Owner>[] = [
         header: "Last Name",
     },
     {
-        accessorKey: "email",
-        header: "Email",
-    },
-    {
-        accessorKey: "phoneNumber",
-        header: "Phone Number",
+        id: "contact",
+        header: "Contact",
+        cell: ({ row }) => {
+            const email = row.original.email
+            const phoneNumber = row.original.phoneNumber
+            
+            return (
+                <div className="flex flex-col space-y-1">
+                    <div className="flex items-center">
+                        <span className="text-xs text-muted-foreground mr-1">Phone:</span>
+                        <span>{phoneNumber || "N/A"}</span>
+                    </div>
+                    <div className="flex items-center">
+                        <span className="text-xs text-muted-foreground mr-1">Email:</span>
+                        <span className="text-sm truncate">{email || "N/A"}</span>
+                    </div>
+                </div>
+            )
+        }
     },
     {
       accessorKey: "isMigrated",
       header: "Migrated",
-  },
+    },
     {
         accessorKey: "gender",
         header: "Gender"
@@ -81,8 +93,7 @@ export const columns: ColumnDef<Owner>[] = [
     {
       accessorKey: "referredByCode",
       header: "Referral Code" 
-  },
-   
+    },
     {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />,
