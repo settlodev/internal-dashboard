@@ -6,7 +6,7 @@ type AppError = AuthError | PostgrestError | null;
 export const errorHandler = async (error: AppError): Promise<void> => {
   if (!error) return;
 
-  console.error("The Errors:", error);
+  console.error("The Errors:", error.message);
 
   switch (error?.code) {
     case 'email_not_confirmed':

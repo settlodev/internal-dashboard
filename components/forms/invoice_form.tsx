@@ -1,3 +1,4 @@
+
 'use client'
 import {
     Card,
@@ -30,15 +31,12 @@ import { Owner } from "@/types/owners/type"
 import { PosDevices } from "@/types/devices/type"
 import { Checkbox } from "../ui/checkbox"
 import { Button } from "../ui/button"
-import { X } from "lucide-react"
+import { X, Plus } from "lucide-react"
 import { useMemo } from "react"
 import { Subscription } from "@/types/location/type"
 import SubscriptionPackageSelector from "../widgets/subscriptionPackageSelector"
 
-
-
 function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
-    // console.log("The item to be updated",item)
     const [isPending, startTransition] = useTransition();
 
     const transformItemForForm = useCallback((invoiceItem: any) => {
@@ -84,8 +82,8 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
     
         return {
             owner: invoiceItem.owner,
-            devices: devices.length ? devices : [{ device: '', quantity: 1 }],
-            subscriptions: subscriptions.length ? subscriptions : [{ subscription: '', quantity: 1 }],
+            devices: devices.length ? devices : [],
+            subscriptions: subscriptions.length ? subscriptions : [],
             note: invoiceItem.items?.[0]?.note || '',
             due_date: invoiceItem.due_date || '',
             invoice_date: invoiceItem.invoice_date || new Date().toISOString(),
@@ -104,8 +102,8 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
         resolver: zodResolver(invoiceSchema),
         defaultValues: {
             owner: transformedItem?.owner || '',
-            devices: transformedItem?.devices || [{ device: '', quantity: 1 }],
-            subscriptions: transformedItem?.subscriptions || [{ subscription: '', quantity: 1 }],
+            devices: transformedItem?.devices || [],
+            subscriptions: transformedItem?.subscriptions || [],
             note: transformedItem?.note || '',
             due_date: transformedItem?.due_date || '',
             invoice_date: transformedItem?.invoice_date || new Date().toISOString(),
@@ -115,50 +113,65 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
     });
 
     // Create a merged object for the preview that includes both form values and
-// additional data, prioritizing newly selected form values over original data
-const previewData = useMemo(() => {
-    const watchedValues = form.watch();
+    // additional data, prioritizing newly selected form values over original data
+    const previewData = useMemo(() => {
+        const watchedValues = form.watch();
+        
+        // Get current owner information (could be newly selected)
+        const currentOwner = typeof watchedValues.owner === 'object' && watchedValues.owner 
+            ? watchedValues.owner
+            : null;
+        
+        // If user has selected a new owner, use that data instead of the original billing details
+        const effectiveBillingDetails = currentOwner ? {
+            billed_name: `${currentOwner.firstName} ${currentOwner.lastName}`,
+            billed_email: currentOwner.email,
+            billed_phone: currentOwner.phoneNumber,
+            billed_address: currentOwner.countryName
+        } : transformedItem?.billingDetails;
+        
+        return {
+            ...watchedValues,
+            billingDetails: effectiveBillingDetails,
+            invoice_number: transformedItem?.invoice_number,
+            isUpdating: !!item,
+            ownerChanged: !!currentOwner
+        };
+    }, [form.watch(), transformedItem, item]);
     
-    // Get current owner information (could be newly selected)
-    const currentOwner = typeof watchedValues.owner === 'object' && watchedValues.owner 
-        ? watchedValues.owner
-        : null;
-    
-    // If user has selected a new owner, use that data instead of the original billing details
-    const effectiveBillingDetails = currentOwner ? {
-        billed_name: `${currentOwner.firstName} ${currentOwner.lastName}`,
-        billed_email: currentOwner.email,
-        billed_phone: currentOwner.phoneNumber,
-        billed_address: currentOwner.countryName
-    } : transformedItem?.billingDetails;
-    
-    return {
-        ...watchedValues,
-        billingDetails: effectiveBillingDetails,
-        invoice_number: transformedItem?.invoice_number,
-        isUpdating: !!item,
-        ownerChanged: !!currentOwner
-    };
-}, [form.watch(), transformedItem, item]);
-    
-console.log("Preview Data", previewData )
+    console.log("Preview Data", previewData)
    
     const onInvalid = useCallback((errors: FieldErrors) => {
         console.log(errors);
     }, []);
 
     const onSubmitData = useCallback(async (values: z.infer<typeof invoiceSchema>) => {
+        // Helper function to check if a value is truly empty
+        const isEmpty = (value: any) => {
+            if (!value) return true;
+            if (typeof value === 'string') return value.trim() === '';
+            if (typeof value === 'object' && !value.id) return true;
+            return false;
+        };
+
+        // Filter out empty devices and subscriptions before submitting
+        const validDevices = (values.devices || []).filter(item => 
+            item.device && !isEmpty(item.device) && item.quantity && item.quantity > 0
+        );
+        
+        const validSubscriptions = (values.subscriptions || []).filter(item => 
+            item.subscription && !isEmpty(item.subscription) && item.quantity && item.quantity > 0
+        );
+
         const simplifiedValues = {
             owner: typeof values.owner === 'object' ? values.owner : values.owner,
-            devices: values.devices.map(item => ({
+            devices: validDevices.map(item => ({
                 device: typeof item.device === 'object' ? item.device : item.device,
                 quantity: item.quantity,
-                // price: item.price
             })),
-            subscriptions: values.subscriptions.map(item => ({
+            subscriptions: validSubscriptions.map(item => ({
                 subscription: typeof item.subscription === 'object' ? item.subscription : item.subscription,
                 quantity: item.quantity,
-                
             })),
             note: values.note,
             due_date: values.due_date,
@@ -167,13 +180,11 @@ console.log("Preview Data", previewData )
             vat_inclusive: values.vat_inclusive
         };
 
-        console.log("Simplified Values", simplifiedValues )
+        console.log("Simplified Values", simplifiedValues)
 
         startTransition(async () => {
-            
             const result = item 
-                ? 
-                await updateInvoice(item.id, simplifiedValues)
+                ? await updateInvoice(item.id, simplifiedValues)
                 : await createInvoice(simplifiedValues);
 
             if (result?.error) {
@@ -195,24 +206,24 @@ console.log("Preview Data", previewData )
     }, [item]);
 
     // Get the devices fields array for rendering
-const { fields: deviceFields, append: appendDevice, remove: removeDevice } = useFieldArray({
-    control: form.control,
-    name: "devices"
-});
+    const { fields: deviceFields, append: appendDevice, remove: removeDevice } = useFieldArray({
+        control: form.control,
+        name: "devices"
+    });
 
-// Get the subscriptions fields array for rendering
-const { fields: subscriptionFields, append: appendSubscription, remove: removeSubscription } = useFieldArray({
-    control: form.control,
-    name: "subscriptions"
-});
+    // Get the subscriptions fields array for rendering
+    const { fields: subscriptionFields, append: appendSubscription, remove: removeSubscription } = useFieldArray({
+        control: form.control,
+        name: "subscriptions"
+    });
 
-const addDeviceItem = () => {
-    appendDevice({ device: '', quantity: 1 });
-};
+    const addDeviceItem = () => {
+        appendDevice({ device: '', quantity: undefined });
+    };
 
-const addSubscriptionItem = () => {
-    appendSubscription({ subscription: '', quantity: 1 });
-};
+    const addSubscriptionItem = () => {
+        appendSubscription({ subscription: '', quantity: undefined });
+    };
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -254,30 +265,45 @@ const addSubscriptionItem = () => {
                                 {/* Devices section with add/remove capabilities */}
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-lg font-medium">Devices</h3>
+                                        <h3 className="text-lg font-medium">Devices (Optional)</h3>
                                         <Button 
                                             type="button" 
                                             variant="outline" 
                                             size="sm"
                                             onClick={addDeviceItem}
                                         >
+                                            <Plus className="h-4 w-4 mr-2" />
                                             Add Device
                                         </Button>
                                     </div>
                                     
+                                    {deviceFields.length === 0 && (
+                                        <div className="p-4 border-2 border-dashed border-gray-300 rounded-md text-center text-gray-500">
+                                            <p>No devices added yet.</p>
+                                            <Button 
+                                                type="button" 
+                                                variant="ghost" 
+                                                size="sm"
+                                                onClick={addDeviceItem}
+                                                className="mt-2"
+                                            >
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Add your first device
+                                            </Button>
+                                        </div>
+                                    )}
+                                    
                                     {deviceFields.map((field, index) => (
                                         <div key={field.id} className="space-y-4 p-4 border rounded-md relative">
                                             <div className="absolute top-2 right-2">
-                                                {index > 0 && (
-                                                    <Button 
-                                                        type="button" 
-                                                        variant="ghost" 
-                                                        size="sm"
-                                                        onClick={() => removeDevice(index)}
-                                                    >
-                                                        <X className="h-4 w-4" />
-                                                    </Button>
-                                                )}
+                                                <Button 
+                                                    type="button" 
+                                                    variant="ghost" 
+                                                    size="sm"
+                                                    onClick={() => removeDevice(index)}
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </Button>
                                             </div>
                                             
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -290,7 +316,7 @@ const addSubscriptionItem = () => {
                                                             <FormControl>
                                                                 <DeviceSelector
                                                                     {...field}
-                                                                    placeholder="Select device"
+                                                                    placeholder="Select device (optional)"
                                                                     label="Device Type"
                                                                     value={field.value as string | PosDevices | undefined}
                                                                 />
@@ -310,8 +336,8 @@ const addSubscriptionItem = () => {
                                                                 <Input
                                                                     type="number"
                                                                     placeholder="How many?"
-                                                                    value={field.value}
-                                                                    onChange={(e) => field.onChange(parseInt(e.target.value) || '')}
+                                                                    value={field.value || ''}
+                                                                    onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
                                                                 />
                                                             </FormControl>
                                                             <FormMessage />
@@ -321,43 +347,52 @@ const addSubscriptionItem = () => {
                                             </div>
                                         </div>
                                     ))}
-                                    
-                                    {form.formState.errors.devices && (
-                                        <p className="text-sm font-medium text-destructive">
-                                            {form.formState.errors.devices.message}
-                                        </p>
-                                    )}
                                 </div>
 
-                                {/* Devices section with add/remove capabilities */}
+                                {/* Subscriptions section with add/remove capabilities */}
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-lg font-medium">Subscriptions</h3>
+                                        <h3 className="text-lg font-medium">Subscriptions (Optional)</h3>
                                         <Button 
                                             type="button" 
                                             variant="outline" 
                                             size="sm"
                                             onClick={addSubscriptionItem}
                                         >
+                                            <Plus className="h-4 w-4 mr-2" />
                                             Add Subscription
                                         </Button>
                                     </div>
                                     
+                                    {subscriptionFields.length === 0 && (
+                                        <div className="p-4 border-2 border-dashed border-gray-300 rounded-md text-center text-gray-500">
+                                            <p>No subscriptions added yet.</p>
+                                            <Button 
+                                                type="button" 
+                                                variant="ghost" 
+                                                size="sm"
+                                                onClick={addSubscriptionItem}
+                                                className="mt-2"
+                                            >
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Add your first subscription
+                                            </Button>
+                                        </div>
+                                    )}
+                                    
                                     {subscriptionFields.map((field, index) => (
                                         <div key={field.id} className="space-y-4 p-4 border rounded-md relative">
-                                            
                                             <div className="absolute top-2 right-2">
-                                                {index > 0 && (
-                                                    <Button 
-                                                        type="button" 
-                                                        variant="ghost" 
-                                                        size="sm"
-                                                        onClick={() => removeSubscription(index)}
-                                                    >
-                                                        <X className="h-4 w-4" />
-                                                    </Button>
-                                                )}
+                                                <Button 
+                                                    type="button" 
+                                                    variant="ghost" 
+                                                    size="sm"
+                                                    onClick={() => removeSubscription(index)}
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </Button>
                                             </div>
+                                            
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <FormField
                                                     control={form.control}
@@ -368,7 +403,7 @@ const addSubscriptionItem = () => {
                                                             <FormControl>
                                                                 <SubscriptionPackageSelector
                                                                     {...field}
-                                                                    placeholder="Select subscription package"
+                                                                    placeholder="Select subscription package (optional)"
                                                                     label="Subscription Package"
                                                                     value={field.value as string | Subscription | undefined}
                                                                 />
@@ -387,9 +422,9 @@ const addSubscriptionItem = () => {
                                                             <FormControl>
                                                                 <Input
                                                                     type="number"
-                                                                    placeholder="How many month(s) would you like?"
-                                                                    value={field.value}
-                                                                    onChange={(e) => field.onChange(parseInt(e.target.value) || '')}
+                                                                    placeholder="How many month(s)?"
+                                                                    value={field.value || ''}
+                                                                    onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
                                                                 />
                                                             </FormControl>
                                                             <FormMessage />
@@ -399,12 +434,6 @@ const addSubscriptionItem = () => {
                                             </div>
                                         </div>
                                     ))}
-                                    
-                                    {form.formState.errors.subscriptions && (
-                                        <p className="text-sm font-medium text-destructive">
-                                            {form.formState.errors.subscriptions.message}
-                                        </p>
-                                    )}
                                 </div>
 
                                 {/* Remaining fields */}

@@ -39,7 +39,7 @@ export const SignIn = async (
     }
     const user = data.user;
 
-    console.log("The user", user)
+    // console.log("The user", user)
 
     const { data: internal_profile, error: profileError } = await supabase
       .from('internal_profiles')
@@ -51,7 +51,7 @@ export const SignIn = async (
       .single();
 
  
-      console.log("The profile", internal_profile)
+      // console.log("The profile", internal_profile)
 
     if (profileError) {
       console.log("The error", profileError)
@@ -344,7 +344,7 @@ export async function deleteUser(userId: string) {
     const { error: authError } = await supabase.auth.admin.deleteUser(userId);
 
     if (authError) {
-      console.error("Error deleting user from auth:", authError);
+      console.error("Error deleting user from auth:", authError.message);
       return { error: "Failed to delete user from authentication." };
     }
 

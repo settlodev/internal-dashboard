@@ -5,7 +5,7 @@ import { DataTable } from '@/components/table/data-table'
 import { Card, CardContent } from '@/components/ui/card'
 import React, { useEffect, useState } from 'react'
 import { Owner } from '@/types/owners/type'
-import { fetchAllBusinessOwners } from '@/lib/actions/business-owners'
+import { searchBusinessOwners } from '@/lib/actions/business-owners'
 import Loading from '@/components/widgets/loader'
 import { ProtectedComponent } from '@/components/auth/protectedComponent'
 import Unauthorized from '@/components/code/401'
@@ -49,10 +49,13 @@ export default function page() {
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({});
 
   const fetchBusinessOwners = async () => {
+    
     try {
-      const data = await fetchAllBusinessOwners()
-      // const owners = data.filter(user => user.isOwner === true);
+      const data = await searchBusinessOwners()
+
       const sortedOwners = data.sort((a, b) => new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime());
+
+      // console.log("The sorted business owner",sortedOwners)
 
       setBusinessOwners(sortedOwners);
       // console.log("The selected Filter is", selectedFilters)
@@ -71,6 +74,7 @@ export default function page() {
     range: { from: Date; to: Date },
     filters: Record<string, string>
   ) => {
+  
     const filteredOwners = data.filter(sub => {
       // Date range filter
       const isWithinDateRange =
@@ -81,7 +85,7 @@ export default function page() {
         if (value === 'all') return true;
 
         if (key === 'isMigrated') {
-          // Convert string "true"/"false" to boolean
+          
           return sub[key as keyof Owner] === (value === "true");
         }
 
@@ -92,7 +96,7 @@ export default function page() {
     });
     setFilteredBusinessOwners(filteredOwners);
   }
-  // console.log("The filtered business owners", filteredBusinessOwners)
+  
 
   useEffect(() => {
     fetchBusinessOwners()
@@ -179,7 +183,7 @@ export default function page() {
       <CardContent className="p-2 sm:p-4 md:p-6">
         <DataTable
           columns={columns}
-          data={filteredBusinessOwners}
+          data={filteredBusinessOwners || businessOwners}
           searchKey='firstName'
         />
       </CardContent>

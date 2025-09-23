@@ -21,22 +21,22 @@ interface LocationStatisticsProps {
 }
 
 export const LocationStatistics = ({ statistics }: LocationStatisticsProps) => {
-  console.log(statistics)
+  
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold">Location Statistics</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Orders Card */}
-        <Card className="w-[45%] lg:w-full">
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{statistics.totalOrders}</div>
-            <div className="grid grid-cols-3 gap-2 pt-4">
-              <div className="flex flex-col">
+            <div className="grid grid-cols-3 gap-4 py-4">
+              <div className="flex flex-col items-center">
                 <span className="text-xs text-muted-foreground flex items-center">
                   <CheckCircle className="h-3 w-3 mr-1 text-green-500" />
                   Completed
@@ -62,7 +62,7 @@ export const LocationStatistics = ({ statistics }: LocationStatisticsProps) => {
         </Card>
 
         {/* Transactions Card */}
-        <Card className="w-[45%] lg:w-full">
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Transactions</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
@@ -88,7 +88,7 @@ export const LocationStatistics = ({ statistics }: LocationStatisticsProps) => {
         </Card>
 
         {/* Products Card */}
-        <Card className="w-[45%] lg:w-full">
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Products</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
@@ -108,7 +108,7 @@ export const LocationStatistics = ({ statistics }: LocationStatisticsProps) => {
         </Card>
 
         {/* Stock Card */}
-        <Card className="w-[45%] lg:w-full">
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Stock</CardTitle>
             <Box className="h-4 w-4 text-muted-foreground" />
