@@ -1,56 +1,243 @@
 'use server'
+import { FeedbackSchema } from "@/types/owners/feedbackSchema";
 import ApiClient from "../api-client";
 import { parseStringify } from "../utils";
 import { Owner } from "@/types/owners/type";
+import { z } from "zod";
+import { FormResponse } from "@/types/types";
+import { getAuthenticatedUser } from "./auth/signIn";
+import { revalidatePath } from "next/cache";
 
-export const fetchAllBusinessOwners = async (): Promise<Owner[]> => {
-    try {
-        const apiClient = new ApiClient();
-        const data = await apiClient.get("/api/users");
-        console.log("The business owners are",data)
-        return parseStringify(data);
+export interface SearchBusinessOwnersParams {
+  page?: number;
+  size?: number;
+  q?:string;
+}
 
-    } catch (error) {
+export const searchBusinessOwners = async (
+  page:number,
+  pageSize:number
+): Promise<any> => {
+  try {
+
+    const apiClient = new ApiClient();
+    const query = {
+      filters:[
+
+      ],
+      sorts:[
+          {
+              key:"dateCreated",
+              direction:"DESC"
+          }
+      ],
+      page:page ? page - 1:0,
+      size:pageSize ? pageSize : 10
+      
+    };
+
+    const response = await apiClient.post<any, {}>("/api/internal/users/all", query,);
+
+    const data = response.content || response.data || response;
+
     
-        console.log("The error received while fetching ownres is",error);
-        throw error;
+    if (!Array.isArray(data)) {
+      throw new Error('Expected array but got: ' + typeof data);
     }
+
+    return {
+      content: parseStringify(data),
+      totalElements: response.totalElements || data.length,
+      totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
+    };
+  } catch (error) {
+
+    console.error("Error in getting unverified business owners :", error);
+    throw error;
+  }
 }
 
-
-export const searchBusinessOwners = async (): Promise<Owner[]> => {
-   
+  export const searchUnverifiedBusinessOwners = async (
+    params: SearchBusinessOwnersParams = {}
+  ): Promise<{ content: Owner[]; totalElements: number; totalPages: number }> => {
     try {
-        const apiClient = new ApiClient();
-        const payload = {
-            "page": 0,
-            "size": 100000
-        }
-        const response = await apiClient.post<any, {}>("/api/users", payload,
+
+      const apiClient = new ApiClient();
+      const query = {
+        filters:[
+
+        ],
+        sorts:[
             {
-                headers: {
-                    "INTERNAL-DASHBOARD-API-KEY": "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa"
-                }
+                key:"dateCreated",
+                direction:"DESC"
             }
-        );
+        ],
+        page: params.page ?? 0,
+        size: params.size ?? 10,
         
-        // Handle different response structures
-        const data = response.content || response.data || response;
-        
-        // console.log("List of business owner records", data)
-        
-        if (!Array.isArray(data)) {
-            throw new Error('Expected array but got: ' + typeof data);
-        }
-        
-        return parseStringify(data);
+      };
+  
+      const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query, {});
+  
+      const data = response.content || response.data || response;
+
+      
+      if (!Array.isArray(data)) {
+        throw new Error('Expected array but got: ' + typeof data);
+      }
+  
+      return {
+        content: parseStringify(data),
+        totalElements: response.totalElements || data.length,
+        totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
+      };
     } catch (error) {
-        console.error("Error in searchBusinessOwners:", error);
-        throw error;
+
+      console.error("Error in getting unverified business owners :", error);
+      throw error;
     }
-}
+  }
 
+  export const usersWithIncompleteBusinessSetup = async (
+    page:number,
+    pageSize:number
+  ): Promise<any> => {
+    try {
 
+      const apiClient = new ApiClient();
+      const query = {
+        filters:[
+
+        ],
+        sorts:[
+            {
+                key:"dateCreated",
+                direction:"DESC"
+            }
+        ],
+        page:page ? page - 1:0,
+        size:pageSize ? pageSize : 10
+        
+      };
+  
+      const response = await apiClient.post<any, {}>("/api/internal/users/with-incomplete-setup", query);
+  
+      const data = response.content || response.data || response;
+
+     
+      if (!Array.isArray(data)) {
+        throw new Error('Expected array but got: ' + typeof data);
+      }
+  
+      return {
+        content: parseStringify(data),
+        totalElements: response.totalElements || data.length,
+        totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
+      };
+    } catch (error) {
+
+      console.error("Error in getting unverified business owners :", error);
+      throw error;
+    }
+  }
+  
+  export const businessOwnersWithNoOrder = async (
+    page: number,
+    pageSize: number,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<any> => {
+    try {
+      const apiClient = new ApiClient();
+      
+      const query: any = {
+        sorts: [
+          {
+            key: "dateCreated",
+            direction: "DESC"
+          }
+        ],
+        page: page ? page - 1 : 0,
+        size: pageSize ? pageSize : 10
+      };
+  
+      // Add date filter only if both startDate and endDate are provided
+      if (startDate && endDate) {
+        query.creationDateFilter = {
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString()
+        };
+      }
+  
+      const response = await apiClient.post<any, {}>("/api/internal/users/with-no-orders", query);
+  
+      const data = response.content || response.data || response;
+
+      // console.log("User with no order",data)
+  
+      if (!Array.isArray(data)) {
+        throw new Error('Expected array but got: ' + typeof data);
+      }
+  
+      return {
+        content: parseStringify(data),
+        totalElements: response.totalElements || data.length,
+        totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
+      };
+    } catch (error) {
+      console.error("Error in getting unverified business owners :", error);
+      throw error;
+    }
+  }
+  export const subscriptionExpiresIn = async (
+    page: number,
+    pageSize: number,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<any> => {
+    try {
+      const apiClient = new ApiClient();
+      
+      const query: any = {
+        sorts: [
+          {
+            key: "dateCreated",
+            direction: "DESC"
+          }
+        ],
+        page: page ? page - 1 : 0,
+        size: pageSize ? pageSize : 10
+      };
+  
+      // Add date filter only if both startDate and endDate are provided
+      if (startDate && endDate) {
+        query.creationDateFilter = {
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString()
+        };
+      }
+  
+      const response = await apiClient.post<any, {}>("/api/internal/users/with-expiring-locations-in-x-days", query);
+  
+      const data = response.content || response.data || response;
+
+      // console.log("User with no order",data)
+  
+      if (!Array.isArray(data)) {
+        throw new Error('Expected array but got: ' + typeof data);
+      }
+  
+      return {
+        content: parseStringify(data),
+        totalElements: response.totalElements || data.length,
+        totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
+      };
+    } catch (error) {
+      console.error("Error in getting user with expired location :", error);
+      throw error;
+    }
+  }
 
 export const getBusinessOwner = async (id: string) => {
     try {
@@ -61,3 +248,56 @@ export const getBusinessOwner = async (id: string) => {
         throw error;
     }
 }   
+
+export const recordFeedback = async (
+  value: z.infer<typeof FeedbackSchema>
+):Promise<FormResponse | void> =>{
+  let formResponse: FormResponse | null = null;
+  const validFeedback = FeedbackSchema.safeParse(value)
+
+  if(!validFeedback.success){
+    formResponse = {
+      responseType:"error",
+      message:"Please fill all the required fields",
+      error:new Error(validFeedback.error.message)
+    }
+    return parseStringify(formResponse);
+  }
+  const activeUser = await getAuthenticatedUser();
+
+  const payload = {
+    ...validFeedback.data,
+    internalProfileId:activeUser?.id
+  }
+
+  console.log("The payload to be submitted is",payload)
+
+
+  try {
+    const apiClient = new ApiClient();
+  
+
+    await apiClient.post(
+        '/api/internal/user-follow-up-feedbacks/create',
+        payload
+    );
+    formResponse = {
+        responseType: "success",
+        message: "User Feedback created successfully",
+    };
+}
+catch (error: any){
+    const formattedError = await error;
+
+    console.log("The error received is",formattedError)
+
+    formResponse = {
+        responseType: "error",
+        message:formattedError.message,
+        error: error instanceof Error ? error : new Error(String(error)),
+    };
+}
+
+revalidatePath("/owners");
+return parseStringify(formResponse)
+}

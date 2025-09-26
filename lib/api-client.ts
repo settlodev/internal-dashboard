@@ -10,7 +10,6 @@ class ApiClient {
     public isPlain: boolean;
 
     constructor() {
-
         this.baseURL = process.env.SERVICE_URL || "";
         this.isPlain = true;
 
@@ -25,12 +24,31 @@ class ApiClient {
                 config.url = this.baseURL + config.url;
             }
 
-           
-
+            // Set default headers
             config.headers["Content-Type"] = "application/json";
+            
+            // Add API key headers if available in environment variables
+            if (process.env.INTERNAL_DASHBOARD_API_KEY) {
+                config.headers["INTERNAL-DASHBOARD-API-KEY"] = process.env.INTERNAL_DASHBOARD_API_KEY;
+            }
+            
+            // You can add more API keys as needed
+            if (process.env.EXTERNAL_API_KEY) {
+                config.headers["EXTERNAL-API-KEY"] = process.env.EXTERNAL_API_KEY;
+            }
 
             return config;
         });
+    }
+
+    // Method to set API key dynamically if needed
+    public setApiKey(keyName: string, keyValue: string): void {
+        this.instance.defaults.headers.common[keyName] = keyValue;
+    }
+
+    // Method to remove API key
+    public removeApiKey(keyName: string): void {
+        delete this.instance.defaults.headers.common[keyName];
     }
 
     public async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
@@ -50,9 +68,8 @@ class ApiClient {
     ): Promise<T> {
         try {
             const response = await this.instance.post<T>(url, data, config);
-
             return response.data;
-        } catch (error:any) {
+        } catch (error: any) {
             console.error("Error in post:", error);
             throw await errorHandler(error);
         }
@@ -65,9 +82,8 @@ class ApiClient {
     ): Promise<T> {
         try {
             const response = await this.instance.put<T>(url, data, config);
-
             return response.data;
-        } catch (error:any) {
+        } catch (error: any) {
             throw await errorHandler(error);
         }
     }
@@ -75,9 +91,8 @@ class ApiClient {
     public async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
         try {
             const response = await this.instance.delete<T>(url, config);
-
             return response.data;
-        } catch (error:any) {
+        } catch (error: any) {
             throw await errorHandler(error);
         }
     }

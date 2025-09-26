@@ -13,6 +13,7 @@ export default function BusinessOwnerSummary({
   selectedFilters?: Record<string, string>
 }) {
 
+  console.log("The owner summary is",owners)
   
   const filteredOwners = owners.filter(own => {
     // Date range filter

@@ -3,7 +3,7 @@ import { Profile, ProfileData, User } from "@/types/users/type"
 import { parseStringify } from "../utils"
 import { createClient } from "../supabase/server"
 import { fetchAllBusiness } from "./business"
-import { fetchAllBusinessOwners } from "./business-owners"
+// import { fetchAllBusinessOwners } from "./business-owners"
 import { Business } from "@/types/business/types"
 
 export const getUserWithProfile = async () => {
@@ -154,52 +154,52 @@ export async function fetchProfileDataById(id: string): Promise<Profile | null> 
   }
 }
 
-export const fetchBusinessesByReferralCode = async (referralCode: string): Promise<Business[]> => {
-  try {
-    // Get all business owners and businesses
-    const owners = await fetchAllBusinessOwners();
-    const businesses = await fetchAllBusiness();
+// export const fetchBusinessesByReferralCode = async (referralCode: string): Promise<Business[]> => {
+//   try {
+//     // Get all business owners and businesses
+//     const owners = await fetchAllBusinessOwners();
+//     const businesses = await fetchAllBusiness();
     
-    // Find owners who used this referral code
-    const ownersWithReferralCode = owners.filter(owner => 
-      owner.referredByCode === referralCode
-    );
+//     // Find owners who used this referral code
+//     const ownersWithReferralCode = owners.filter(owner => 
+//       owner.referredByCode === referralCode
+//     );
     
-    // If no owners used this code, return empty array
-    if (ownersWithReferralCode.length === 0) {
-      return [];
-    }
+//     // If no owners used this code, return empty array
+//     if (ownersWithReferralCode.length === 0) {
+//       return [];
+//     }
     
-    // Get the IDs of owners who used this referral code
-    const ownerIds = ownersWithReferralCode.map(owner => owner.id);
+//     // Get the IDs of owners who used this referral code
+//     const ownerIds = ownersWithReferralCode.map(owner => owner.id);
     
-    // Find businesses owned by these owners
-    const referredBusinesses = businesses.filter(business => 
-      ownerIds.includes(business.owner)
-    );
+//     // Find businesses owned by these owners
+//     const referredBusinesses = businesses.filter(business => 
+//       ownerIds.includes(business.owner)
+//     );
     
-    return referredBusinesses;
-  } catch (error) {
-    console.error("Error fetching businesses by referral code:", error);
-    throw error;
-  }
-}
+//     return referredBusinesses;
+//   } catch (error) {
+//     console.error("Error fetching businesses by referral code:", error);
+//     throw error;
+//   }
+// }
 
-export const getOwnerDetails = async (ownerId: string): Promise<string> => {
-  try {
-    const owners = await fetchAllBusinessOwners();
-    const owner = owners.find(o => o.id === ownerId);
+// export const getOwnerDetails = async (ownerId: string): Promise<string> => {
+//   try {
+//     const owners = await fetchAllBusinessOwners();
+//     const owner = owners.find(o => o.id === ownerId);
     
-    if (owner) {
-      return `${owner.firstName} ${owner.lastName}`;
-    }
+//     if (owner) {
+//       return `${owner.firstName} ${owner.lastName}`;
+//     }
     
-    return "Not Available";
-  } catch (error) {
-    console.error("Error fetching owner details:", error);
-    return "Not Available";
-  }
-}
+//     return "Not Available";
+//   } catch (error) {
+//     console.error("Error fetching owner details:", error);
+//     return "Not Available";
+//   }
+// }
 
 
 

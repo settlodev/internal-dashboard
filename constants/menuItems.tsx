@@ -19,16 +19,36 @@ const data = {
       title: "Business Owners",
       url: "#",
       icon: Users,
-      // isActive: true,
+      isActive: false,
       items: [
+        {
+          title: "Unverified Emails",
+          url: "/unverified-emails",
+          requiredPermission: "",
+        },
+        {
+          title: "Incomplete Setup",
+          url: "/incomplete-setup",
+          requiredPermission: "",
+        },
+        {
+          title: "No Order",
+          url: "/no-orders",
+          requiredPermission: "view:owners",
+        },
+        {
+          title: "Expiring Subscription",
+          url: "/expiring-subscription",
+          requiredPermission: "view:owners",
+        },
         {
           title: "Owners",
           url: "/owners",
           requiredPermission: "view:owners",
         },
-
       ],
     },
+
     {
       title: "Business Management",
       url: "#",

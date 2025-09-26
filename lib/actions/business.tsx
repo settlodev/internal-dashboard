@@ -23,4 +23,5 @@ export const getBusiness = async (id: string) => {
     } catch (error) {
         throw error;
     }
-}   
+} 
+

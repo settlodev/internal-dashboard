@@ -1,7 +1,6 @@
 "use client"
 import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
-
 import { CellAction } from "./cell-action"
 import { Owner } from "@/types/owners/type"
 
@@ -39,8 +38,7 @@ export const columns: ColumnDef<Owner>[] = [
             return (
                 <div className="flex space-y-1">
                     <div className="flex items-center">
-                        <p className="text-xs font-medium text-black mr-1">{first_name} {last_name}</p>
-                    </div>
+                    <p className="text-xs text-black mr-1">{first_name} {last_name}</p>                    </div>
                 </div>
             )
         }
@@ -66,14 +64,14 @@ export const columns: ColumnDef<Owner>[] = [
             )
         }
     },
-  
+    
     {
         accessorKey: "gender",
         header: "Gender"
     },
     {
         accessorKey: "dateCreated",
-        header: "Date Onboarded",
+        header: "Date Registered",
         cell: ({ row }) => {
             const date = new Date(row.getValue("dateCreated"));
             return date.toLocaleDateString('en-US', {
@@ -85,20 +83,6 @@ export const columns: ColumnDef<Owner>[] = [
             });
         }
     },
-    {
-        accessorKey: "emailVerified",
-        header: "Email Verified",
-        cell: ({ row }) => {
-            const isVerified = Boolean(row.getValue("emailVerified"));
-            
-            return (
-                <span className={`font-medium ${isVerified ? 'text-green-500' : 'text-red-500'}`}>
-                    {isVerified ? 'Verified' : 'Not Verified'}
-                </span>
-            );
-        }
-    },
-
     {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />,
