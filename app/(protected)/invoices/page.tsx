@@ -19,6 +19,7 @@ const breadcrumbItems = [
 export default function page() {
     const [isLoading, setLoading] = useState(true);
     const [invoices, setInvoices] = useState<Invoice[]>([])
+    const total = 100;
     const getInvoices = async () => {
         try {
           
@@ -73,6 +74,8 @@ export default function page() {
             columns={columns}
             data={invoices}
             searchKey="invoice_number"
+            total={total}
+              pageSize={10}
             />
         </CardContent>
     </Card>

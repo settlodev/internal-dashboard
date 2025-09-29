@@ -60,7 +60,7 @@ export const SignIn = async (
       })
 
  
-      console.log("The profile", internal_profile)
+      // console.log("The profile", internal_profile)
 
     if (profileError) {
       console.log("The error", profileError)

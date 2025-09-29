@@ -1,10 +1,9 @@
 
-
 import Loading from '@/components/widgets/loader'
 import { ProtectedComponent } from '@/components/auth/protectedComponent'
 import Unauthorized from '@/components/code/401'
-import { subscriptionExpiresInXDays } from '@/lib/actions/business-owners';
-import { LocationSubscriptionExpiresInXDays } from '@/components/subscriptions/expires-in-x';
+import { followUpsOnCustomerFeedbacks} from '@/lib/actions/business-owners';
+import { FollowUpFeedback } from '@/components/follow-ups/follow-ups';
 
 type Params = { 
   searchParams: Promise<{ 
@@ -15,7 +14,7 @@ type Params = {
 };
 
 const breadcrumbItems = [
-  { title: "Subscription Expires In X days ", link: "/expiring-subscription" },
+  { title: "Feedback on follow ups", link: "/feedback-on-follow-ups" },
 ]
 
 async function Page({ searchParams }: Params) {
@@ -24,10 +23,10 @@ async function Page({ searchParams }: Params) {
   const size = Number(resolvedSearchParams.limit) || 10;
 
   try {
-    // Pass default 5 days for initial load
-    const data = await subscriptionExpiresInXDays(page, size, undefined, undefined, 5)
+    
+    const data = await followUpsOnCustomerFeedbacks(page, size, undefined, undefined)
 
-    const sortedUsersWithIcomplete = data.content.sort((a:any, b:any) => 
+    const sortedFollowUp = data.content.sort((a:any, b:any) => 
       new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
     );
 
@@ -41,8 +40,8 @@ async function Page({ searchParams }: Params) {
         }
         fallback={<Unauthorized />}
       >
-        <LocationSubscriptionExpiresInXDays
-          initialBusinessOwners={sortedUsersWithIcomplete}
+        <FollowUpFeedback
+          initialFollowUps={sortedFollowUp}
           totalElements={data.totalElements}
           searchParams={resolvedSearchParams}
           breadcrumbItems={breadcrumbItems}

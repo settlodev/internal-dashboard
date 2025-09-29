@@ -33,3 +33,20 @@ export declare interface Owner  {
         gender:string
         dateCreated:Date
     }
+
+
+    export declare interface FollowUp{
+        id:string,
+        nextFollowUpDate:Date,
+        remarks:string,
+        userId:string,
+        internalProfileId:string,
+        internalFollowupId:string,
+        userFirstName:string,
+        userLastName:string,
+        userPhone:string,
+        userEmail:string,
+        internalProfileFirstName:string
+        internalProfileLastName:string,
+        internalFollowUpTypeName:string,
+    }

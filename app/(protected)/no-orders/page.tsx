@@ -2,8 +2,7 @@
 import Loading from '@/components/widgets/loader'
 import { ProtectedComponent } from '@/components/auth/protectedComponent'
 import Unauthorized from '@/components/code/401'
-import { IncompleteSetup } from '@/components/incomplete-setup/incomplete-setup'
-import { businessOwnersWithNoOrder, usersWithIncompleteBusinessSetup } from '@/lib/actions/business-owners';
+import { businessOwnersWithNoOrder} from '@/lib/actions/business-owners';
 import { BusinessOwnersWithNoOrders } from '@/components/orders/no-orders';
 
 type Params = { 

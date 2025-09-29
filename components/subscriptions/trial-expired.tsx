@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useState, useEffect } from 'react'
 import { DatePickerWithRange } from '@/components/widgets/date-range-picker'
 import { Owner } from '@/types/owners/type'
-import { subscriptionExpiresInXDays } from '@/lib/actions/business-owners'
+import { subscriptionExpiresInXDays, trialExpired } from '@/lib/actions/business-owners'
 import { columns } from '../table/no-orders/column'
 import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
@@ -26,7 +26,7 @@ interface DaysFormValues {
   daysBeforeExpiry: number
 }
 
-export function LocationSubscriptionExpiresInXDays({ 
+export function TrialExpired({ 
   initialBusinessOwners, 
   totalElements, 
   searchParams,
@@ -46,16 +46,16 @@ export function LocationSubscriptionExpiresInXDays({
   const page = Number(searchParams.page) || 0
   const size = Number(searchParams.limit) || 10
 
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<DaysFormValues>({
+  const { register, handleSubmit, formState: { errors }} = useForm<DaysFormValues>({
     defaultValues: {
       daysBeforeExpiry: 5
     }
   })
 
-  const fetchIncompleteBusinessSetup = async (days: number) => {
+  const fetchExpiredTrial = async () => {
     setIsLoading(true)
     try {
-      const data = await subscriptionExpiresInXDays(page, size, dateRange.from, dateRange.to, days)
+      const data = await trialExpired(page, size, dateRange.from, dateRange.to)
     
       const sortedBusinesses = data.content.sort((a:any, b:any) => 
         new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
@@ -70,8 +70,8 @@ export function LocationSubscriptionExpiresInXDays({
   }
 
   useEffect(() => {
-    fetchIncompleteBusinessSetup(daysValue)
-  }, [page, size, dateRange, daysValue]) 
+    fetchExpiredTrial()
+  }, [page, size, dateRange]) 
 
   const handleDateRangeChange = (newRange: { from: Date; to: Date }) => {
     setDateRange(newRange)
@@ -102,42 +102,15 @@ export function LocationSubscriptionExpiresInXDays({
         <div className='flex flex-col lg:flex-row items-start gap-4 lg:items-center lg:justify-between w-full'>
           <div className='flex flex-col gap-2 flex-1 min-w-0'>
             <h2 className='text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100'>
-              Subscription expires in {daysValue} days
+              Trial Subscription Expired
             </h2>
             <p className='text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl'>
-              The list of customers whose subscription expires in {daysValue} days.
+              The list of customers whose trial subscription has expired.
             </p>
           </div>
           
           {/* Date Picker and Days Input */}
           <div className='flex flex-col sm:flex-row gap-3 w-full lg:w-auto flex-shrink-0'>
-            <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col sm:flex-row gap-3 items-end'>
-              <div className='flex flex-col gap-2 w-full sm:w-auto'>
-                <Label htmlFor="daysBeforeExpiry" className='text-sm font-medium'>
-                  Days Before Expiry
-                </Label>
-                <div className='flex gap-2'>
-                  <Input
-                    id="daysBeforeExpiry"
-                    type="number"
-                    min="1"
-                    placeholder="Enter days"
-                    className="w-full sm:w-[140px]"
-                    {...register('daysBeforeExpiry', {
-                      required: 'Days is required',
-                      min: { value: 1, message: 'Minimum 1 day' },
-                      valueAsNumber: true
-                    })}
-                  />
-                  <Button type="submit" size="default">
-                    Apply
-                  </Button>
-                </div>
-                {errors.daysBeforeExpiry && (
-                  <span className='text-xs text-red-500'>{errors.daysBeforeExpiry.message}</span>
-                )}
-              </div>
-            </form>
             
             <div className='flex flex-col gap-2 w-full sm:w-auto'>
               <Label className='text-sm font-medium'>Date Range</Label>

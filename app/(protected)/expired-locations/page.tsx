@@ -41,6 +41,7 @@ export default function DueLocations() {
   
   // Use our hook to get export columns
   const exportColumns = useExportColumns(columns);
+  const total = 100
   
   // Fetch locations with proper error handling
   const fetchLocations = async () => {
@@ -162,6 +163,8 @@ export default function DueLocations() {
               columns={columns}
               data={filteredLocations}
               searchKey="name"
+              total={total}
+              pageSize={10}
              
             />
           </CardContent>

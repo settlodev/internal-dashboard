@@ -1,10 +1,9 @@
 
-
 import Loading from '@/components/widgets/loader'
 import { ProtectedComponent } from '@/components/auth/protectedComponent'
 import Unauthorized from '@/components/code/401'
-import { subscriptionExpiresInXDays } from '@/lib/actions/business-owners';
-import { LocationSubscriptionExpiresInXDays } from '@/components/subscriptions/expires-in-x';
+import { businessOwnersWithLastOrderPlacedInXDays,} from '@/lib/actions/business-owners';
+import { BusinessOwnersWithLastOrdersPlacedInXDays } from '@/components/orders/last-orders';
 
 type Params = { 
   searchParams: Promise<{ 
@@ -15,7 +14,7 @@ type Params = {
 };
 
 const breadcrumbItems = [
-  { title: "Subscription Expires In X days ", link: "/expiring-subscription" },
+  { title: "Have not placed order", link: "/no-orders" },
 ]
 
 async function Page({ searchParams }: Params) {
@@ -24,10 +23,9 @@ async function Page({ searchParams }: Params) {
   const size = Number(resolvedSearchParams.limit) || 10;
 
   try {
-    // Pass default 5 days for initial load
-    const data = await subscriptionExpiresInXDays(page, size, undefined, undefined, 5)
+    const data = await businessOwnersWithLastOrderPlacedInXDays(page, size, undefined, undefined, 5)
 
-    const sortedUsersWithIcomplete = data.content.sort((a:any, b:any) => 
+    const sortedUsersWithLastBusinessOrder = data.content.sort((a:any, b:any) => 
       new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
     );
 
@@ -41,8 +39,8 @@ async function Page({ searchParams }: Params) {
         }
         fallback={<Unauthorized />}
       >
-        <LocationSubscriptionExpiresInXDays
-          initialBusinessOwners={sortedUsersWithIcomplete}
+        <BusinessOwnersWithLastOrdersPlacedInXDays
+          initialBusinessOwners={sortedUsersWithLastBusinessOrder}
           totalElements={data.totalElements}
           searchParams={resolvedSearchParams}
           breadcrumbItems={breadcrumbItems}
@@ -50,7 +48,7 @@ async function Page({ searchParams }: Params) {
       </ProtectedComponent>
     );
   } catch (error) {
-    console.error('Error fetching business owners who expires in x days:', error);
+    console.error('Error fetching unverified business owners:', error);
     throw error;
   }
 }

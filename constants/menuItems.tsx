@@ -37,6 +37,16 @@ const data = {
           requiredPermission: "view:owners",
         },
         {
+          title: "Last Order Placed",
+          url: "/last-order-in-x-days",
+          requiredPermission: "view:owners",
+        },
+        {
+          title: "Trial Subscription Expired",
+          url: "/trial-expired",
+          requiredPermission: "view:owners",
+        },
+        {
           title: "Expiring Subscription",
           url: "/expiring-subscription",
           requiredPermission: "view:owners",
@@ -45,6 +55,18 @@ const data = {
           title: "Owners",
           url: "/owners",
           requiredPermission: "view:owners",
+        },
+      ],
+    },
+    {
+      title: "Customer Feedbacks",
+      url: "#",
+      icon: BriefcaseBusiness,
+      items: [
+        {
+          title: "Feedback",
+          url: "/feedback-on-follow-ups",
+          requiredPermission: "",
         },
       ],
     },
