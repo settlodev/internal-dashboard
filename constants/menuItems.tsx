@@ -47,8 +47,13 @@ const data = {
           requiredPermission: "view:owners",
         },
         {
-          title: "Expiring Subscription",
+          title: "Expiring Sub In X days",
           url: "/expiring-subscription",
+          requiredPermission: "view:owners",
+        },
+        {
+          title: "Expired Subscriptions",
+          url: "/expired-subscription",
           requiredPermission: "view:owners",
         },
         {
@@ -59,12 +64,12 @@ const data = {
       ],
     },
     {
-      title: "Customer Feedbacks",
+      title: "Customer Follow Ups",
       url: "#",
       icon: BriefcaseBusiness,
       items: [
         {
-          title: "Feedback",
+          title: "Follow Ups",
           url: "/feedback-on-follow-ups",
           requiredPermission: "",
         },

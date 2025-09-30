@@ -8,9 +8,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useState, useEffect } from 'react'
 import { DatePickerWithRange } from '@/components/widgets/date-range-picker'
 import { Owner } from '@/types/owners/type'
-import { trialExpired } from '@/lib/actions/business-owners'
+import { expiredSubscription} from '@/lib/actions/business-owners'
 import { columns } from '../table/no-orders/column'
-import { useForm } from 'react-hook-form'
 import { Label } from '@/components/ui/label'
 
 interface Props {
@@ -20,11 +19,7 @@ interface Props {
   breadcrumbItems: { title: string; link: string }[]
 }
 
-interface DaysFormValues {
-  daysBeforeExpiry: number
-}
-
-export function TrialExpired({ 
+export function ExpiredSubscription({ 
   initialBusinessOwners, 
   totalElements, 
   searchParams,
@@ -40,20 +35,15 @@ export function TrialExpired({
     };
   })
   const [total, setTotal] = useState(totalElements)
-  const [daysValue, setDaysValue] = useState<number>(5)
   const page = Number(searchParams.page) || 0
   const size = Number(searchParams.limit) || 10
 
-  const { register, handleSubmit, formState: { errors }} = useForm<DaysFormValues>({
-    defaultValues: {
-      daysBeforeExpiry: 5
-    }
-  })
+ 
 
-  const fetchExpiredTrial = async () => {
+  const fetchExpiredSubscription = async () => {
     setIsLoading(true)
     try {
-      const data = await trialExpired(page, size, dateRange.from, dateRange.to)
+      const data = await expiredSubscription(page, size, dateRange.from, dateRange.to)
     
       const sortedBusinesses = data.content.sort((a:any, b:any) => 
         new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
@@ -61,24 +51,21 @@ export function TrialExpired({
       setBusinessesOwners(sortedBusinesses)
       setTotal(data.totalElements)
     } catch (error) {
-      console.error('Error fetching business owners with no Orders:', error)
+      console.error('Error fetching business owners with expired subscriptions:', error)
     } finally {
       setIsLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchExpiredTrial()
+    fetchExpiredSubscription()
   }, [page, size, dateRange]) 
 
   const handleDateRangeChange = (newRange: { from: Date; to: Date }) => {
     setDateRange(newRange)
   }
 
-  const onSubmit = (data: DaysFormValues) => {
-    setDaysValue(data.daysBeforeExpiry || 5)
-  }
-
+ 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -100,10 +87,10 @@ export function TrialExpired({
         <div className='flex flex-col lg:flex-row items-start gap-4 lg:items-center lg:justify-between w-full'>
           <div className='flex flex-col gap-2 flex-1 min-w-0'>
             <h2 className='text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100'>
-              Trial Subscription Expired
+              Customer with subscription Expired
             </h2>
             <p className='text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl'>
-              The list of customers whose trial subscription has expired.
+              The list of customers whose  subscription has expired.
             </p>
           </div>
           

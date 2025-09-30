@@ -3,8 +3,9 @@
 import Loading from '@/components/widgets/loader'
 import { ProtectedComponent } from '@/components/auth/protectedComponent'
 import Unauthorized from '@/components/code/401'
-import { trialExpired } from '@/lib/actions/business-owners';
+import { expiredSubscription, trialExpired } from '@/lib/actions/business-owners';
 import { TrialExpired } from '@/components/subscriptions/trial-expired';
+import { ExpiredSubscription } from '@/components/subscriptions/expired-subscription';
 
 type Params = { 
   searchParams: Promise<{ 
@@ -15,7 +16,7 @@ type Params = {
 };
 
 const breadcrumbItems = [
-  { title: "Trial Subscription Expired", link: "/trial-expired" },
+  { title: "Expired Subscription", link: "/expired-subscription" },
 ]
 
 async function Page({ searchParams }: Params) {
@@ -25,7 +26,7 @@ async function Page({ searchParams }: Params) {
 
   try {
     // Pass default 5 days for initial load
-    const data = await trialExpired(page, size, undefined, undefined)
+    const data = await expiredSubscription(page, size, undefined, undefined)
 
     const sortedUsersWithIcomplete = data.content.sort((a:any, b:any) => 
       new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
@@ -41,7 +42,7 @@ async function Page({ searchParams }: Params) {
         }
         fallback={<Unauthorized />}
       >
-        <TrialExpired
+        <ExpiredSubscription
           initialBusinessOwners={sortedUsersWithIcomplete}
           totalElements={data.totalElements}
           searchParams={resolvedSearchParams}

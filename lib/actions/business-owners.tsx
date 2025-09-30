@@ -356,6 +356,58 @@ export const trialExpired = async (
   }
 }
 
+export const expiredSubscription = async (
+  page: number,
+  pageSize: number,
+  startDate?: Date,
+  endDate?: Date,
+): Promise<any> => {
+  try {
+    const apiClient = new ApiClient();
+
+    const query: any = {
+      sorts: [
+        {
+          key: "dateCreated",
+          direction: "DESC"
+        }
+      ],
+      page: page ? page - 1 : 0,
+      size: pageSize ? pageSize : 10
+    };
+
+
+    if (startDate && endDate) {
+      query.creationDateFilter = {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString()
+      };
+    }
+
+    const payload = {
+      ...query,
+      
+    }
+
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-expired-locations", payload);
+
+    const data = response.content || response.data || response;
+
+    if (!Array.isArray(data)) {
+      throw new Error('Expected array but got: ' + typeof data);
+    }
+
+    return {
+      content: parseStringify(data),
+      totalElements: response.totalElements || data.length,
+      totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
+    };
+  } catch (error) {
+    console.error("Error in getting user with expired location :", error);
+    throw error;
+  }
+}
+
 export const followUpsOnCustomerFeedbacks = async (
   page: number,
   pageSize: number,
@@ -392,6 +444,8 @@ export const followUpsOnCustomerFeedbacks = async (
     const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", payload);
 
     const data = response.content || response.data || response;
+
+    console.log("The list of folow ups made are",data)
 
 
     if (!Array.isArray(data)) {

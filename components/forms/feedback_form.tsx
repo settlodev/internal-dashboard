@@ -19,11 +19,11 @@ import { Textarea } from "../ui/textarea";
 import { Alert, AlertDescription } from "../ui/alert";
 import { FeedbackSchema } from "@/types/owners/feedbackSchema";
 import FollowUpTypeSelector from "../widgets/followUpSelector";
-import { DateTimePicker } from "../widgets/date-time-picker";
 import { feedbackProp } from "../widgets/feedback_dialog";
 import { recordFeedback } from "@/lib/actions/business-owners";
+import { Input } from "../ui/input";
 
-function RecordFeedbackForm({ ownerId }: feedbackProp) {
+function  RecordFeedbackForm({ ownerId, onSuccess }: feedbackProp & { onSuccess?: () => void }) {
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -32,14 +32,12 @@ function RecordFeedbackForm({ ownerId }: feedbackProp) {
     defaultValues: {
       internalFollowUpTypeId: "",
       remarks: "",
-      nextFollowUpDate: undefined,
+      nextFollowUpDate: "",
       userId: ownerId,
     },
   });
 
-  // Add form state logging
-  const watchedValues = form.watch();
-  // console.log("Form watched values:", watchedValues);
+ 
 
   const onInvalid = useCallback((errors: FieldErrors) => {
     console.log("Form validation errors:", errors);
@@ -55,11 +53,24 @@ function RecordFeedbackForm({ ownerId }: feedbackProp) {
       console.log("Form submission values:", values);
       setFormError(null);
 
+      const submitValues = {
+        ...values,
+        nextFollowUpDate: values.nextFollowUpDate 
+          ? new Date(values.nextFollowUpDate).toISOString() 
+          : undefined
+      };
+
       startTransition(async () => {
-        recordFeedback(values);
+        try {
+          await recordFeedback(submitValues);
+          onSuccess?.();
+          form.reset()
+        } catch (error) {
+          setFormError("Failed to record feedback. Please try again.");
+        }
       });
     },
-    [form],
+    [onSuccess , form],
   );
 
   return (
@@ -110,32 +121,15 @@ function RecordFeedbackForm({ ownerId }: feedbackProp) {
               name="nextFollowUpDate"
               render={({ field }) => {
                 console.log("=== FormField Debug ===");
-                console.log("FormField render - field value:", field.value);
-                console.log("Field onChange type:", typeof field.onChange);
-
-                const handleDateChange = (date: Date | undefined) => {
-                  console.log("=== Form onChange Handler ===");
-                  console.log("Received date:", date);
-                  console.log("Calling field.onChange...");
-                  
-                  field.onChange(date);
-                  
-                  console.log("Field onChange called, new field value will be:", date);
-                  
-                  // Trigger validation
-                  setTimeout(() => {
-                    console.log("Form values after onChange:", form.getValues());
-                  }, 100);
-                };
-
+    
                 return (
                   <FormItem>
                     <FormLabel>Next FollowUp</FormLabel>
                     <FormControl>
-                      <DateTimePicker
-                        value={field.value}
-                        onChange={handleDateChange}
-                        placeholder="Select date and time"
+                      
+                      <Input
+                      {...field}
+                      type="date"
                       />
                     </FormControl>
                     <FormMessage />
