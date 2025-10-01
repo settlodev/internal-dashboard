@@ -38,6 +38,7 @@ export default function DueLocations() {
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState(getDefaultDateRange());
+  const total = 100
   
   // Use our hook to get export columns
   const exportColumns = useExportColumns(columns);
@@ -162,6 +163,8 @@ export default function DueLocations() {
               columns={columns}
               data={filteredLocations}
               searchKey="name"
+              total={total}
+              pageSize={10}
              
             />
           </CardContent>

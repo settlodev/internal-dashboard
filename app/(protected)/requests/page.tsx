@@ -20,6 +20,7 @@ const breadcrumbItems = [
 export default function Dashboard() {
     const [requests, setRequest] = useState<RequestSubscription[]>([])
     const [isLoading, setLoading] = useState(true);
+    const total = 100
 
     const fetchRequestSubscription = async () => {
       try {
@@ -69,6 +70,8 @@ export default function Dashboard() {
                     columns={columns}
                     data={requests}
                     searchKey="location_name"
+                    total={total}
+                    pageSize={10}
                     />
                 </CardContent>
             </Card>

@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { fetchAllBusinessOwners } from "@/lib/actions/business-owners";
+import { searchBusinessOwners } from "@/lib/actions/business-owners";
 import { Owner } from "@/types/owners/type";
 
 interface BusinessOwnerSelectorProps {
@@ -41,13 +41,15 @@ const BusinessOwnerSelector: React.FC<BusinessOwnerSelectorProps> = ({
   const [open, setOpen] = useState(false);
   const [businessOwners, setBusinessOwners] = useState<Owner[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const page = 1;
+  const pageSize = 500
 
   useEffect(() => {
     async function loadBusinessOwners() {
       try {
         setIsLoading(true);
-        const fetchedOwners = await fetchAllBusinessOwners();
-        setBusinessOwners(fetchedOwners);
+        const fetchedOwners = await searchBusinessOwners(page,pageSize);
+        setBusinessOwners(fetchedOwners.content);
       } catch (error: any) {
         console.log("Error fetching business owners:", error);
       } finally {
@@ -60,6 +62,7 @@ const BusinessOwnerSelector: React.FC<BusinessOwnerSelectorProps> = ({
   const getDisplayName = (owner: Owner) => {
     return `${owner.firstName} ${owner.lastName}`;
   };
+  
 
   const ownerOptions = businessOwners.map((owner) => ({
     id: owner.id,

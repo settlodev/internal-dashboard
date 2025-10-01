@@ -145,6 +145,8 @@ if (isLoading) {
                     columns={columns}
                     data={filteredBusinesses}
                     searchKey="name"
+                    total={10}
+                    pageSize={10}
                     />
                 </CardContent>
             </Card>

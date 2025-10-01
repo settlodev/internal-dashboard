@@ -1,8 +1,7 @@
 "use client"
 import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ArrowUpDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
+
 import { CellAction } from "./cell-action"
 import { Owner } from "@/types/owners/type"
 
@@ -29,23 +28,22 @@ export const columns: ColumnDef<Owner>[] = [
         enableSorting: false,
         enableHiding: false,
     },
+
     {
-        accessorKey: "firstName",
-        header: ({ column }) => {
+        id: "name",
+        header: "Full Name",
+        cell: ({ row }) => {
+            const first_name = row.original.firstName
+            const last_name = row.original.lastName
+            
             return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    First Name
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
+                <div className="flex space-y-1">
+                    <div className="flex items-center">
+                        <p className="text-xs font-medium text-black mr-1">{first_name} {last_name}</p>
+                    </div>
+                </div>
             )
         }
-    },
-    {
-        accessorKey: "lastName",
-        header: "Last Name",
     },
     {
         id: "contact",
@@ -68,17 +66,14 @@ export const columns: ColumnDef<Owner>[] = [
             )
         }
     },
-    {
-      accessorKey: "isMigrated",
-      header: "Migrated",
-    },
+  
     {
         accessorKey: "gender",
         header: "Gender"
     },
     {
         accessorKey: "dateCreated",
-        header: "Date Registered",
+        header: "Date Onboarded",
         cell: ({ row }) => {
             const date = new Date(row.getValue("dateCreated"));
             return date.toLocaleDateString('en-US', {
@@ -91,9 +86,19 @@ export const columns: ColumnDef<Owner>[] = [
         }
     },
     {
-      accessorKey: "referredByCode",
-      header: "Referral Code" 
+        accessorKey: "emailVerified",
+        header: "Email Verified",
+        cell: ({ row }) => {
+            const isVerified = Boolean(row.getValue("emailVerified"));
+            
+            return (
+                <span className={`font-medium ${isVerified ? 'text-green-500' : 'text-red-500'}`}>
+                    {isVerified ? 'Verified' : 'Not Verified'}
+                </span>
+            );
+        }
     },
+
     {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />,

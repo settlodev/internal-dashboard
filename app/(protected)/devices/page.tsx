@@ -18,6 +18,7 @@ const breadcrumbItems = [
 export default function page() {
     const [isLoading, setLoading] = useState(true);
     const [devices, setDevices] = useState<PosDevices[]>([])
+    const total = 100;
     const fetchListDevices = async () => {
         try {
           const list = await fetchDevices()
@@ -67,19 +68,8 @@ export default function page() {
             columns={columns}
             data={devices}
             searchKey="device_type"
-            // filters={[
-            //   {
-            //     key: "device_type",
-            //     label: "Device Type",
-            //     options: [
-            //       {label: "Tablet",value: "Tablet"},
-            //       {label: "Printer",value: "Printer"}
-            //     ]
-            //   },
-              
-            //   // Add more filters as needed
-            // ]}
-            // pageSize={5}
+            total={total}
+            pageSize={10}
             />
         </CardContent>
     </Card>

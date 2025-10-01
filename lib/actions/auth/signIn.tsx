@@ -10,6 +10,7 @@ import { z } from "zod";
 import { inviteStaff } from "../email/send";
 import { resetPasswordSchema } from "@/types/auth/resetPasswordSchema";
 import { cache } from 'react';
+import { cookies } from "next/headers";
 
 export const SignIn = async (
   credentials: z.infer<typeof signInSchema>
@@ -49,6 +50,14 @@ export const SignIn = async (
       `)
       .eq('id', user.id)
       .single();
+
+      const cookieStore = await cookies()
+      cookieStore.set({
+        name:"authenticatedUser",
+        value:JSON.stringify(internal_profile),
+        httpOnly:true,
+        secure:process.env.NODE_ENV === "production"
+      })
 
  
       // console.log("The profile", internal_profile)
@@ -382,3 +391,16 @@ export async function updateUserProfile(userId: string, data: any) {
   }
 }
 
+export const getAuthenticatedUser = async (): Promise<any> => {
+  const cookieStore = await cookies();
+  const authUserCookie = cookieStore.get("authenticatedUser");
+
+  if (!authUserCookie) return undefined;
+
+  try {
+    return JSON.parse(authUserCookie.value);
+  } catch (error) {
+    console.error("Failed to parse authenticated user cookie:", error);
+    return undefined;
+  }
+};

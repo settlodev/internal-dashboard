@@ -1,4 +1,4 @@
-import { BriefcaseBusiness,ChartColumn, MapPin, Receipt, Settings2,Tablet,Users } from "lucide-react"
+import { BriefcaseBusiness,ChartColumn,Receipt, Settings2,Tablet,Users } from "lucide-react"
 
 const data = {
   navMain: [
@@ -19,60 +19,107 @@ const data = {
       title: "Business Owners",
       url: "#",
       icon: Users,
-      // isActive: true,
+      isActive: false,
       items: [
+        {
+          title: "Unverified Emails",
+          url: "/unverified-emails",
+          requiredPermission: "",
+        },
+        {
+          title: "Incomplete Setup",
+          url: "/incomplete-setup",
+          requiredPermission: "",
+        },
+        {
+          title: "No Order",
+          url: "/no-orders",
+          requiredPermission: "view:owners",
+        },
+        {
+          title: "Last Order Placed",
+          url: "/last-order-in-x-days",
+          requiredPermission: "view:owners",
+        },
+        {
+          title: "Trial Subscription Expired",
+          url: "/trial-expired",
+          requiredPermission: "view:owners",
+        },
+        {
+          title: "Expiring Sub In X days",
+          url: "/expiring-subscription",
+          requiredPermission: "view:owners",
+        },
+        {
+          title: "Expired Subscriptions",
+          url: "/expired-subscription",
+          requiredPermission: "view:owners",
+        },
         {
           title: "Owners",
           url: "/owners",
           requiredPermission: "view:owners",
         },
-
       ],
     },
     {
-      title: "Business Management",
+      title: "Customer Follow Ups",
       url: "#",
       icon: BriefcaseBusiness,
       items: [
         {
-          title: "Business",
-          url: "/businesses",
-          requiredPermission: "view:businesses",
+          title: "Follow Ups",
+          url: "/feedback-on-follow-ups",
+          requiredPermission: "",
         },
       ],
     },
-    {
-      title: "Business Location",
-      url: "#",
-      icon: MapPin,
-      items: [
-        {
-          title: "All Locations",
-          url: "/locations",
-          requiredPermission: "view:locations",
-        },
-        {
-          title: "Trial Locations",
-          url: "/trial-locations",
-          requiredPermission: "view:locations",
-        },
-        {
-          title: "Almost Due Locations",
-          url: "/almost-due-locations",
-          requiredPermission: "view:locations",
-        },
-        {
-          title: "Due Locations",
-          url: "/due-locations",
-          requiredPermission: "view:locations",
-        },
-        {
-          title: "Expired Locations",
-          url: "/expired-locations",
-          requiredPermission: "view:locations",
-        },
-      ],
-    },
+
+    // {
+    //   title: "Business Management",
+    //   url: "#",
+    //   icon: BriefcaseBusiness,
+    //   items: [
+    //     {
+    //       title: "Business",
+    //       url: "/businesses",
+    //       requiredPermission: "view:businesses",
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: "Business Location",
+    //   url: "#",
+    //   icon: MapPin,
+    //   items: [
+    //     {
+    //       title: "All Locations",
+    //       url: "/locations",
+    //       requiredPermission: "view:locations",
+    //     },
+    //     {
+    //       title: "Trial Locations",
+    //       url: "/trial-locations",
+    //       requiredPermission: "view:locations",
+    //     },
+    //     {
+    //       title: "Almost Due Locations",
+    //       url: "/almost-due-locations",
+    //       requiredPermission: "view:locations",
+    //     },
+    //     {
+    //       title: "Due Locations",
+    //       url: "/due-locations",
+    //       requiredPermission: "view:locations",
+    //     },
+    //     {
+    //       title: "Expired Locations",
+    //       url: "/expired-locations",
+    //       requiredPermission: "view:locations",
+    //     },
+    //   ],
+    // },
     // {
     //   title: "Subscriptions",
     //   url: "#",

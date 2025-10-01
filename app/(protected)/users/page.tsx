@@ -76,6 +76,8 @@ export default function Page() {
             columns={columns}
             data={userProfile}
             searchKey="first_name"
+            total={100}
+            pageSize={10}
           />
         </CardContent>
       </Card>

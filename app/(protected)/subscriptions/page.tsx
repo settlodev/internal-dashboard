@@ -178,6 +178,8 @@ export default function Subscription() {
               columns={columns}
               data={filteredSubscriptions}
               searchKey="locationName"
+              total={100}
+              pageSize={10}
             />
           </CardContent>
         </Card>

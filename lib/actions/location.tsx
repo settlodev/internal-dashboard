@@ -106,7 +106,7 @@ export const requestSubscription = async (
 ): Promise<FormResponse> => {
     const validRequest = RequestSubscriptionSchema.safeParse(request);
 
-    // console.log("The valid request", validRequest )
+    
 
     if (!validRequest.success) {
         return parseStringify({

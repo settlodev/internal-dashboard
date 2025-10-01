@@ -36,6 +36,8 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     searchKey: string;
+    total:number;
+    pageSize?:number;
     searchParams?: {
         [key: string]: string | string[] | undefined
     };
@@ -57,6 +59,8 @@ export function DataTable<TData, TValue>({
     data,
     searchKey,
     filters,
+    total,
+    pageSize: initialPageSize = 10
 }: DataTableProps<TData, TValue>) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -73,7 +77,7 @@ export function DataTable<TData, TValue>({
     const [pageIndex, setPageIndex] = useState(pageIndexFromUrl);
 
     // Add state for page size (default to 10)
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(initialPageSize);
 
     // Handle filter change for a specific filter key
     const handleFilterChange = (filterKey: string, value: string) => {
@@ -102,23 +106,23 @@ export function DataTable<TData, TValue>({
         }
     }
 
-    // Create filter description for export
-    // const getFilterDescription = () => {
-    //     const activeFilters = Object.entries(selectedFilters)
-    //         .filter(([_, value]) => value !== 'all')
-    //         .map(([key, value]) => {
-    //             const filterDef = filters?.find(f => f.key === key);
-    //             const optionLabel = filterDef?.options.find(o => o.value.toString() === value)?.label;
-    //             return `${filterDef?.label || key}: ${optionLabel || value}`;
-    //         });
+   // Handle page changes
+   const handlePaginationChange = (updater: any) => {
+    const newState = typeof updater === "function" 
+        ? updater({ pageIndex, pageSize })
+        : updater;
 
-    //     const searchValue = table.getColumn(searchKey)?.getFilterValue() as string;
-    //     if (searchValue) {
-    //         activeFilters.push(`Search: "${searchValue}"`);
-    //     }
+    setPageIndex(newState.pageIndex);
+    setPageSize(newState.pageSize);
+    
+    // Update URL with new page index
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set('page', newState.pageIndex.toString());
+    newSearchParams.set('limit', newState.pageSize.toString());
+    
+    router.push(`?${newSearchParams.toString()}`, { scroll: false });
+}
 
-    //     return activeFilters.join(', ');
-    // };
 
     const table = useReactTable({
         data,
@@ -131,6 +135,8 @@ export function DataTable<TData, TValue>({
         getFilteredRowModel: getFilteredRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
+        manualPagination: true, 
+        pageCount: Math.ceil(total / pageSize),
         filterFns: {
             exactMatch: (row, id, filterValue) => {
                 return row.getValue(id) === filterValue;
@@ -146,78 +152,16 @@ export function DataTable<TData, TValue>({
                 pageSize
             }
         },
-        onPaginationChange: (updater) => {
-            if (typeof updater === "function") {
-                const newState = updater({
-                    pageIndex,
-                    pageSize
-                });
-                setPageIndex(newState.pageIndex);
-                setPageSize(newState.pageSize);
-                router.push(`?page=${newState.pageIndex}`, { scroll: false });
-            } else {
-                setPageIndex(updater.pageIndex);
-                setPageSize(updater.pageSize);
-                router.push(`?page=${updater.pageIndex}`, { scroll: false });
-            }
-        }
+        onPaginationChange: handlePaginationChange
     })
 
-   //Extract column information for export with improved handling
-// const exportColumns = columns
-//   .filter(col => {
-//     const id = String(col.id || '');
-//     // Skip select and actions columns
-//     return id !== 'select' && id !== 'actions';
-//   })
-//   .map(column => {
-//     const id = String(column.accessorKey || column.id || '');
-//     const headerValue = column.header;
-    
-//     // Get header text for different header types
-//     let headerText = id;
-//     if (typeof headerValue === 'string') {
-//       headerText = headerValue;
-//     } else if (headerValue && typeof headerValue === 'object' && 'name' in headerValue) {
-//       headerText = headerValue.name;
-//     } else if (column.id === 'name') {
-//       headerText = 'Business Location';
-//     }
 
-//     // Create format function for date fields
-//     let format;
-//     if (id.includes('date') || id.includes('Date')) {
-//       format = (value: any) => {
-//         if (!value) return '';
-//         try {
-//           const date = new Date(value);
-//           return date.toLocaleDateString('en-US', {
-//             day: '2-digit',
-//             month: 'short',
-//             year: 'numeric'
-//           });
-//         } catch (e) {
-//           return String(value);
-//         }
-//       };
-//     }
-
-//     return {
-//       id,
-//       header: headerText,
-//       accessorKey: column.accessorKey,
-//       format
-//     };
-//   });
-
-// Get filtered data for export (all rows, not just current page)
-// const exportData = table.getFilteredRowModel().rows.map(row => row.original);
 
     return (
         <div className="flex flex-col gap-2">
         {/* Search and filters section - made responsive */}
-        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-4 py-4">
-            <div className="flex flex-wrap items-center gap-3">
+        
+            <div className="w-full my-2">
                 <Input
                     placeholder={`Search ...`}
                     value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
@@ -253,9 +197,6 @@ export function DataTable<TData, TValue>({
                 </div>
             </div>
             
-           
-        </div>
-        
         {/* Responsive table with horizontal scroll on small screens */}
         <div className="rounded-md border overflow-x-auto">
             <Table>

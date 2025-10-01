@@ -30,7 +30,8 @@ export default async function Dashboard() {
                     columns={columns}
                     data={roles}
                     searchKey="name"
-                    // pageSize={5}
+                    total={100}
+                    pageSize={10}
                     />
                 </CardContent>
             </Card>

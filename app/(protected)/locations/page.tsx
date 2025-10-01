@@ -54,6 +54,7 @@ export default function Dashboard() {
   
   // Use our hook to get export columns
   const exportColumns = useExportColumns(columns);
+  const total = 100
   
   // Calculate summary statistics for export
   const summaryData = useMemo(() => {
@@ -231,6 +232,8 @@ export default function Dashboard() {
               columns={columns}
               data={filteredLocations}
               searchKey="name"
+              total={total}
+              pageSize={10}
             />
           </CardContent>
         </Card>

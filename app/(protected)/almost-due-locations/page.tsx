@@ -162,6 +162,8 @@ export default function AlmostDueLocations() {
               columns={columns}
               data={filteredLocations}
               searchKey="name"
+              total={10}
+              pageSize={10}
              
             />
           </CardContent>

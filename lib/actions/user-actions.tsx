@@ -3,8 +3,10 @@ import { Profile, ProfileData, User } from "@/types/users/type"
 import { parseStringify } from "../utils"
 import { createClient } from "../supabase/server"
 import { fetchAllBusiness } from "./business"
-import { fetchAllBusinessOwners } from "./business-owners"
+// import { fetchAllBusinessOwners } from "./business-owners"
 import { Business } from "@/types/business/types"
+import { searchBusinessOwners } from "./business-owners"
+import { Owner } from "@/types/owners/type"
 
 export const getUserWithProfile = async () => {
   const supabase = await createClient()
@@ -155,9 +157,11 @@ export async function fetchProfileDataById(id: string): Promise<Profile | null> 
 }
 
 export const fetchBusinessesByReferralCode = async (referralCode: string): Promise<Business[]> => {
+  const page = 1;
+  const pageSize = 500
   try {
     // Get all business owners and businesses
-    const owners = await fetchAllBusinessOwners();
+    const owners: Owner[] = await searchBusinessOwners(page,pageSize);
     const businesses = await fetchAllBusiness();
     
     // Find owners who used this referral code
@@ -186,8 +190,10 @@ export const fetchBusinessesByReferralCode = async (referralCode: string): Promi
 }
 
 export const getOwnerDetails = async (ownerId: string): Promise<string> => {
+  const page = 1;
+  const pageSize = 500;
   try {
-    const owners = await fetchAllBusinessOwners();
+    const owners: Owner[] = await searchBusinessOwners(page, pageSize);
     const owner = owners.find(o => o.id === ownerId);
     
     if (owner) {
