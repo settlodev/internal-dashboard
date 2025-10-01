@@ -158,7 +158,7 @@ export async function fetchProfileDataById(id: string): Promise<Profile | null> 
 
 export const fetchBusinessesByReferralCode = async (referralCode: string): Promise<Business[]> => {
   const page = 1;
-  const pageSize = 10000
+  const pageSize = 500
   try {
     // Get all business owners and businesses
     const owners: Owner[] = await searchBusinessOwners(page,pageSize);
@@ -191,7 +191,7 @@ export const fetchBusinessesByReferralCode = async (referralCode: string): Promi
 
 export const getOwnerDetails = async (ownerId: string): Promise<string> => {
   const page = 1;
-  const pageSize = 10000;
+  const pageSize = 500;
   try {
     const owners: Owner[] = await searchBusinessOwners(page, pageSize);
     const owner = owners.find(o => o.id === ownerId);

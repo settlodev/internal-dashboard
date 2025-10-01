@@ -42,14 +42,14 @@ const BusinessOwnerSelector: React.FC<BusinessOwnerSelectorProps> = ({
   const [businessOwners, setBusinessOwners] = useState<Owner[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const page = 1;
-  const pageSize = 10000
+  const pageSize = 500
 
   useEffect(() => {
     async function loadBusinessOwners() {
       try {
         setIsLoading(true);
         const fetchedOwners = await searchBusinessOwners(page,pageSize);
-        setBusinessOwners(fetchedOwners);
+        setBusinessOwners(fetchedOwners.content);
       } catch (error: any) {
         console.log("Error fetching business owners:", error);
       } finally {
@@ -62,6 +62,7 @@ const BusinessOwnerSelector: React.FC<BusinessOwnerSelectorProps> = ({
   const getDisplayName = (owner: Owner) => {
     return `${owner.firstName} ${owner.lastName}`;
   };
+  
 
   const ownerOptions = businessOwners.map((owner) => ({
     id: owner.id,

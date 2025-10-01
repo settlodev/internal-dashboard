@@ -40,7 +40,7 @@ export const searchBusinessOwners = async (
 
     const data = response.content || response.data || response;
 
-
+    console.log("The business owners are",data)
     if (!Array.isArray(data)) {
       throw new Error('Expected array but got: ' + typeof data);
     }
@@ -524,9 +524,6 @@ export const getBusinessOwnerSummary = async (id: string) => {
   try {
     const apiClient = new ApiClient();
     const data = await apiClient.post(`/api/internal/users/summary/${id}`,{});
-
-    console.log("The business owner summary is",data)
-
     return parseStringify(data);
   } catch (error) {
     throw error;
