@@ -46,7 +46,7 @@ export function LocationSubscriptionExpiresInXDays({
   const page = Number(searchParams.page) || 0
   const size = Number(searchParams.limit) || 10
 
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<DaysFormValues>({
+  const { register, handleSubmit, formState: { errors }} = useForm<DaysFormValues>({
     defaultValues: {
       daysBeforeExpiry: 5
     }

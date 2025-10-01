@@ -50,3 +50,5 @@ export declare interface Owner  {
         internalProfileLastName:string,
         internalFollowUpTypeName:string,
     }
+
+   

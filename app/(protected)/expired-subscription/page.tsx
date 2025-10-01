@@ -3,8 +3,7 @@
 import Loading from '@/components/widgets/loader'
 import { ProtectedComponent } from '@/components/auth/protectedComponent'
 import Unauthorized from '@/components/code/401'
-import { expiredSubscription, trialExpired } from '@/lib/actions/business-owners';
-import { TrialExpired } from '@/components/subscriptions/trial-expired';
+import { expiredSubscription} from '@/lib/actions/business-owners';
 import { ExpiredSubscription } from '@/components/subscriptions/expired-subscription';
 
 type Params = { 
@@ -25,7 +24,7 @@ async function Page({ searchParams }: Params) {
   const size = Number(resolvedSearchParams.limit) || 10;
 
   try {
-    // Pass default 5 days for initial load
+    
     const data = await expiredSubscription(page, size, undefined, undefined)
 
     const sortedUsersWithIcomplete = data.content.sort((a:any, b:any) => 

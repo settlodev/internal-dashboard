@@ -1,56 +1,26 @@
 
-
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Card, CardHeader, CardContent, CardTitle} from '@/components/ui/card';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
+import { Avatar,AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Mail, Phone, Building, User, UserRound, AlertTriangle, Eye, Calendar, Shield, TrendingUp, CreditCard } from 'lucide-react';
-import { getBusinessOwner } from '@/lib/actions/business-owners';
+import { MapPin, Building, AlertTriangle, Eye, Shield, TrendingUp, CreditCard, Mail, Phone, UserRound, Calendar, Package, Warehouse } from 'lucide-react';
+import { getBusinessOwnerSummary } from '@/lib/actions/business-owners';
 import { UUID } from 'crypto';
 import { BreadcrumbNav } from '@/components/layout/breadcrumbs';
 import { ProtectedComponent } from '@/components/auth/protectedComponent';
 import Link from 'next/link';
-import { Business } from '@/types/business/types';
 import { FeedbackDialog } from '@/components/widgets/feedback_dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { UserSummary } from '@/types/owners/summary';
 
-interface BusinessOwner {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  emailVerified: boolean;
-  phoneNumber: string;
-  phoneNumberVerified: boolean;
-  gender: string;
-  identificationId?: string;
-  avatar?: string;
-  isOwner: boolean;
-  bio?: string;
-  businessComplete: boolean;
-  locationComplete: boolean;
-  region: string;
-  district: string;
-  ward: string;
-  municipal?: string;
-  areaCode: string;
-  isMigrated?: boolean;
-  accountNumber: string;
-  status: boolean;
-  referredByCode?: string;
-  theme: string;
-  businesses?: Business[];
-  dateCreated?: string;
-}
-
-const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => {
+const ProfileDisplay = ({ businessOwner }: { businessOwner: UserSummary }) => {
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
 
-  const formatDate = (dateString?: string) => {
+  const formatDate = (dateString?: string | null) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -59,6 +29,23 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
     });
   };
 
+  const formatDateTime = (dateString?: string | null) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const isEmailVerified = businessOwner.userDetails.emailVerified !== null;
+  const hasLocation = Boolean(
+    businessOwner.userDetails.region && 
+    businessOwner.userDetails.district
+  );
+
   return (
     <div className="flex flex-col w-full gap-6 max-w-7xl mx-auto">
       {/* Header Section */}
@@ -66,7 +53,7 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
         <div>
           <BreadcrumbNav items={[
             { title: "Business Owners", link: "/owners" },
-            { title: `${businessOwner.firstName} ${businessOwner.lastName}`, link: "" }
+            { title: `${businessOwner.userDetails.firstName} ${businessOwner.userDetails.lastName}`, link: "" }
           ]} />
           <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mt-2">
             Business Owner Profile
@@ -77,9 +64,9 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
         </div>
         
         <div className="flex gap-3">
-          <FeedbackDialog ownerId={businessOwner.id} />
-          {businessOwner.businesses && businessOwner.businesses[0] ? (
-            <Link href={`/businesses/${businessOwner.businesses[0]}`}>
+          <FeedbackDialog ownerId={businessOwner.userDetails.id} />
+          {businessOwner.businessDetails && businessOwner.businessDetails.length > 0 ? (
+            <Link href={`/businesses/${businessOwner.businessDetails[0].id}`}>
               <Button variant="outline" className="flex items-center gap-2">
                 <Eye className="h-4 w-4" />
                 View Business
@@ -100,41 +87,31 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
         <div className="xl:col-span-1 space-y-6">
           {/* Profile Summary Card */}
           <Card className="relative overflow-hidden border-0 shadow-lg">
-  
             <CardContent className="pt-8 pb-6">
               <div className="flex flex-col items-center text-center">
                 <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
-                  <AvatarImage
-                    src={businessOwner.avatar}
-                    alt={`Profile photo of ${businessOwner.firstName} ${businessOwner.lastName}`}
-                  />
+                  
                   <AvatarFallback className="text-lg font-semibold bg-gradient-to-br from-blue-100 to-purple-100">
-                    {getInitials(businessOwner.firstName, businessOwner.lastName)}
+                    {getInitials(businessOwner.userDetails.firstName, businessOwner.userDetails.lastName)}
                   </AvatarFallback>
                 </Avatar>
                 
                 <div className="mt-4">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                    {businessOwner.firstName} {businessOwner.lastName}
+                    {businessOwner.userDetails.firstName} {businessOwner.userDetails.lastName}
                   </h2>
-                  <p className="text-gray-600 dark:text-gray-400 mt-1">{businessOwner.email}</p>
+                  <p className="text-gray-600 dark:text-gray-400 mt-1">{businessOwner.userDetails.email}</p>
                   
                   <div className="flex items-center justify-center gap-2 mt-3">
-                    {businessOwner.isOwner && (
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                        <User className="h-3 w-3 mr-1" />
-                        Owner
-                      </Badge>
-                    )}
-                    <Badge variant={businessOwner.status ? "default" : "destructive"}>
-                      {businessOwner.status ? "Active" : "Inactive"}
+                    <Badge variant={businessOwner.userDetails.gender ? "secondary" : "outline"} className="capitalize">
+                      {businessOwner.userDetails.gender?.toLowerCase() || "Not specified"}
                     </Badge>
                   </div>
                 </div>
 
-                {businessOwner.bio && (
+                {businessOwner.userDetails.bio && (
                   <p className="text-gray-600 dark:text-gray-300 mt-4 text-sm leading-relaxed">
-                    {businessOwner.bio}
+                    {businessOwner.userDetails.bio}
                   </p>
                 )}
               </div>
@@ -152,26 +129,26 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Email Verification</span>
-                <Badge variant={businessOwner.emailVerified ? "default" : "destructive"}>
-                  {businessOwner.emailVerified ? "Verified" : "Pending"}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Phone Verification</span>
-                <Badge variant={businessOwner.phoneNumberVerified ? "default" : "destructive"}>
-                  {businessOwner.phoneNumberVerified ? "Verified" : "Pending"}
+                <Badge variant={isEmailVerified ? "default" : "destructive"}>
+                  {isEmailVerified ? "Verified" : "Pending"}
                 </Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Business Setup</span>
-                <Badge variant={businessOwner.businessComplete ? "default" : "secondary"}>
-                  {businessOwner.businessComplete ? "Complete" : "Incomplete"}
+                <Badge variant={businessOwner.businessDetails.length > 0 ? "default" : "secondary"}>
+                  {businessOwner.businessDetails.length > 0 ? "Complete" : "Incomplete"}
                 </Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Location</span>
-                <Badge variant={businessOwner.locationComplete ? "default" : "secondary"}>
-                  {businessOwner.locationComplete ? "Verified" : "Pending"}
+                <Badge variant={hasLocation ? "default" : "secondary"}>
+                  {hasLocation ? "Verified" : "Pending"}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Total Businesses</span>
+                <Badge variant="outline" className="font-semibold">
+                  {businessOwner.businessDetails.length}
                 </Badge>
               </div>
             </CardContent>
@@ -184,7 +161,7 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
           <Card className="border-0 shadow-sm">
             <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <User className="h-5 w-5 text-blue-600" />
+                <UserRound className="h-5 w-5 text-blue-600" />
                 Personal Information
               </CardTitle>
             </CardHeader>
@@ -197,7 +174,7 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Email Address</p>
-                      <p className="font-medium">{businessOwner.email}</p>
+                      <p className="font-medium">{businessOwner.userDetails.email}</p>
                     </div>
                   </div>
                   
@@ -207,7 +184,7 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Phone Number</p>
-                      <p className="font-medium">{businessOwner.phoneNumber}</p>
+                      <p className="font-medium">{businessOwner.userDetails.phoneNumber}</p>
                     </div>
                   </div>
                 </div>
@@ -219,7 +196,7 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Gender</p>
-                      <p className="font-medium capitalize">{businessOwner.gender || 'Not specified'}</p>
+                      <p className="font-medium capitalize">{businessOwner.userDetails.gender?.toLowerCase() || 'Not specified'}</p>
                     </div>
                   </div>
                   
@@ -229,7 +206,7 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Member Since</p>
-                      <p className="font-medium">{formatDate(businessOwner.dateCreated)}</p>
+                      <p className="font-medium">{formatDate(businessOwner.userDetails.dateCreated)}</p>
                     </div>
                   </div>
                 </div>
@@ -238,38 +215,55 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
           </Card>
 
           {/* Location Information Card */}
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <MapPin className="h-5 w-5 text-green-600" />
-                Location Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg mt-1">
-                  <Building className="h-4 w-4 text-green-600" />
+          {hasLocation && (
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <MapPin className="h-5 w-5 text-green-600" />
+                  Location Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg mt-1">
+                    <Building className="h-4 w-4 text-green-600" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                    {businessOwner.userDetails.region && (
+                      <div>
+                        <p className="text-sm text-gray-500">Region</p>
+                        <p className="font-medium">{businessOwner.userDetails.region}</p>
+                      </div>
+                    )}
+                    {businessOwner.userDetails.district && (
+                      <div>
+                        <p className="text-sm text-gray-500">District</p>
+                        <p className="font-medium">{businessOwner.userDetails.district}</p>
+                      </div>
+                    )}
+                    {businessOwner.userDetails.ward && (
+                      <div>
+                        <p className="text-sm text-gray-500">Ward</p>
+                        <p className="font-medium">{businessOwner.userDetails.ward}</p>
+                      </div>
+                    )}
+                    {businessOwner.userDetails.municipal && (
+                      <div>
+                        <p className="text-sm text-gray-500">Municipal</p>
+                        <p className="font-medium">{businessOwner.userDetails.municipal}</p>
+                      </div>
+                    )}
+                    {businessOwner.userDetails.areaCode && (
+                      <div>
+                        <p className="text-sm text-gray-500">Area Code</p>
+                        <p className="font-medium">{businessOwner.userDetails.areaCode}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
-                  <div>
-                    <p className="text-sm text-gray-500">Region & District</p>
-                    <p className="font-medium">{businessOwner.region}, {businessOwner.district}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Ward & Municipal</p>
-                    <p className="font-medium">
-                      {businessOwner.ward}
-                      {businessOwner.municipal && `, ${businessOwner.municipal}`}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Area Code</p>
-                    <p className="font-medium">{businessOwner.areaCode}</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Account Information Card */}
           <Card className="border-0 shadow-sm">
@@ -285,36 +279,113 @@ const ProfileDisplay = ({ businessOwner }: { businessOwner: BusinessOwner }) => 
                   <CreditCard className="h-8 w-8 text-blue-600" />
                   <div>
                     <p className="text-sm text-gray-500">Account Number</p>
-                    <p className="font-medium text-lg">{businessOwner.accountNumber}</p>
+                    <p className="font-medium text-lg">{businessOwner.userDetails.accountNumber}</p>
                   </div>
                 </div>
                 
-                <div>
-                  <p className="text-sm text-gray-500">Referral Code</p>
-                  <p className="font-medium">{businessOwner.referredByCode || "None"}</p>
-                </div>
+                {businessOwner.userDetails.identificationId && (
+                  <div>
+                    <p className="text-sm text-gray-500">Identification ID</p>
+                    <p className="font-medium">{businessOwner.userDetails.identificationId}</p>
+                  </div>
+                )}
                 
                 <div>
-                  <p className="text-sm text-gray-500">Theme Preference</p>
-                  <Badge variant="outline" className="capitalize">
-                    {businessOwner.theme || "Default"}
-                  </Badge>
-                </div>
-                
-                <div>
-                  <p className="text-sm text-gray-500">Migration Status</p>
-                  <Badge variant={businessOwner.isMigrated ? "default" : "secondary"}>
-                    {businessOwner.isMigrated ? "Migrated" : "Not Migrated"}
-                  </Badge>
-                </div>
-                
-                <div>
-                  <p className="text-sm text-gray-500">Identification ID</p>
-                  <p className="font-medium">{businessOwner.identificationId || "Not provided"}</p>
+                  <p className="text-sm text-gray-500">Email Verified</p>
+                  <p className="font-medium text-sm">{isEmailVerified ? formatDateTime(businessOwner.userDetails.emailVerified) : "Not verified"}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          {/* Business Details Card */}
+          {businessOwner.businessDetails.length > 0 && (
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Building className="h-5 w-5 text-orange-600" />
+                  Business Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="space-y-6">
+                  {businessOwner.businessDetails.map((business) => (
+                    <div key={business.id} className="border-b last:border-b-0 pb-6 last:pb-0">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="font-semibold text-lg">{business.name}</h3>
+                          <p className="text-sm text-gray-500">Created: {formatDate(business.businessCreationDate)}</p>
+                        </div>
+                        <Link href={`/businesses/${business.id}`}>
+                          <Button size="sm" variant="outline">
+                            <Eye className="h-3 w-3 mr-1" />
+                            View
+                          </Button>
+                        </Link>
+                      </div>
+
+                      {/* Locations */}
+                      {business.locationDetails.length > 0 && (
+                        <div className="mb-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <MapPin className="h-4 w-4 text-green-600" />
+                            <span className="text-sm font-medium">Locations ({business.locationDetails.length})</span>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 ml-6">
+                            {business.locationDetails.map((location) => (
+                              <div key={location.locationId} className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                                <p className="font-medium text-sm">{location.locationName}</p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {location.lastSubscriptionPackageName ? (
+                                    <>
+                                      <Package className="h-3 w-3 inline mr-1" />
+                                      {location.lastSubscriptionPackageName}
+                                    </>
+                                  ) : (
+                                    "No subscription"
+                                  )}
+                                </p>
+                                {location.lastSubscriptionEndDate && (
+                                  <p className="text-xs text-gray-500">
+                                    Expires: {formatDate(location.lastSubscriptionEndDate)}
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Warehouses */}
+                      {business.warehouseDetails.length > 0 && (
+                        <div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <Warehouse className="h-4 w-4 text-blue-600" />
+                            <span className="text-sm font-medium">Warehouses ({business.warehouseDetails.length})</span>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 ml-6">
+                            {business.warehouseDetails.map((warehouse) => (
+                              <div key={warehouse.warehouseId} className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                                <p className="font-medium text-sm">{warehouse.warehouseName}</p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Created: {formatDate(warehouse.warehouseCreationDate)}
+                                </p>
+                                {warehouse.lastSubscriptionEndDate && (
+                                  <p className="text-xs text-gray-500">
+                                    Subscription: {formatDate(warehouse.lastSubscriptionEndDate)}
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
@@ -358,9 +429,8 @@ const ErrorDisplay = () => (
   </div>
 );
 
-// Main component
 const BusinessOwnerProfile = ({ params }: { params: { id: string } }) => {
-  const [businessOwner, setBusinessOwner] = useState<BusinessOwner | null>(null);
+  const [businessOwner, setBusinessOwner] = useState<UserSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -368,7 +438,8 @@ const BusinessOwnerProfile = ({ params }: { params: { id: string } }) => {
     const fetchBusinessOwner = async () => {
       try {
         setIsLoading(true);
-        const data = await getBusinessOwner(params.id as UUID);
+        const data = await getBusinessOwnerSummary(params.id as UUID);
+        console.log("The user data are", data.userDetails);
         setBusinessOwner(data);
       } catch (err) {
         console.error("Failed to load business owner:", err);

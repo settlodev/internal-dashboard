@@ -10,7 +10,6 @@ import { DatePickerWithRange } from '@/components/widgets/date-range-picker'
 import { Owner } from '@/types/owners/type'
 import { trialExpired } from '@/lib/actions/business-owners'
 import { columns } from '../table/no-orders/column'
-import { useForm } from 'react-hook-form'
 import { Label } from '@/components/ui/label'
 
 interface Props {
@@ -20,9 +19,7 @@ interface Props {
   breadcrumbItems: { title: string; link: string }[]
 }
 
-interface DaysFormValues {
-  daysBeforeExpiry: number
-}
+
 
 export function TrialExpired({ 
   initialBusinessOwners, 
@@ -40,15 +37,11 @@ export function TrialExpired({
     };
   })
   const [total, setTotal] = useState(totalElements)
-  const [daysValue, setDaysValue] = useState<number>(5)
+  
   const page = Number(searchParams.page) || 0
   const size = Number(searchParams.limit) || 10
 
-  const { register, handleSubmit, formState: { errors }} = useForm<DaysFormValues>({
-    defaultValues: {
-      daysBeforeExpiry: 5
-    }
-  })
+
 
   const fetchExpiredTrial = async () => {
     setIsLoading(true)
@@ -75,9 +68,6 @@ export function TrialExpired({
     setDateRange(newRange)
   }
 
-  const onSubmit = (data: DaysFormValues) => {
-    setDaysValue(data.daysBeforeExpiry || 5)
-  }
 
   if (isLoading) {
     return (

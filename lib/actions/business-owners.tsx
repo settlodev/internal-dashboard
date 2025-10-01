@@ -519,3 +519,16 @@ export const recordFeedback = async (
   revalidatePath("/owners");
   return parseStringify(formResponse)
 }
+
+export const getBusinessOwnerSummary = async (id: string) => {
+  try {
+    const apiClient = new ApiClient();
+    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{});
+
+    console.log("The business owner summary is",data)
+
+    return parseStringify(data);
+  } catch (error) {
+    throw error;
+  }
+}

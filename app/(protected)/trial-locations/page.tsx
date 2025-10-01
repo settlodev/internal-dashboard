@@ -162,6 +162,8 @@ export default function DueLocations() {
               columns={columns}
               data={filteredLocations}
               searchKey="name"
+              total={100}
+              pageSize={10}
              
             />
           </CardContent>

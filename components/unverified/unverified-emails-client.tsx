@@ -64,9 +64,7 @@ export function UnverifiedEmailsClient({
     }
   }
 
-  const handleRefresh = () => {
-    fetchBusinessOwners(true)
-  }
+  
 
   useEffect(() => {
     fetchBusinessOwners()
