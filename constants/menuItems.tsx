@@ -1,4 +1,4 @@
-import { BriefcaseBusiness,ChartColumn, MapPin, Receipt, Settings2,Tablet,Users } from "lucide-react"
+import { BriefcaseBusiness,ChartColumn,Receipt, Settings2,Tablet,Users } from "lucide-react"
 
 const data = {
   navMain: [
@@ -76,50 +76,50 @@ const data = {
       ],
     },
 
-    {
-      title: "Business Management",
-      url: "#",
-      icon: BriefcaseBusiness,
-      items: [
-        {
-          title: "Business",
-          url: "/businesses",
-          requiredPermission: "view:businesses",
-        },
-      ],
-    },
-    {
-      title: "Business Location",
-      url: "#",
-      icon: MapPin,
-      items: [
-        {
-          title: "All Locations",
-          url: "/locations",
-          requiredPermission: "view:locations",
-        },
-        {
-          title: "Trial Locations",
-          url: "/trial-locations",
-          requiredPermission: "view:locations",
-        },
-        {
-          title: "Almost Due Locations",
-          url: "/almost-due-locations",
-          requiredPermission: "view:locations",
-        },
-        {
-          title: "Due Locations",
-          url: "/due-locations",
-          requiredPermission: "view:locations",
-        },
-        {
-          title: "Expired Locations",
-          url: "/expired-locations",
-          requiredPermission: "view:locations",
-        },
-      ],
-    },
+    // {
+    //   title: "Business Management",
+    //   url: "#",
+    //   icon: BriefcaseBusiness,
+    //   items: [
+    //     {
+    //       title: "Business",
+    //       url: "/businesses",
+    //       requiredPermission: "view:businesses",
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: "Business Location",
+    //   url: "#",
+    //   icon: MapPin,
+    //   items: [
+    //     {
+    //       title: "All Locations",
+    //       url: "/locations",
+    //       requiredPermission: "view:locations",
+    //     },
+    //     {
+    //       title: "Trial Locations",
+    //       url: "/trial-locations",
+    //       requiredPermission: "view:locations",
+    //     },
+    //     {
+    //       title: "Almost Due Locations",
+    //       url: "/almost-due-locations",
+    //       requiredPermission: "view:locations",
+    //     },
+    //     {
+    //       title: "Due Locations",
+    //       url: "/due-locations",
+    //       requiredPermission: "view:locations",
+    //     },
+    //     {
+    //       title: "Expired Locations",
+    //       url: "/expired-locations",
+    //       requiredPermission: "view:locations",
+    //     },
+    //   ],
+    // },
     // {
     //   title: "Subscriptions",
     //   url: "#",

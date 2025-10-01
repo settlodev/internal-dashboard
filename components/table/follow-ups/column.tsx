@@ -1,7 +1,6 @@
 "use client"
 import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
-import { CellAction } from "./cell-action"
 import { FollowUp} from "@/types/owners/type"
 
 export const columns: ColumnDef<FollowUp>[] = [
@@ -29,7 +28,20 @@ export const columns: ColumnDef<FollowUp>[] = [
     },
     {
         accessorKey:'internalProfileFirstName',
-        header:'Follow Up By'
+        header:'Follow Up By',
+        cell: ({ row }) => {
+          const firstName = row.original.internalProfileFirstName
+          const lastName = row.original.internalProfileLastName
+          
+          return (
+              <div className="flex flex-col space-y-1">
+                  <div className="flex items-center">
+                      <span>{firstName} {lastName}</span>
+                  </div>
+                  
+              </div>
+          )
+      }
     },
    
     {
@@ -54,9 +66,33 @@ export const columns: ColumnDef<FollowUp>[] = [
             )
         }
     },
-
     {
-        id: "actions",
-        cell: ({ row }) => <CellAction data={row.original} />,
+      accessorKey: "dateCreated",
+      header: "Follow Up Date",
+      cell: ({ row }) => {
+        const date = row.original.dateCreated;
+        if (!date) return "-";
+        
+        try {
+          return new Intl.DateTimeFormat('en-US').format(new Date(date));
+        } catch {
+          return "Invalid date";
+        }
+      }
     },
+    {
+      accessorKey: "nextFollowUpDate",
+      header: "Next Follow Up Date",
+      cell: ({ row }) => {
+        const nextDate = row.original.nextFollowUpDate;
+        if (!nextDate) return "-";
+        
+        try {
+          return new Intl.DateTimeFormat('en-US').format(new Date(nextDate));
+        } catch {
+          return "Invalid date";
+        }
+      }
+    }
+
 ]

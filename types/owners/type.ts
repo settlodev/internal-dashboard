@@ -49,6 +49,7 @@ export declare interface Owner  {
         internalProfileFirstName:string
         internalProfileLastName:string,
         internalFollowUpTypeName:string,
+        dateCreated:string
     }
 
    

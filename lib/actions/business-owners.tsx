@@ -40,7 +40,6 @@ export const searchBusinessOwners = async (
 
     const data = response.content || response.data || response;
 
-    console.log("The business owners are",data)
     if (!Array.isArray(data)) {
       throw new Error('Expected array but got: ' + typeof data);
     }
@@ -444,9 +443,6 @@ export const followUpsOnCustomerFeedbacks = async (
     const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", payload);
 
     const data = response.content || response.data || response;
-
-    console.log("The list of folow ups made are",data)
-
 
     if (!Array.isArray(data)) {
       throw new Error('Expected array but got: ' + typeof data);

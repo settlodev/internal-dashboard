@@ -29,6 +29,8 @@ export const searchFollowUpTypes = async (
       const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-types", query,);
   
       const data = response.content || response.data || response;
+
+      console.log("The list of follow up is",data)
   
       if (!Array.isArray(data)) {
         throw new Error('Expected array but got: ' + typeof data);
