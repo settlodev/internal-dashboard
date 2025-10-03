@@ -3,8 +3,10 @@
 import Loading from '@/components/widgets/loader'
 import { ProtectedComponent } from '@/components/auth/protectedComponent'
 import Unauthorized from '@/components/code/401'
-import { searchBusinessOwners } from '@/lib/actions/business-owners';
-import { BusinessOwnerComponent } from '@/components/owners/owner-component';
+import { trialSubscriptionExpiresInXDays } from '@/lib/actions/business-owners';
+
+import { TrialSubscriptionExpiresInXDays } from '@/components/subscriptions/trial-expires-in-x';
+
 
 type Params = { 
   searchParams: Promise<{ 
@@ -15,7 +17,7 @@ type Params = {
 };
 
 const breadcrumbItems = [
-  { title: "Business Owners", link: "/owners" },
+  { title: "Trial Subscription Expires In X days ", link: "/trial-expires-in-x-days" },
 ]
 
 async function Page({ searchParams }: Params) {
@@ -24,9 +26,10 @@ async function Page({ searchParams }: Params) {
   const size = Number(resolvedSearchParams.limit) || 10;
 
   try {
-    const data = await searchBusinessOwners(page,size,undefined,undefined)
+    // Pass default 5 days for initial load
+    const data = await trialSubscriptionExpiresInXDays(page, size, undefined, undefined, 5)
 
-    const sortedUsersWithIcomplete = data.content.sort((a:any, b:any) => 
+    const sortedUsersWithTrialExpiry = data.content.sort((a:any, b:any) => 
       new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
     );
 
@@ -40,8 +43,8 @@ async function Page({ searchParams }: Params) {
         }
         fallback={<Unauthorized />}
       >
-        <BusinessOwnerComponent
-          initialBusinessOwners={sortedUsersWithIcomplete}
+        <TrialSubscriptionExpiresInXDays
+          initialBusinessOwners={sortedUsersWithTrialExpiry}
           totalElements={data.totalElements}
           searchParams={resolvedSearchParams}
           breadcrumbItems={breadcrumbItems}
@@ -49,7 +52,7 @@ async function Page({ searchParams }: Params) {
       </ProtectedComponent>
     );
   } catch (error) {
-    console.error('Error fetching unverified business owners:', error);
+    console.error('Error fetching business owners who trial expires in x days:', error);
     throw error;
   }
 }

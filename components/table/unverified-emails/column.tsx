@@ -83,16 +83,6 @@ export const columns: ColumnDef<Owner>[] = [
             });
         }
     },
-    {
-        accessorKey:'emailVerified',
-        header:"Email Verified",
-        cell: ({row})=>{
-            const unverified = row.getValue("emailVerified");
-            if(unverified === null){
-               return <p className="text-red-500">False</p>
-            }
-        }
-    },
    
     {
         id: "actions",
