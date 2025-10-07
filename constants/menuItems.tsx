@@ -42,6 +42,11 @@ const data = {
           requiredPermission: "view:owners",
         },
         {
+          title: "Trial Sub Expires In X days",
+          url: "/trial-expires-in-x-days",
+          requiredPermission: "view:owners",
+        },
+        {
           title: "Trial Subscription Expired",
           url: "/trial-expired",
           requiredPermission: "view:owners",

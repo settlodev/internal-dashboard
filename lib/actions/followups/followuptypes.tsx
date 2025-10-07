@@ -30,8 +30,7 @@ export const searchFollowUpTypes = async (
   
       const data = response.content || response.data || response;
 
-      console.log("The list of follow up is",data)
-  
+    
       if (!Array.isArray(data)) {
         throw new Error('Expected array but got: ' + typeof data);
       }

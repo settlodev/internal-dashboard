@@ -39,10 +39,10 @@ export function BusinessOwnerComponent({
 
 
 
-  const fetchIncompleteBusinessSetup = async () => {
+  const fetchAllBusinessOwners = async () => {
     setIsLoading(true)
     try {
-      const data = await searchBusinessOwners(page,size)
+      const data = await searchBusinessOwners(page,size,dateRange.from,dateRange.to)
     
       const sortedBusinesses = data.content.sort((a:any, b:any) => 
         new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
@@ -57,11 +57,12 @@ export function BusinessOwnerComponent({
   }
 
   useEffect(() => {
-    fetchIncompleteBusinessSetup()
-  }, [page, size])
+    fetchAllBusinessOwners()
+  }, [page, size,dateRange.from,dateRange.to])
 
-  const handleDateRangeChange = (newRange: { from: Date; to: Date }) => {
+  const handleDateRangeChange = async(newRange: { from: Date; to: Date }) => {
     setDateRange(newRange)
+    fetchAllBusinessOwners()
   }
 
   if (isLoading) {
@@ -81,11 +82,13 @@ export function BusinessOwnerComponent({
           <BreadcrumbNav items={breadcrumbItems} />
         </div>
 
-        <div className='flex flex-col lg:flex-row items-start gap-2 lg:items-center lg:justify-between w-full'>
-          <div className='flex flex-col gap-2'>
-            <h2>Business Owners</h2>
-            <p className='text-xs text-muted-foreground'>
-              The list of onboarded customers who have not completed setting up business/location
+        <div className='flex flex-col lg:flex-row items-start gap-4 lg:items-center lg:justify-between w-full'>
+          <div className='flex flex-col gap-2 flex-1 min-w-0'>
+            <h2 className='text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100'>
+              Business owners
+            </h2>
+            <p className='text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl'>
+              View and manage all registered business owners in the system
             </p>
           </div>
           <div className='mr-6'>

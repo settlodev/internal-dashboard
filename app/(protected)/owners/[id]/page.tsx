@@ -439,7 +439,6 @@ const BusinessOwnerProfile = ({ params }: { params: { id: string } }) => {
       try {
         setIsLoading(true);
         const data = await getBusinessOwnerSummary(params.id as UUID);
-        console.log("The user data are", data.userDetails);
         setBusinessOwner(data);
       } catch (err) {
         console.error("Failed to load business owner:", err);

@@ -30,13 +30,6 @@ export function CellAction({ data }: CellActionProps) {
             >
               View details
             </DropdownMenuItem>
-            <DropdownMenuItem
-            onClick={() => {
-                router.push(`/owners/${data?.id}`);
-            }}
-            >
-              Delete
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
     );
