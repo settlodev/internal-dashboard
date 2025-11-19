@@ -14,56 +14,6 @@ export interface SearchBusinessOwnersParams {
   q?: string;
 }
 
-// export const searchBusinessOwnersx = async (
-//   page: number,
-//   pageSize: number,
-//   startDate?: Date,
-//   endDate?: Date
-// ): Promise<any> => {
-//   try {
-
-//     const apiClient = new ApiClient();
-//     const query = {
-//       filters: [
-
-//       ],
-//       sorts: [
-//         {
-//           key: "dateCreated",
-//           direction: "DESC"
-//         }
-//       ],
-//       page: page ? page - 1 : 0,
-//       size: pageSize ? pageSize : 10
-
-//     };
-
-//     if (startDate && endDate) {
-//       query.creationDateFilter = {
-//         startDate: startDate.toISOString(),
-//         endDate: endDate.toISOString()
-//       };
-//     }
-
-//     const response = await apiClient.post<any, {}>("/api/internal/users/all", query,);
-
-//     const data = response.content || response.data || response;
-
-//     if (!Array.isArray(data)) {
-//       throw new Error('Expected array but got: ' + typeof data);
-//     }
-
-//     return {
-//       content: parseStringify(data),
-//       totalElements: response.totalElements || data.length,
-//       totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
-//     };
-//   } catch (error) {
-
-//     console.error("Error in getting unverified business owners :", error);
-//     throw error;
-//   }
-// }
 
 export const searchBusinessOwners = async (
   page: number,
@@ -136,7 +86,7 @@ export const searchUnverifiedBusinessOwners = async (
 
     };
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query, {});
+    const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query);
 
     const data = response.content || response.data || response;
 
@@ -301,7 +251,7 @@ export const businessOwnersWithLastOrderPlacedInXDays = async (
       totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
     };
   } catch (error) {
-    console.error("Error in getting user with expired location :", error);
+    // console.error("Error in getting user with expired location :", error);
     throw error;
   }
 }
@@ -357,10 +307,12 @@ export const subscriptionExpiresInXDays = async (
       totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
     };
   } catch (error) {
-    console.error("Error in getting user with expired location :", error);
+    // console.error("Error in getting user with expired location :", error);
     throw error;
   }
 }
+
+
 export const trialSubscriptionExpiresInXDays = async (
   page: number,
   pageSize: number,
@@ -412,7 +364,7 @@ export const trialSubscriptionExpiresInXDays = async (
       totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
     };
   } catch (error) {
-    console.error("Error in getting user with expired location :", error);
+    // console.error("Error in getting user with expired location :", error);
     throw error;
   }
 }
@@ -464,7 +416,7 @@ export const trialExpired = async (
       totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
     };
   } catch (error) {
-    console.error("Error in getting user with expired location :", error);
+    // console.error("Error in getting user with expired location :", error);
     throw error;
   }
 }
@@ -516,7 +468,7 @@ export const expiredSubscription = async (
       totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
     };
   } catch (error) {
-    console.error("Error in getting user with expired location :", error);
+    // console.error("Error in getting user with expired location :", error);
     throw error;
   }
 }
@@ -568,7 +520,7 @@ export const followUpsOnCustomerFeedbacks = async (
       totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
     };
   } catch (error) {
-    console.error("Error in getting user with expired location :", error);
+    // console.error("Error in getting user with expired location :", error);
     throw error;
   }
 }
@@ -633,10 +585,12 @@ export const recordFeedback = async (
 export const getBusinessOwnerSummary = async (id: string) => {
   try {
     const apiClient = new ApiClient();
-    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{});
+
+    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{} );
     console.log("The customer data is",data)
     return parseStringify(data);
   } catch (error) {
+      console.error("Error occuring while getting user details is",error);
     throw error;
   }
 }

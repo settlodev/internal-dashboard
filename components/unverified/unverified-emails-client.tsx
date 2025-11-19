@@ -116,7 +116,7 @@ export function UnverifiedEmailsClient({
           <div className='flex flex-col gap-2 flex-1 min-w-0'>
             <div className='flex items-center gap-3 flex-wrap'>
               <h2 className='text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100'>
-                Unverified Customer Emails
+                Emails not verified <span className="text-lg ml-2 text-red-500">({businessOwners.length})</span>
               </h2>
               
             </div>
@@ -171,6 +171,7 @@ export function UnverifiedEmailsClient({
                 searchKey='' 
                 total={total}
                 pageSize={size || 10}
+                showIndex={true}
               />
             </div>
           </CardContent>
