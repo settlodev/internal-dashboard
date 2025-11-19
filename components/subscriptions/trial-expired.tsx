@@ -11,6 +11,7 @@ import { Owner } from '@/types/owners/type'
 import { trialExpired } from '@/lib/actions/business-owners'
 import { columns } from '../table/no-orders/column'
 import { Label } from '@/components/ui/label'
+import {useRouter} from "next/navigation";
 
 interface Props {
   initialBusinessOwners: Owner[]
@@ -40,6 +41,11 @@ export function TrialExpired({
   
   const page = Number(searchParams.page) || 0
   const size = Number(searchParams.limit) || 10
+    const router = useRouter()
+
+    const handleRowClick = (owner: Owner) => {
+        router.push(`/owners/${owner.id}`)
+    }
 
 
 
@@ -129,6 +135,7 @@ export function TrialExpired({
               searchKey='' 
               total={total}
               pageSize={size || 10}
+              onRowClick={handleRowClick}
             />
           </CardContent>
         </Card>

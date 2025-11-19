@@ -22,6 +22,7 @@ async function Page({ searchParams }: Params) {
   const page = Number(resolvedSearchParams.page) || 0;
   const size = Number(resolvedSearchParams.limit) || 10;
 
+
   try {
     const data = await usersWithIncompleteBusinessSetup(page,size)
 

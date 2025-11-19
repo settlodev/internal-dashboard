@@ -64,11 +64,7 @@ export const columns: ColumnDef<Owner>[] = [
             )
         }
     },
-    
-    {
-        accessorKey: "gender",
-        header: "Gender"
-    },
+
     {
         accessorKey: "dateCreated",
         header: "Date Registered",

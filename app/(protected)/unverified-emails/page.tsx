@@ -23,6 +23,8 @@ async function Page({ searchParams }: Params) {
   const page = Number(resolvedSearchParams.page) || 0;
   const size = Number(resolvedSearchParams.limit) || 10;
 
+
+
   try {
     const data = await searchUnverifiedBusinessOwners({ q, page, size })
     const sortedOwners = data.content.sort((a, b) => 

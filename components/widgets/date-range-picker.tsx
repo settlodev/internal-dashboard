@@ -21,67 +21,47 @@ import {
 
 // Predefined date ranges for quick selection
 const PRESETS = {
-  today: {
-    label: "Today",
-    getValue: () => {
-      const today = new Date()
-      return { from: today, to: today }
+    thisMonth: {
+        label: "This Month",
+        getValue: () => {
+            const today = new Date();
+            return { from: startOfMonth(today), to: today };
+        }
+    },
+
+    lastMonth: {
+        label: "Last Month",
+        getValue: () => {
+            const today = new Date();
+            const lastMonth = subMonths(today, 1);
+            return { from: startOfMonth(lastMonth), to: endOfMonth(lastMonth) };
+        }
+    },
+
+    last90Days: {
+        label: "Last 3 Months",
+        getValue: () => {
+            const today = new Date();
+            return { from: addDays(today, -90), to: today };
+        }
+    },
+
+    last180Days: {
+        label: "Last 6 Months",
+        getValue: () => {
+            const today = new Date();
+            return { from: addDays(today, -180), to: today };
+        }
+    },
+
+    last365Days: {
+        label: "Last 12 Months",
+        getValue: () => {
+            const today = new Date();
+            return { from: addDays(today, -365), to: today };
+        }
     }
-  },
-  yesterday: {
-    label: "Yesterday",
-    getValue: () => {
-      const yesterday = addDays(new Date(), -1)
-      return { from: yesterday, to: yesterday }
-    }
-  },
-  thisWeek: {
-    label: "This Week",
-    getValue: () => {
-      const today = new Date()
-      const startOfWeek = addDays(today, -today.getDay()) // Sunday
-      return { from: startOfWeek, to: today }
-    }
-  },
-  lastWeek: {
-    label: "Last Week",
-    getValue: () => {
-      const today = new Date()
-      const endOfLastWeek = addDays(today, -today.getDay() - 1) // Saturday of previous week
-      const startOfLastWeek = addDays(endOfLastWeek, -6) // Sunday of previous week
-      return { from: startOfLastWeek, to: endOfLastWeek }
-    }
-  },
-  thisMonth: {
-    label: "This Month",
-    getValue: () => {
-      const today = new Date()
-      return { from: startOfMonth(today), to: today }
-    }
-  },
-  lastMonth: {
-    label: "Last Month",
-    getValue: () => {
-      const today = new Date()
-      const lastMonth = subMonths(today, 1)
-      return { from: startOfMonth(lastMonth), to: endOfMonth(lastMonth) }
-    }
-  },
-  last30Days: {
-    label: "Last 30 Days",
-    getValue: () => {
-      const today = new Date()
-      return { from: addDays(today, -30), to: today }
-    }
-  },
-  last90Days: {
-    label: "Last 90 Days",
-    getValue: () => {
-      const today = new Date()
-      return { from: addDays(today, -90), to: today }
-    }
-  }
-}
+};
 
 type DatePickerWithRangeProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'value' | 'defaultValue' | 'onChange'> & {
   value?: DateRange;

@@ -11,6 +11,7 @@ import { searchUnverifiedBusinessOwners } from '@/lib/actions/business-owners'
 
 import { RefreshCw} from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import {useRouter} from "next/navigation";
 
 interface UnverifiedEmailsClientProps {
   initialBusinessOwners: Owner[]
@@ -37,9 +38,10 @@ export function UnverifiedEmailsClient({
   })
   const [total, setTotal] = useState(totalElements)
 
-  const q = searchParams.search || ""
-  const page = Number(searchParams.page) || 0
-  const size = Number(searchParams.limit) || 10
+      const q = searchParams.search || ""
+      const page = Number(searchParams.page) || 0
+      const size = Number(searchParams.limit) || 10
+    const router = useRouter()
 
   const fetchBusinessOwners = async (showRefreshAnimation = false) => {
     if (showRefreshAnimation) {
@@ -64,6 +66,9 @@ export function UnverifiedEmailsClient({
     }
   }
 
+    const handleRowClick = (owner: Owner) => {
+        router.push(`/owners/${owner.id}`)
+    }
   
 
   useEffect(() => {
@@ -172,6 +177,7 @@ export function UnverifiedEmailsClient({
                 total={total}
                 pageSize={size || 10}
                 showIndex={true}
+                onRowClick={handleRowClick}
               />
             </div>
           </CardContent>

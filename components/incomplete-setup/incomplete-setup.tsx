@@ -8,6 +8,7 @@ import { DatePickerWithRange } from '@/components/widgets/date-range-picker'
 import { columns } from '@/components/table/unverified-emails/column'
 import { Owner } from '@/types/owners/type'
 import { usersWithIncompleteBusinessSetup } from '@/lib/actions/business-owners'
+import {useRouter} from "next/navigation";
 
 interface Props {
   initialBusinessOwners: Owner[]
@@ -22,6 +23,7 @@ export function IncompleteSetup({
   searchParams,
   breadcrumbItems 
 }: Props) {
+
   const [businessesOwnres, setBusinessesOwners] = useState<Owner[]>(initialBusinessOwners)
   const [isLoading, setIsLoading] = useState(false)
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>(() => {
@@ -32,10 +34,13 @@ export function IncompleteSetup({
     };
   })
   const [total, setTotal] = useState(totalElements)
-
- 
   const page = Number(searchParams.page) || 0
   const size = Number(searchParams.limit) || 10
+    const router = useRouter()
+
+    const handleRowClick = (owner: Owner) => {
+        router.push(`/owners/${owner.id}`)
+    }
 
 
 
@@ -114,6 +119,7 @@ export function IncompleteSetup({
               searchKey='' 
               total={total}
               pageSize={size || 10}
+              onRowClick={handleRowClick}
             />
           </CardContent>
         </Card>

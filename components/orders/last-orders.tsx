@@ -13,6 +13,7 @@ import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import {useRouter} from "next/navigation";
 
 interface Props {
   initialBusinessOwners: Owner[]
@@ -44,6 +45,11 @@ export function BusinessOwnersWithLastOrdersPlacedInXDays({
   const [daysValue, setDaysValue] = useState<number>(5)
   const page = Number(searchParams.page) || 0
   const size = Number(searchParams.limit) || 10
+    const router = useRouter()
+
+    const handleRowClick = (owner: Owner) => {
+        router.push(`/owners/${owner.id}`)
+    }
 
   const { register, handleSubmit, formState: { errors } } = useForm<DaysFormValues>({
     defaultValues: {
@@ -167,6 +173,7 @@ export function BusinessOwnersWithLastOrdersPlacedInXDays({
               searchKey='' 
               total={total}
               pageSize={size || 10}
+              onRowClick={handleRowClick}
             />
           </CardContent>
         </Card>

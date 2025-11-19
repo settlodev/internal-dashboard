@@ -9,6 +9,7 @@ import { DatePickerWithRange } from '@/components/widgets/date-range-picker'
 import { Owner } from '@/types/owners/type'
 import { businessOwnersWithNoOrder} from '@/lib/actions/business-owners'
 import { columns } from '../table/no-orders/column'
+import {useRouter} from "next/navigation";
 
 interface Props {
   initialBusinessOwners: Owner[]
@@ -35,6 +36,11 @@ export function BusinessOwnersWithNoOrders({
   const [total, setTotal] = useState(totalElements)
   const page = Number(searchParams.page) || 0
   const size = Number(searchParams.limit) || 10
+    const router = useRouter()
+
+    const handleRowClick = (owner: Owner) => {
+        router.push(`/owners/${owner.id}`)
+    }
 
   const fetchIncompleteBusinessSetup = async () => {
     setIsLoading(true)
@@ -123,6 +129,7 @@ export function BusinessOwnersWithNoOrders({
               searchKey='' 
               total={total}
               pageSize={size || 10}
+              onRowClick={handleRowClick}
             />
           </CardContent>
         </Card>

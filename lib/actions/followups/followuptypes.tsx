@@ -73,10 +73,17 @@ export const userFollowUpThreads = async (
 
         };
 
-        const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", query);
+        const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", query,
+            {
+                headers: {
+                    "INTERNAL-DASHBOARD-API-KEY":
+                        "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+                },
+            },
+            );
 
         const data = response.content || response.data || response;
-        console.log("the followup data", data);
+
         if (!Array.isArray(data)) {
             throw new Error('Expected array but got: ' + typeof data);
         }

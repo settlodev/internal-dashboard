@@ -43,7 +43,7 @@ const FeedbackThread = ({ userId }: { userId: string }) => {
             try {
                 setIsLoading(true);
                 const data = await userFollowUpThreads(userId as UUID);
-                console.log("the followup data", data);
+
                 setThreads(data || []);
             } catch (err) {
                 console.error("Failed to load feedback threads:", err);

@@ -86,7 +86,12 @@ export const searchUnverifiedBusinessOwners = async (
 
     };
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query);
+    const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query,{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
 
     const data = response.content || response.data || response;
 
@@ -506,9 +511,16 @@ export const followUpsOnCustomerFeedbacks = async (
       ...query,
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", payload);
+    const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", payload,
+        {
+            headers: {
+                "INTERNAL-DASHBOARD-API-KEY":
+                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+            },
+        },);
 
     const data = response.content || response.data || response;
+
 
     if (!Array.isArray(data)) {
       throw new Error('Expected array but got: ' + typeof data);
@@ -586,11 +598,15 @@ export const getBusinessOwnerSummary = async (id: string) => {
   try {
     const apiClient = new ApiClient();
 
-    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{} );
-    console.log("The customer data is",data)
+    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{},{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    } );
     return parseStringify(data);
   } catch (error) {
-      console.error("Error occuring while getting user details is",error);
+      console.error("Error occurring while getting user details is",error);
     throw error;
   }
 }

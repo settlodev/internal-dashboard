@@ -39,6 +39,7 @@ interface DataTableProps<TData, TValue> {
     total:number;
     pageSize?:number;
     showIndex?:boolean
+    onRowClick?: (data: TData) => void;
     searchParams?: {
         [key: string]: string | string[] | undefined
     };
@@ -63,6 +64,7 @@ export function DataTable<TData, TValue>({
     total,
     pageSize: initialPageSize = 10,
     showIndex = false,
+    onRowClick
 }: DataTableProps<TData, TValue>) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -245,6 +247,8 @@ export function DataTable<TData, TValue>({
                             <TableRow
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
+                                className={onRowClick ? "cursor-pointer hover:bg-muted/50 transition-colors" : ""}
+                                onClick={() => onRowClick?.(row.original)}
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id} className="max-w-xs">
