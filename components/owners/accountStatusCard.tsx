@@ -10,10 +10,7 @@ interface AccountStatusCardProps {
 
 export const AccountStatusCard: React.FC<AccountStatusCardProps> = ({ businessOwner }) => {
     const isEmailVerified = businessOwner.userDetails.emailVerified !== null;
-    const hasLocation = Boolean(
-        businessOwner.userDetails.region &&
-        businessOwner.userDetails.district
-    );
+
 
     return (
         <Card className="border-0 shadow-sm">
@@ -36,18 +33,7 @@ export const AccountStatusCard: React.FC<AccountStatusCardProps> = ({ businessOw
                         {businessOwner.businessDetails.length > 0 ? "Complete" : "Incomplete"}
                     </Badge>
                 </div>
-                <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Location(Branch(es))</span>
-                    <Badge variant={hasLocation ? "default" : "secondary"}>
-                        {hasLocation ? "Verified" : "Pending"}
-                    </Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Total Businesses</span>
-                    <Badge variant="outline" className="font-semibold">
-                        {businessOwner.businessDetails.length}
-                    </Badge>
-                </div>
+
             </CardContent>
         </Card>
     );

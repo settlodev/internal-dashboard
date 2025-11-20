@@ -56,7 +56,7 @@ export const userFollowUpThreads = async (
 ): Promise<any> => {
 
     const page = 0;
-    const pageSize = 1000;
+    const pageSize = 500;
     try {
 
         const apiClient = new ApiClient();
@@ -73,14 +73,7 @@ export const userFollowUpThreads = async (
 
         };
 
-        const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", query,
-            {
-                headers: {
-                    "INTERNAL-DASHBOARD-API-KEY":
-                        "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-                },
-            },
-            );
+        const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", query);
 
         const data = response.content || response.data || response;
 

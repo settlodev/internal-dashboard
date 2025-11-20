@@ -8,12 +8,13 @@ import { FormResponse } from "@/types/types";
 import { getAuthenticatedUser } from "./auth/signIn";
 import { revalidatePath } from "next/cache";
 
-export interface SearchBusinessOwnersParams {
-  page?: number;
-  size?: number;
-  q?: string;
+interface SearchBusinessOwnersParams {
+    q?: string;
+    page?: number;
+    size?: number;
+    startDate?: string;
+    endDate?: string;
 }
-
 
 export const searchBusinessOwners = async (
   page: number,
@@ -65,52 +66,54 @@ export const searchBusinessOwners = async (
   }
 }
 
+
+
 export const searchUnverifiedBusinessOwners = async (
-  params: SearchBusinessOwnersParams = {}
+    params: SearchBusinessOwnersParams = {}
 ): Promise<{ content: Owner[]; totalElements: number; totalPages: number }> => {
-  try {
+    try {
+        const apiClient = new ApiClient();
 
-    const apiClient = new ApiClient();
-    const query = {
-      filters: [
+        const query: any = {
+            filters: [],
+            sorts: [
+                {
+                    key: "dateCreated",
+                    direction: "DESC"
+                }
+            ],
+            page: params.page ?? 0,
+            size: params.size ?? 10,
+        };
 
-      ],
-      sorts: [
-        {
-          key: "dateCreated",
-          direction: "DESC"
+        // Add creationDateFilter only if both dates are provided
+        if (params.startDate && params.endDate) {
+            query.creationDateFilter = {
+                startDate: params.startDate,
+                endDate: params.endDate
+            };
         }
-      ],
-      page: params.page ?? 0,
-      size: params.size ?? 10,
 
-    };
+        const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query);
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+        const data = response.content || response.data || response;
 
-    const data = response.content || response.data || response;
+        if (!Array.isArray(data)) {
+            throw new Error('Expected array but got: ' + typeof data);
+        }
 
-
-    if (!Array.isArray(data)) {
-      throw new Error('Expected array but got: ' + typeof data);
+        return {
+            content: parseStringify(data),
+            totalElements: response.totalElements || data.length,
+            totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
+        };
+    } catch (error) {
+        console.error("Error in getting unverified business owners:", error);
+        throw error;
     }
-
-    return {
-      content: parseStringify(data),
-      totalElements: response.totalElements || data.length,
-      totalPages: response.totalPages || Math.ceil((response.totalElements || data.length) / query.size)
-    };
-  } catch (error) {
-
-    console.error("Error in getting unverified business owners :", error);
-    throw error;
-  }
 }
+
+
 
 export const usersWithIncompleteBusinessSetup = async (
   page: number,
@@ -511,13 +514,7 @@ export const followUpsOnCustomerFeedbacks = async (
       ...query,
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", payload,
-        {
-            headers: {
-                "INTERNAL-DASHBOARD-API-KEY":
-                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-            },
-        },);
+    const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", payload);
 
     const data = response.content || response.data || response;
 
@@ -564,7 +561,12 @@ export const recordFeedback = async (
 
   const payload = {
     ...validFeedback.data,
-    internalProfileId: activeUser?.id
+    internalProfileId: activeUser?.id,
+      ...(validFeedback.data.archiveAccountOptions?.archiveAccount && {
+          archiveAccountOptions: {
+              archiveAccount: true
+          }
+      })
   }
 
   try {
@@ -598,13 +600,9 @@ export const getBusinessOwnerSummary = async (id: string) => {
   try {
     const apiClient = new ApiClient();
 
-    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{},{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    } );
+    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{} );
     return parseStringify(data);
+    console.log("user summary summary",data);
   } catch (error) {
       console.error("Error occurring while getting user details is",error);
     throw error;
