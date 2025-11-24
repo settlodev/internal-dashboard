@@ -27,7 +27,7 @@ async function Page({ searchParams }: Params) {
     
     const data = await expiredSubscription(page, size)
 
-    const sortedUsersWithIcomplete = data.content
+    const customersWithExpiredSub = data.content
 
     return (
       <ProtectedComponent
@@ -40,7 +40,7 @@ async function Page({ searchParams }: Params) {
         fallback={<Unauthorized />}
       >
         <ExpiredSubscription
-          initialBusinessOwners={sortedUsersWithIcomplete}
+          initialBusinessOwners={customersWithExpiredSub}
           totalElements={data.totalElements}
           searchParams={resolvedSearchParams}
           breadcrumbItems={breadcrumbItems}
@@ -48,7 +48,7 @@ async function Page({ searchParams }: Params) {
       </ProtectedComponent>
     );
   } catch (error) {
-    console.error('Error fetching business owners whose trial expired:', error);
+    console.error('Error fetching business owners with subscription expired:', error);
     throw error;
   }
 }

@@ -45,7 +45,7 @@ export function ExpiredSubscription({
         router.push(`/owners/${owner.id}`)
     }
 
-    const fetchIncompleteBusinessSetup = async (showRefreshAnimation = false) => {
+    const fetchExpiredSubscription = async (showRefreshAnimation = false) => {
         if (showRefreshAnimation) {
             setIsRefreshing(true)
         } else {
@@ -67,7 +67,7 @@ export function ExpiredSubscription({
     }
 
     useEffect(() => {
-        fetchIncompleteBusinessSetup()
+        fetchExpiredSubscription()
     }, [page, size])
 
 
