@@ -48,7 +48,7 @@ export function TrialExpired({
       setBusinessesOwners(sortedBusinesses)
       setTotal(data.totalElements)
     } catch (error) {
-      console.error('Error fetching business owners with no Orders:', error)
+      console.error('Error fetching business owners with trial subscription expired:', error)
     } finally {
       setIsLoading(false)
     }
