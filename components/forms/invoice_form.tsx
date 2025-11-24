@@ -41,10 +41,10 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
 
     const transformItemForForm = useCallback((invoiceItem: any) => {
         if (!invoiceItem) return null;
-        
+
         // Get devices and subscriptions from the nested structure
         const itemsData = invoiceItem.items?.[0]?.items_data || {};
-        
+
         // Map devices to the expected structure
         const devices = itemsData.devices?.map((deviceItem: any) => {
             return {
@@ -58,7 +58,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                 quantity: deviceItem.quantity
             };
         }) || [];
-        
+
         // Map subscriptions to the expected structure
         const subscriptions = itemsData.subscriptions?.map((subItem: any) => {
             return {
@@ -71,7 +71,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                 quantity: subItem.quantity
             };
         }) || [];
-    
+
         // Include billing details for the preview
         const billingDetails = {
             billed_name: invoiceItem.billed_name,
@@ -79,7 +79,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
             billed_phone: invoiceItem.billed_phone,
             billed_address: invoiceItem.billed_address
         };
-    
+
         return {
             owner: invoiceItem.owner,
             devices: devices.length ? devices : [],
@@ -116,12 +116,12 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
     // additional data, prioritizing newly selected form values over original data
     const previewData = useMemo(() => {
         const watchedValues = form.watch();
-        
+
         // Get current owner information (could be newly selected)
-        const currentOwner = typeof watchedValues.owner === 'object' && watchedValues.owner 
+        const currentOwner = typeof watchedValues.owner === 'object' && watchedValues.owner
             ? watchedValues.owner
             : null;
-        
+
         // If user has selected a new owner, use that data instead of the original billing details
         const effectiveBillingDetails = currentOwner ? {
             billed_name: `${currentOwner.firstName} ${currentOwner.lastName}`,
@@ -129,7 +129,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
             billed_phone: currentOwner.phoneNumber,
             billed_address: currentOwner.countryName
         } : transformedItem?.billingDetails;
-        
+
         return {
             ...watchedValues,
             billingDetails: effectiveBillingDetails,
@@ -138,9 +138,9 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
             ownerChanged: !!currentOwner
         };
     }, [form.watch(), transformedItem, item]);
-    
+
     // console.log("Preview Data", previewData)
-   
+
     const onInvalid = useCallback((errors: FieldErrors) => {
         console.log(errors);
     }, []);
@@ -155,11 +155,11 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
         };
 
         // Filter out empty devices and subscriptions before submitting
-        const validDevices = (values.devices || []).filter(item => 
+        const validDevices = (values.devices || []).filter(item =>
             item.device && !isEmpty(item.device) && item.quantity && item.quantity > 0
         );
-        
-        const validSubscriptions = (values.subscriptions || []).filter(item => 
+
+        const validSubscriptions = (values.subscriptions || []).filter(item =>
             item.subscription && !isEmpty(item.subscription) && item.quantity && item.quantity > 0
         );
 
@@ -175,7 +175,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
             })),
             note: values.note,
             due_date: values.due_date,
-            invoice_date: values.invoice_date, 
+            invoice_date: values.invoice_date,
             discount: values.discount,
             vat_inclusive: values.vat_inclusive
         };
@@ -183,7 +183,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
         console.log("Simplified Values", simplifiedValues)
 
         startTransition(async () => {
-            const result = item 
+            const result = item
                 ? await updateInvoice(item.id, simplifiedValues)
                 : await createInvoice(simplifiedValues);
 
@@ -266,9 +266,9 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
                                         <h3 className="text-lg font-medium">Devices (Optional)</h3>
-                                        <Button 
-                                            type="button" 
-                                            variant="outline" 
+                                        <Button
+                                            type="button"
+                                            variant="outline"
                                             size="sm"
                                             onClick={addDeviceItem}
                                         >
@@ -276,13 +276,13 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                             Add Device
                                         </Button>
                                     </div>
-                                    
+
                                     {deviceFields.length === 0 && (
                                         <div className="p-4 border-2 border-dashed border-gray-300 rounded-md text-center text-gray-500">
                                             <p>No devices added yet.</p>
-                                            <Button 
-                                                type="button" 
-                                                variant="ghost" 
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
                                                 size="sm"
                                                 onClick={addDeviceItem}
                                                 className="mt-2"
@@ -292,20 +292,20 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                             </Button>
                                         </div>
                                     )}
-                                    
+
                                     {deviceFields.map((field, index) => (
                                         <div key={field.id} className="space-y-4 p-4 border rounded-md relative">
                                             <div className="absolute top-2 right-2">
-                                                <Button 
-                                                    type="button" 
-                                                    variant="ghost" 
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
                                                     size="sm"
                                                     onClick={() => removeDevice(index)}
                                                 >
                                                     <X className="h-4 w-4" />
                                                 </Button>
                                             </div>
-                                            
+
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <FormField
                                                     control={form.control}
@@ -325,7 +325,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                                         </FormItem>
                                                     )}
                                                 />
-                                                
+
                                                 <FormField
                                                     control={form.control}
                                                     name={`devices.${index}.quantity`}
@@ -353,9 +353,9 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
                                         <h3 className="text-lg font-medium">Subscriptions (Optional)</h3>
-                                        <Button 
-                                            type="button" 
-                                            variant="outline" 
+                                        <Button
+                                            type="button"
+                                            variant="outline"
                                             size="sm"
                                             onClick={addSubscriptionItem}
                                         >
@@ -363,13 +363,13 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                             Add Subscription
                                         </Button>
                                     </div>
-                                    
+
                                     {subscriptionFields.length === 0 && (
                                         <div className="p-4 border-2 border-dashed border-gray-300 rounded-md text-center text-gray-500">
                                             <p>No subscriptions added yet.</p>
-                                            <Button 
-                                                type="button" 
-                                                variant="ghost" 
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
                                                 size="sm"
                                                 onClick={addSubscriptionItem}
                                                 className="mt-2"
@@ -379,20 +379,20 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                             </Button>
                                         </div>
                                     )}
-                                    
+
                                     {subscriptionFields.map((field, index) => (
                                         <div key={field.id} className="space-y-4 p-4 border rounded-md relative">
                                             <div className="absolute top-2 right-2">
-                                                <Button 
-                                                    type="button" 
-                                                    variant="ghost" 
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
                                                     size="sm"
                                                     onClick={() => removeSubscription(index)}
                                                 >
                                                     <X className="h-4 w-4" />
                                                 </Button>
                                             </div>
-                                            
+
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <FormField
                                                     control={form.control}
@@ -412,7 +412,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                                         </FormItem>
                                                     )}
                                                 />
-                                                
+
                                                 <FormField
                                                     control={form.control}
                                                     name={`subscriptions.${index}.quantity`}
@@ -457,7 +457,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                         )}
                                     />
                                 </div>
-                                
+
                                 <div className="grid grid-cols-2 gap-2">
                                     <div className="grid gap-2">
                                         <FormField
@@ -498,7 +498,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                         />
                                     </div>
                                 </div>
-                                
+
                                 <div className="grid grid-cols-2 gap-2 items-center">
                                     <div className="grid gap-2">
                                         <FormField
@@ -540,7 +540,7 @@ function InvoiceForm({ item }: { item: Invoice | null | undefined }) {
                                         />
                                     </div>
                                 </div>
-                                
+
                                 <div className="flex h-5 items-center space-x-4 mt-10">
                                     <CancelButton />
                                     <Separator orientation="vertical" />

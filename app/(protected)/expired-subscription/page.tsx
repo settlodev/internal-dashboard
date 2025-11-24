@@ -25,11 +25,9 @@ async function Page({ searchParams }: Params) {
 
   try {
     
-    const data = await expiredSubscription(page, size, undefined, undefined)
+    const data = await expiredSubscription(page, size)
 
-    const sortedUsersWithIcomplete = data.content.sort((a:any, b:any) => 
-      new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
-    );
+    const sortedUsersWithIcomplete = data.content
 
     return (
       <ProtectedComponent

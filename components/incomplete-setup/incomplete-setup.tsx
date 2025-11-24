@@ -4,126 +4,136 @@ import { BreadcrumbNav } from '@/components/layout/breadcrumbs'
 import { DataTable } from '@/components/table/data-table'
 import { Card, CardContent } from '@/components/ui/card'
 import { useState, useEffect } from 'react'
-import { DatePickerWithRange } from '@/components/widgets/date-range-picker'
 import { columns } from '@/components/table/unverified-emails/column'
 import { Owner } from '@/types/owners/type'
 import { usersWithIncompleteBusinessSetup } from '@/lib/actions/business-owners'
-import {useRouter} from "next/navigation";
+import { useRouter} from "next/navigation"
+import { RefreshCw } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
+import {PageHeader} from "@/components/widgets/pageHeader";
 
 interface Props {
-  initialBusinessOwners: Owner[]
-  totalElements: number
-  searchParams: { search?: string; page?: string; limit?: string }
-  breadcrumbItems: { title: string; link: string }[]
+    initialBusinessOwners: Owner[]
+    totalElements: number
+    searchParams: {
+        search?: string
+        page?: string
+        limit?: string
+        startDate?: string
+        endDate?: string
+    }
+    breadcrumbItems: { title: string; link: string }[]
 }
 
-export function IncompleteSetup({ 
-  initialBusinessOwners, 
-  totalElements, 
-  searchParams,
-  breadcrumbItems 
-}: Props) {
+export function IncompleteSetup({
+                                    initialBusinessOwners,
+                                    totalElements,
+                                    searchParams,
+                                    breadcrumbItems
+                                }: Props) {
+    const [businessesOwners, setBusinessesOwners] = useState<Owner[]>(initialBusinessOwners)
+    const [isLoading, setIsLoading] = useState(false)
+    const [isRefreshing, setIsRefreshing] = useState(false)
+    const [total, setTotal] = useState(totalElements)
 
-  const [businessesOwnres, setBusinessesOwners] = useState<Owner[]>(initialBusinessOwners)
-  const [isLoading, setIsLoading] = useState(false)
-  const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>(() => {
-    const today = new Date();
-    return {
-      from: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7), 
-      to: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999)
-    };
-  })
-  const [total, setTotal] = useState(totalElements)
-  const page = Number(searchParams.page) || 0
-  const size = Number(searchParams.limit) || 10
     const router = useRouter()
+
+
+    const page = Number(searchParams.page) || 0
+    const size = Number(searchParams.limit) || 10
 
     const handleRowClick = (owner: Owner) => {
         router.push(`/owners/${owner.id}`)
     }
 
+    const fetchIncompleteBusinessSetup = async (showRefreshAnimation = false) => {
+        if (showRefreshAnimation) {
+            setIsRefreshing(true)
+        } else {
+            setIsLoading(true)
+        }
 
+        try {
+            const data = await usersWithIncompleteBusinessSetup(page, size)
 
-  const fetchIncompleteBusinessSetup = async () => {
-    setIsLoading(true)
-    try {
-      const data = await usersWithIncompleteBusinessSetup(page,size)
-    
-      const sortedBusinesses = data.content.sort((a:any, b:any) => 
-        new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
-      )
-      setBusinessesOwners(sortedBusinesses)
-      setTotal(data.totalElements)
-    } catch (error) {
-      console.error('Error fetching incomplete business setup:', error)
-    } finally {
-      setIsLoading(false)
+            const sortedBusinesses = data.content
+            setBusinessesOwners(sortedBusinesses)
+            setTotal(data.totalElements)
+        } catch (error) {
+            console.error('Error fetching incomplete business setup:', error)
+        } finally {
+            setIsLoading(false)
+            setIsRefreshing(false)
+        }
     }
-  }
 
-  useEffect(() => {
-    fetchIncompleteBusinessSetup()
-  }, [page, size])
+    useEffect(() => {
+        fetchIncompleteBusinessSetup()
+    }, [page, size])
 
-  const handleDateRangeChange = (newRange: { from: Date; to: Date }) => {
-    setDateRange(newRange)
-  }
 
-  if (isLoading) {
+    if (isLoading && !isRefreshing) {
+        return (
+            <div className="flex flex-col w-full h-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 space-y-6">
+                <div className="flex flex-col space-y-4 md:space-y-6 mb-4 md:mb-6 w-full">
+                    <Skeleton className="h-4 w-64" />
+                    <div className="flex flex-col lg:flex-row items-start gap-4 lg:items-center lg:justify-between w-full">
+                        <div className="flex flex-col gap-3 flex-1">
+                            <Skeleton className="h-8 w-80" />
+                            <Skeleton className="h-4 w-96" />
+                        </div>
+                        <Skeleton className="h-10 w-64" />
+                    </div>
+                </div>
+                <Card className="w-full">
+                    <CardContent className="p-6">
+                        <div className="space-y-3">
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-64 w-full" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
+
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">
-          Loading...
+        <div className='flex flex-col w-full h-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16'>
+            <div className='flex flex-col space-y-4 md:space-y-6 mb-4 md:mb-6 w-full'>
+                <div className='w-full mt-2'>
+                    <BreadcrumbNav items={breadcrumbItems} />
+                </div>
+
+                <PageHeader
+                    title="Incomplete Business Setup"
+                    description="Onboarded customers who haven't completed their business or location setup."
+                    totalCount={total}
+                    badgeColor="orange"
+                />
+            </div>
+
+            <div className='w-full overflow-x-auto flex-1'>
+                <Card className="w-full shadow-sm hover:shadow-md transition-shadow duration-200 border-0">
+                    <CardContent className="p-0 sm:p-0">
+                        <div className={`relative ${isRefreshing ? 'opacity-60' : ''}`}>
+                            {isRefreshing && (
+                                <div className="absolute inset-0 bg-white/50 dark:bg-gray-950/50 z-10 flex items-center justify-center">
+                                    <RefreshCw className="h-6 w-6 animate-spin text-blue-600" />
+                                </div>
+                            )}
+                            <DataTable
+                                columns={columns}
+                                data={businessesOwners}
+                                searchKey=''
+                                total={total}
+                                pageSize={size || 10}
+                                showIndex={true}
+                                onRowClick={handleRowClick}
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
-      </div>
     )
-  }
-
-  return (
-    <div className='flex flex-col w-full h-full px-4 sm:px-6 md:px-8'>
-      <div className='flex flex-col space-y-4 md:space-y-6 mb-3 w-full'>
-        <div className='hidden w-full mt-2'>
-          <BreadcrumbNav items={breadcrumbItems} />
-        </div>
-
-        <div className='flex flex-col lg:flex-row items-start gap-2 lg:items-center lg:justify-between w-full'>
-          <div className='flex flex-col gap-2'>
-            <h2>Users with incomplete business setup</h2>
-            <p className='text-xs text-muted-foreground'>
-              The list of onboarded customers who have not completed setting up business/location
-            </p>
-          </div>
-          <div className='mr-6'>
-            <DatePickerWithRange
-              value={{
-                from: dateRange.from,
-                to: dateRange.to
-              }}
-              onChange={(newRange) => {
-                if (newRange?.from && newRange?.to) {
-                  handleDateRangeChange({ from: newRange.from, to: newRange.to })
-                }
-              }}
-              className="w-full"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className='w-full overflow-x-auto'>
-        <Card className="w-full">
-          <CardContent className="p-2 sm:p-4 md:p-6">
-            <DataTable
-              columns={columns}
-              data={businessesOwnres}
-              searchKey='' 
-              total={total}
-              pageSize={size || 10}
-              onRowClick={handleRowClick}
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
 }

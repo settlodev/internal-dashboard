@@ -5,7 +5,6 @@ import { BreadcrumbNav } from '@/components/layout/breadcrumbs'
 import { DataTable } from '@/components/table/data-table'
 import { Card, CardContent } from '@/components/ui/card'
 import { useState, useEffect } from 'react'
-import { DatePickerWithRange } from '@/components/widgets/date-range-picker'
 import { Owner } from '@/types/owners/type'
 import { businessOwnersWithLastOrderPlacedInXDays} from '@/lib/actions/business-owners'
 import { columns } from '../table/no-orders/column'
@@ -34,13 +33,6 @@ export function BusinessOwnersWithLastOrdersPlacedInXDays({
 }: Props) {
   const [businessesOwnres, setBusinessesOwners] = useState<Owner[]>(initialBusinessOwners)
   const [isLoading, setIsLoading] = useState(false)
-  const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>(() => {
-    const today = new Date();
-    return {
-      from: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7), 
-      to: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999)
-    };
-  })
   const [total, setTotal] = useState(totalElements)
   const [daysValue, setDaysValue] = useState<number>(5)
   const page = Number(searchParams.page) || 0
@@ -60,15 +52,13 @@ export function BusinessOwnersWithLastOrdersPlacedInXDays({
   const fetchLastOrderPlacedInXDays = async (days: number) => {
     setIsLoading(true)
     try {
-      const data = await businessOwnersWithLastOrderPlacedInXDays(page, size, dateRange.from, dateRange.to, days)
+      const data = await businessOwnersWithLastOrderPlacedInXDays(page, size, days)
     
-      const sortedBusinesses = data.content.sort((a:any, b:any) => 
-        new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
-      )
+      const sortedBusinesses = data.content
       setBusinessesOwners(sortedBusinesses)
       setTotal(data.totalElements)
     } catch (error) {
-      console.error('Error fetching business owners with no Orders:', error)
+      console.error('Error fetching business owners with no Orders in x days:', error)
     } finally {
       setIsLoading(false)
     }
@@ -76,11 +66,9 @@ export function BusinessOwnersWithLastOrdersPlacedInXDays({
 
   useEffect(() => {
     fetchLastOrderPlacedInXDays(daysValue)
-  }, [page, size, dateRange, daysValue]) 
+  }, [page, size, daysValue])
 
-  const handleDateRangeChange = (newRange: { from: Date; to: Date }) => {
-    setDateRange(newRange)
-  }
+
 
   const onSubmit = (data: DaysFormValues) => {
     setDaysValue(data.daysBeforeExpiry || 5)
@@ -105,14 +93,24 @@ export function BusinessOwnersWithLastOrdersPlacedInXDays({
 
         {/* Header Section */}
         <div className='flex flex-col lg:flex-row items-start gap-4 lg:items-center lg:justify-between w-full'>
-          <div className='flex flex-col gap-2 flex-1 min-w-0'>
-            <h2 className='text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100'>
-            Customer with last order
-            </h2>
-            <p className='text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl'>
-              The list of customers who have not placed order in {daysValue} days.
-            </p>
-          </div>
+
+            <div className='flex flex-col gap-3 flex-1 min-w-0'>
+                <div className='flex items-baseline gap-3 flex-wrap'>
+                    <h2 className='text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100'>
+                        Last Order Created
+                    </h2>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-semibold bg-red-300`}>
+                        {total}
+                    </span>
+                </div>
+
+                <div className='flex flex-col gap-1.5'>
+                    <p className='text-sm text-muted-foreground leading-relaxed'>
+                        The list of customers who have not placed order in {daysValue} days.
+                    </p>
+
+                </div>
+            </div>
           
           {/* Date Picker and Days Input */}
           <div className='flex flex-col sm:flex-row gap-3 w-full lg:w-auto flex-shrink-0'>
@@ -143,22 +141,7 @@ export function BusinessOwnersWithLastOrdersPlacedInXDays({
                 )}
               </div>
             </form>
-            
-            <div className='flex flex-col gap-2 w-full sm:w-auto'>
-              <Label className='text-sm font-medium'>Date Range</Label>
-              <DatePickerWithRange
-                value={{
-                  from: dateRange.from,
-                  to: dateRange.to
-                }}
-                onChange={(newRange) => {
-                  if (newRange?.from && newRange?.to) {
-                    handleDateRangeChange({ from: newRange.from, to: newRange.to })
-                  }
-                }}
-                className="w-full lg:w-[280px]"
-              />
-            </div>
+
           </div>
         </div>
       </div>

@@ -45,7 +45,12 @@ export const searchBusinessOwners = async (
       
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/all", query);
+    const response = await apiClient.post<any, {}>("/api/internal/users/all", query,{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
 
     const data = response.content || response.data || response;
 
@@ -94,7 +99,12 @@ export const searchUnverifiedBusinessOwners = async (
             };
         }
 
-        const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query);
+        const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query,{
+            headers: {
+                "INTERNAL-DASHBOARD-API-KEY":
+                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+            },
+        });
 
         const data = response.content || response.data || response;
 
@@ -137,7 +147,12 @@ export const usersWithIncompleteBusinessSetup = async (
 
     };
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-incomplete-setup", query);
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-incomplete-setup", query,{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
 
     const data = response.content || response.data || response;
 
@@ -186,7 +201,12 @@ export const businessOwnersWithNoOrder = async (
       };
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-no-orders", query);
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-no-orders", query,{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
 
     const data = response.content || response.data || response;
 
@@ -211,8 +231,6 @@ export const businessOwnersWithNoOrder = async (
 export const businessOwnersWithLastOrderPlacedInXDays = async (
   page: number,
   pageSize: number,
-  startDate?: Date,
-  endDate?: Date,
   daysSinceLastOrder?: number
 ): Promise<any> => {
   try {
@@ -229,15 +247,6 @@ export const businessOwnersWithLastOrderPlacedInXDays = async (
       size: pageSize ? pageSize : 10
     };
 
-
-    if (startDate && endDate) {
-      query.creationDateFilter = {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
-      };
-    }
-
-
     const days = daysSinceLastOrder ?? 5;
 
     const payload = {
@@ -245,7 +254,12 @@ export const businessOwnersWithLastOrderPlacedInXDays = async (
       daysSinceLastOrder: days
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-last-order-placed-in-x-days", payload);
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-last-order-placed-in-x-days", payload,{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
 
     const data = response.content || response.data || response;
 
@@ -267,8 +281,6 @@ export const businessOwnersWithLastOrderPlacedInXDays = async (
 export const subscriptionExpiresInXDays = async (
   page: number,
   pageSize: number,
-  startDate?: Date,
-  endDate?: Date,
   daysBeforeExpiry?: number
 ): Promise<any> => {
   try {
@@ -286,14 +298,6 @@ export const subscriptionExpiresInXDays = async (
     };
 
 
-    if (startDate && endDate) {
-      query.creationDateFilter = {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
-      };
-    }
-
-
     const days = daysBeforeExpiry ?? 5;
 
     const payload = {
@@ -301,7 +305,12 @@ export const subscriptionExpiresInXDays = async (
       daysBeforeExpiry: days
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-expiring-locations-in-x-days", payload);
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-expiring-locations-in-x-days", payload,{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
 
     const data = response.content || response.data || response;
 
@@ -324,8 +333,6 @@ export const subscriptionExpiresInXDays = async (
 export const trialSubscriptionExpiresInXDays = async (
   page: number,
   pageSize: number,
-  startDate?: Date,
-  endDate?: Date,
   daysBeforeExpiry?: number
 ): Promise<any> => {
   try {
@@ -342,15 +349,6 @@ export const trialSubscriptionExpiresInXDays = async (
       size: pageSize ? pageSize : 10
     };
 
-
-    if (startDate && endDate) {
-      query.creationDateFilter = {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
-      };
-    }
-
-
     const days = daysBeforeExpiry ?? 5;
 
     const payload = {
@@ -358,7 +356,12 @@ export const trialSubscriptionExpiresInXDays = async (
       daysBeforeExpiry: days
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-expiring-trial-locations-in-x-days", payload);
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-expiring-trial-locations-in-x-days", payload,{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
 
     const data = response.content || response.data || response;
 
@@ -410,7 +413,12 @@ export const trialExpired = async (
       
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/expired-trial", payload);
+    const response = await apiClient.post<any, {}>("/api/internal/users/expired-trial", payload,{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
 
     const data = response.content || response.data || response;
 
@@ -462,7 +470,12 @@ export const expiredSubscription = async (
       
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-expired-locations", payload);
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-expired-locations", payload,{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
 
     const data = response.content || response.data || response;
 
@@ -514,7 +527,12 @@ export const followUpsOnCustomerFeedbacks = async (
       ...query,
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", payload);
+    const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", payload,{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
 
     const data = response.content || response.data || response;
 
@@ -575,7 +593,12 @@ export const recordFeedback = async (
 
     await apiClient.post(
       '/api/internal/user-follow-up-feedbacks/create',
-      payload
+      payload,{
+            headers: {
+                "INTERNAL-DASHBOARD-API-KEY":
+                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+            },
+        }
     );
     formResponse = {
       responseType: "success",
@@ -600,7 +623,12 @@ export const getBusinessOwnerSummary = async (id: string) => {
   try {
     const apiClient = new ApiClient();
 
-    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{} );
+    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    } );
     return parseStringify(data);
     console.log("user summary summary",data);
   } catch (error) {
