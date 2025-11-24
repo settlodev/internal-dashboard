@@ -45,12 +45,7 @@ export const searchBusinessOwners = async (
       
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/all", query,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+    const response = await apiClient.post<any, {}>("/api/internal/users/all", query);
 
     const data = response.content || response.data || response;
 
@@ -99,12 +94,7 @@ export const searchUnverifiedBusinessOwners = async (
             };
         }
 
-        const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query,{
-            headers: {
-                "INTERNAL-DASHBOARD-API-KEY":
-                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-            },
-        });
+        const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query);
 
         const data = response.content || response.data || response;
 
@@ -147,12 +137,7 @@ export const usersWithIncompleteBusinessSetup = async (
 
     };
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-incomplete-setup", query,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-incomplete-setup", query);
 
     const data = response.content || response.data || response;
 
@@ -201,12 +186,7 @@ export const businessOwnersWithNoOrder = async (
       };
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-no-orders", query,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-no-orders", query);
 
     const data = response.content || response.data || response;
 
@@ -254,12 +234,7 @@ export const businessOwnersWithLastOrderPlacedInXDays = async (
       daysSinceLastOrder: days
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-last-order-placed-in-x-days", payload,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-last-order-placed-in-x-days", payload);
 
     const data = response.content || response.data || response;
 
@@ -305,12 +280,7 @@ export const subscriptionExpiresInXDays = async (
       daysBeforeExpiry: days
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-expiring-locations-in-x-days", payload,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-expiring-locations-in-x-days", payload);
 
     const data = response.content || response.data || response;
 
@@ -356,12 +326,7 @@ export const trialSubscriptionExpiresInXDays = async (
       daysBeforeExpiry: days
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-expiring-trial-locations-in-x-days", payload,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-expiring-trial-locations-in-x-days", payload);
 
     const data = response.content || response.data || response;
 
@@ -413,12 +378,7 @@ export const trialExpired = async (
       
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/expired-trial", payload,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+    const response = await apiClient.post<any, {}>("/api/internal/users/expired-trial", payload);
 
     const data = response.content || response.data || response;
 
@@ -470,12 +430,7 @@ export const expiredSubscription = async (
       
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-expired-locations", payload,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-expired-locations", payload);
 
     const data = response.content || response.data || response;
 
@@ -527,12 +482,7 @@ export const followUpsOnCustomerFeedbacks = async (
       ...query,
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", payload,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+    const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", payload);
 
     const data = response.content || response.data || response;
 
@@ -593,12 +543,7 @@ export const recordFeedback = async (
 
     await apiClient.post(
       '/api/internal/user-follow-up-feedbacks/create',
-      payload,{
-            headers: {
-                "INTERNAL-DASHBOARD-API-KEY":
-                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-            },
-        }
+      payload
     );
     formResponse = {
       responseType: "success",
@@ -623,12 +568,7 @@ export const getBusinessOwnerSummary = async (id: string) => {
   try {
     const apiClient = new ApiClient();
 
-    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    } );
+    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{});
     return parseStringify(data);
     console.log("user summary summary",data);
   } catch (error) {
