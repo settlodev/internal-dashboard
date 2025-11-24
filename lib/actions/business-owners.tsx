@@ -430,12 +430,7 @@ export const expiredSubscription = async (
       
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-expired-locations", payload,{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-expired-locations", payload);
 
     const data = response.content || response.data || response;
 
