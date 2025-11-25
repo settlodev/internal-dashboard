@@ -551,6 +551,8 @@ export const recordFeedback = async (
     };
   }
   catch (error: any) {
+
+      console.log("Error occuring while")
     const formattedError = await error;
 
     formResponse = {
@@ -568,7 +570,12 @@ export const getBusinessOwnerSummary = async (id: string) => {
   try {
     const apiClient = new ApiClient();
 
-    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{});
+    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{},{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
     return parseStringify(data);
     console.log("user summary summary",data);
   } catch (error) {

@@ -13,6 +13,17 @@ const data = {
           url: "/dashboard",
           requiredPermission: "view:analytics",
         },
+          // {
+          //     title: "Subscribers",
+          //     url: "/subscribers",
+          //     requiredPermission: "view:analytics",
+          // },
+          // {
+          //     title: "Financial",
+          //     url: "/finance",
+          //     requiredPermission: "view:analytics",
+          // },
+
       ],
     },
     {
