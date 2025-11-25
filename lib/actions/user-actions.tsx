@@ -3,7 +3,7 @@ import { Profile, ProfileData, User } from "@/types/users/type"
 import { parseStringify } from "../utils"
 import { createClient } from "../supabase/server"
 import { fetchAllBusiness } from "./business"
-// import { fetchAllBusinessOwners } from "./business-owners"
+
 import { Business } from "@/types/business/types"
 import { searchBusinessOwners } from "./business-owners"
 import { Owner } from "@/types/owners/type"
@@ -110,8 +110,6 @@ export async function fetchProfileData(): Promise<ProfileData> {
     };
   }
 }
-
-
 
 export async function fetchProfileDataById(id: string): Promise<Profile | null> {
   const supabase = await createClient();

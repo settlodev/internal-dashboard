@@ -18,7 +18,7 @@ export const ProtectedComponent = ({
   children,
   requiredPermission,
   requiredPermissions,
-  requireAll = true, // Default to requiring all permissions
+  requireAll = true,
   fallback = null,
   loading = <div><Loading /></div>
 }: ProtectedComponentProps) => {
