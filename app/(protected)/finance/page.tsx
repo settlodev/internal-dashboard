@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react';
-import { Download, FileText, DollarSign, CreditCard, Wallet } from 'lucide-react';
+import { FileText, DollarSign, CreditCard, Wallet } from 'lucide-react';
 
 const invoices = {
     netInvoicePaid: 8000000,
@@ -25,30 +25,30 @@ export default function FinancialPage() {
         return ((part / total) * 100).toFixed(1);
     };
 
-    const exportToCSV = () => {
-        const data = [
-            ['Financial Reconciliation Report'],
-            ['Date Range:', dateRange],
-            [''],
-            ['Category', 'Amount (TZS)', 'Percentage'],
-            ['Net Invoice Paid', invoices.netInvoicePaid, '100%'],
-            [''],
-            ['Payment Method Breakdown:'],
-            ['Selcom Payments', invoices.separator.selcom, calculatePercentage(invoices.separator.selcom, invoices.netInvoicePaid) + '%'],
-            ['Manual Payments', invoices.separator.manualPayments, calculatePercentage(invoices.separator.manualPayments, invoices.netInvoicePaid) + '%'],
-            [''],
-            ['Total Verified:', invoices.separator.selcom + invoices.separator.manualPayments],
-            ['Variance:', invoices.netInvoicePaid - (invoices.separator.selcom + invoices.separator.manualPayments)]
-        ];
-
-        const csv = data.map(row => row.join(',')).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `financial-reconciliation-${dateRange}.csv`;
-        a.click();
-    };
+    // const exportToCSV = () => {
+    //     const data = [
+    //         ['Financial Reconciliation Report'],
+    //         ['Date Range:', dateRange],
+    //         [''],
+    //         ['Category', 'Amount (TZS)', 'Percentage'],
+    //         ['Net Invoice Paid', invoices.netInvoicePaid, '100%'],
+    //         [''],
+    //         ['Payment Method Breakdown:'],
+    //         ['Selcom Payments', invoices.separator.selcom, calculatePercentage(invoices.separator.selcom, invoices.netInvoicePaid) + '%'],
+    //         ['Manual Payments', invoices.separator.manualPayments, calculatePercentage(invoices.separator.manualPayments, invoices.netInvoicePaid) + '%'],
+    //         [''],
+    //         ['Total Verified:', invoices.separator.selcom + invoices.separator.manualPayments],
+    //         ['Variance:', invoices.netInvoicePaid - (invoices.separator.selcom + invoices.separator.manualPayments)]
+    //     ];
+    //
+    //     const csv = data.map(row => row.join(',')).join('\n');
+    //     const blob = new Blob([csv], { type: 'text/csv' });
+    //     const url = window.URL.createObjectURL(blob);
+    //     const a = document.createElement('a');
+    //     a.href = url;
+    //     a.download = `financial-reconciliation-${dateRange}.csv`;
+    //     a.click();
+    // };
 
     const totalVerified = invoices.separator.selcom + invoices.separator.manualPayments;
     const variance = invoices.netInvoicePaid - totalVerified;
@@ -63,13 +63,13 @@ export default function FinancialPage() {
                             <h1 className="text-3xl font-bold text-gray-900">Financial Reconciliation</h1>
                             <p className="text-gray-600 mt-1">Payment verification and breakdown report</p>
                         </div>
-                        <button
-                            onClick={exportToCSV}
-                            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-                        >
-                            <Download size={18} />
-                            Export CSV
-                        </button>
+                        {/*<button*/}
+                        {/*    onClick={exportToCSV}*/}
+                        {/*    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"*/}
+                        {/*>*/}
+                        {/*    <Download size={18} />*/}
+                        {/*    Export CSV*/}
+                        {/*</button>*/}
                     </div>
 
                     <div className="mt-4">

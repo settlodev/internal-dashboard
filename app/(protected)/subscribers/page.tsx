@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react';
-import { Download, Users, UserCheck, UserX, UserPlus, TrendingUp, Calendar } from 'lucide-react';
+import {Users, UserCheck, UserX, UserPlus, TrendingUp, Calendar } from 'lucide-react';
 
 // Sample data - replace with your actual data
 const subscriberData = {
@@ -33,31 +33,31 @@ export default function SubscriberReport() {
         return ((part / total) * 100).toFixed(1);
     };
 
-    const exportToCSV = () => {
-        const data = [
-            ['Subscriber Analytics Report'],
-            ['Reporting Period:', dateRange],
-            ['Generated:', new Date().toLocaleDateString()],
-            [''],
-            ['Metric', 'Value', 'Percentage'],
-            ['Total Subscribers', subscriberData.totalSubscribers, '100%'],
-            ['Active Subscribers', subscriberData.activeSubscribers, calculatePercentage(subscriberData.activeSubscribers, subscriberData.totalSubscribers) + '%'],
-            ['Inactive/Expired Subscribers', subscriberData.inactiveSubscribers, calculatePercentage(subscriberData.inactiveSubscribers, subscriberData.totalSubscribers) + '%'],
-            ['New Subscribers This Month', subscriberData.newSubscribersThisMonth, '-'],
-            ['Renewals This Month', subscriberData.renewalsThisMonth, '-'],
-            ['Churn This Month', subscriberData.churnThisMonth, '-'],
-            ['Monthly Growth Rate', subscriberData.monthlyGrowthRate + '%', '-'],
-            ['Revenue This Month', subscriberData.revenueThisMonth, '-']
-        ];
-
-        const csv = data.map(row => row.join(',')).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `subscriber-report-${dateRange}.csv`;
-        a.click();
-    };
+    // const exportToCSV = () => {
+    //     const data = [
+    //         ['Subscriber Analytics Report'],
+    //         ['Reporting Period:', dateRange],
+    //         ['Generated:', new Date().toLocaleDateString()],
+    //         [''],
+    //         ['Metric', 'Value', 'Percentage'],
+    //         ['Total Subscribers', subscriberData.totalSubscribers, '100%'],
+    //         ['Active Subscribers', subscriberData.activeSubscribers, calculatePercentage(subscriberData.activeSubscribers, subscriberData.totalSubscribers) + '%'],
+    //         ['Inactive/Expired Subscribers', subscriberData.inactiveSubscribers, calculatePercentage(subscriberData.inactiveSubscribers, subscriberData.totalSubscribers) + '%'],
+    //         ['New Subscribers This Month', subscriberData.newSubscribersThisMonth, '-'],
+    //         ['Renewals This Month', subscriberData.renewalsThisMonth, '-'],
+    //         ['Churn This Month', subscriberData.churnThisMonth, '-'],
+    //         ['Monthly Growth Rate', subscriberData.monthlyGrowthRate + '%', '-'],
+    //         ['Revenue This Month', subscriberData.revenueThisMonth, '-']
+    //     ];
+    //
+    //     const csv = data.map(row => row.join(',')).join('\n');
+    //     const blob = new Blob([csv], { type: 'text/csv' });
+    //     const url = window.URL.createObjectURL(blob);
+    //     const a = document.createElement('a');
+    //     a.href = url;
+    //     a.download = `subscriber-report-${dateRange}.csv`;
+    //     a.click();
+    // };
 
     const activeRate = calculatePercentage(subscriberData.activeSubscribers, subscriberData.totalSubscribers);
     const inactiveRate = calculatePercentage(subscriberData.inactiveSubscribers, subscriberData.totalSubscribers);
@@ -73,13 +73,13 @@ export default function SubscriberReport() {
                             <h1 className="text-3xl font-bold text-gray-900">Subscriber Analytics</h1>
                             <p className="text-gray-600 mt-1">Comprehensive subscriber management report</p>
                         </div>
-                        <button
-                            onClick={exportToCSV}
-                            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-                        >
-                            <Download size={18} />
-                            Export Report
-                        </button>
+                        {/*<button*/}
+                        {/*    onClick={exportToCSV}*/}
+                        {/*    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"*/}
+                        {/*>*/}
+                        {/*    <Download size={18} />*/}
+                        {/*    Export Report*/}
+                        {/*</button>*/}
                     </div>
 
                     <div className="mt-4">
