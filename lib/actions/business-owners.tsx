@@ -94,7 +94,12 @@ export const searchUnverifiedBusinessOwners = async (
             };
         }
 
-        const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query);
+        const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query,{
+            headers: {
+                "INTERNAL-DASHBOARD-API-KEY":
+                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+            },
+        });
 
         const data = response.content || response.data || response;
 
@@ -543,7 +548,13 @@ export const recordFeedback = async (
 
     await apiClient.post(
       '/api/internal/user-follow-up-feedbacks/create',
-      payload
+      payload,
+        {
+            headers: {
+                "INTERNAL-DASHBOARD-API-KEY":
+                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+            },
+        }
     );
     formResponse = {
       responseType: "success",
@@ -568,7 +579,12 @@ export const getBusinessOwnerSummary = async (id: string) => {
   try {
     const apiClient = new ApiClient();
 
-    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{});
+    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{},{
+        headers: {
+            "INTERNAL-DASHBOARD-API-KEY":
+                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+        },
+    });
     return parseStringify(data);
     console.log("user summary summary",data);
   } catch (error) {
