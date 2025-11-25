@@ -25,11 +25,9 @@ async function Page({ searchParams }: Params) {
 
   try {
     // Pass default 5 days for initial load
-    const data = await subscriptionExpiresInXDays(page, size, undefined, undefined, 5)
+    const data = await subscriptionExpiresInXDays(page, size, 5)
 
-    const sortedUsersWithIcomplete = data.content.sort((a:any, b:any) => 
-      new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
-    );
+    const sortedUsersWithIcomplete = data.content
 
     return (
       <ProtectedComponent

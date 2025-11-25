@@ -25,11 +25,9 @@ async function Page({ searchParams }: Params) {
 
   try {
     // Pass default 5 days for initial load
-    const data = await trialExpired(page, size, undefined, undefined)
+    const data = await trialExpired(page, size)
 
-    const sortedUsersWithIcomplete = data.content.sort((a:any, b:any) => 
-      new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
-    );
+    const customerWithTrialExpired = data.content
 
     return (
       <ProtectedComponent
@@ -42,7 +40,7 @@ async function Page({ searchParams }: Params) {
         fallback={<Unauthorized />}
       >
         <TrialExpired
-          initialBusinessOwners={sortedUsersWithIcomplete}
+          initialBusinessOwners={customerWithTrialExpired}
           totalElements={data.totalElements}
           searchParams={resolvedSearchParams}
           breadcrumbItems={breadcrumbItems}

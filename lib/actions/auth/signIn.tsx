@@ -29,7 +29,7 @@ export const SignIn = async (
 
     const { error, data } = await supabase.auth.signInWithPassword(credentials)
     if (error) {
-      console.log("The error", error)
+      console.log("The error occuring while signing is", error)
 
       return parseStringify({
         responseType: "error",
@@ -90,7 +90,7 @@ export const SignIn = async (
     // return { redirectTo: "/dashboard" };
 
   } catch (error) {
-    console.log(error)
+    console.log("Failed to sign in", error)
     throw error
   }
 }

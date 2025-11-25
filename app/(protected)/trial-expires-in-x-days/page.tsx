@@ -25,9 +25,10 @@ async function Page({ searchParams }: Params) {
   const page = Number(resolvedSearchParams.page) || 0;
   const size = Number(resolvedSearchParams.limit) || 10;
 
+
   try {
     // Pass default 5 days for initial load
-    const data = await trialSubscriptionExpiresInXDays(page, size, undefined, undefined, 5)
+    const data = await trialSubscriptionExpiresInXDays(page, size,5)
 
     const sortedUsersWithTrialExpiry = data.content.sort((a:any, b:any) => 
       new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
