@@ -94,12 +94,7 @@ export const searchUnverifiedBusinessOwners = async (
             };
         }
 
-        const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query,{
-            headers: {
-                "INTERNAL-DASHBOARD-API-KEY":
-                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-            },
-        });
+        const response = await apiClient.post<any, {}>("/api/internal/users/unverified", query);
 
         const data = response.content || response.data || response;
 
@@ -548,13 +543,7 @@ export const recordFeedback = async (
 
     await apiClient.post(
       '/api/internal/user-follow-up-feedbacks/create',
-      payload,
-        {
-            headers: {
-                "INTERNAL-DASHBOARD-API-KEY":
-                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-            },
-        }
+      payload
     );
     formResponse = {
       responseType: "success",
@@ -562,6 +551,8 @@ export const recordFeedback = async (
     };
   }
   catch (error: any) {
+
+      console.log("Error occuring while")
     const formattedError = await error;
 
     formResponse = {
