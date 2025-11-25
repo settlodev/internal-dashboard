@@ -2,6 +2,7 @@
 import ApiClient from "@/lib/api-client";
 import { parseStringify } from "@/lib/utils";
 import {UUID} from "node:crypto";
+import {getAuthenticatedUser} from "@/lib/actions/auth/signIn";
 
 export const searchFollowUpTypes = async (
     
@@ -55,6 +56,7 @@ export const userFollowUpThreads = async (
     userId:UUID,
 ): Promise<any> => {
 
+    const activeUser = await getAuthenticatedUser();
     const page = 0;
     const pageSize = 500;
     try {
@@ -69,7 +71,8 @@ export const userFollowUpThreads = async (
             ],
             page:page ? page - 1:0,
             size:pageSize ? pageSize : 500,
-            userIdFilter:userId
+            userIdFilter:userId,
+            internalProfileIdFilter:activeUser?.id
 
         };
 

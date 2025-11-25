@@ -19,7 +19,7 @@ const data = {
           //     requiredPermission: "view:analytics",
           // },
           // {
-          //     title: "Financial",
+          //     title: "Finance",
           //     url: "/finance",
           //     requiredPermission: "view:analytics",
           // },

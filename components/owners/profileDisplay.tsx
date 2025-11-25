@@ -14,6 +14,7 @@ interface ProfileDisplayProps {
 }
 
 export const ProfileDisplay: React.FC<ProfileDisplayProps> = ({ businessOwner }) => {
+
     return (
         <div className="flex flex-col w-full gap-6 max-w-7xl mx-auto">
             <ProfileHeader businessOwner={businessOwner} />
@@ -29,7 +30,7 @@ export const ProfileDisplay: React.FC<ProfileDisplayProps> = ({ businessOwner })
                     <LocationCard businessOwner={businessOwner} />
                     <AccountInfoCard businessOwner={businessOwner} />
                     <BusinessInfoCard businessOwner={businessOwner} />
-                    <FeedbackThread userId={businessOwner.userDetails.id} />
+                    <FeedbackThread userId={businessOwner.userDetails.id}/>
                 </div>
             </div>
         </div>
