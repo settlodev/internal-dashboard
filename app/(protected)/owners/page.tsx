@@ -1,57 +1,73 @@
 
+'use client';
+import React, { useEffect, useState } from 'react';
+import { UUID } from 'crypto';
+import { getBusinessOwnerSummary } from '@/lib/actions/business-owners';
+import { ProtectedComponent } from '@/components/auth/protectedComponent';
 
-import Loading from '@/components/widgets/loader'
-import { ProtectedComponent } from '@/components/auth/protectedComponent'
-import Unauthorized from '@/components/code/401'
-import { searchBusinessOwners } from '@/lib/actions/business-owners';
-import { BusinessOwnerComponent } from '@/components/owners/owner-component';
+import { UserSummary } from '@/types/owners/summary';
+import {ProfileSkeleton} from "@/components/owners/profileSkeleton";
+import {ErrorDisplay} from "@/components/owners/errordisplay";
+import {ProfileDisplay} from "@/components/owners/profileDisplay";
 
-type Params = { 
-  searchParams: Promise<{ 
-      search?: string; 
-      page?: string; 
-      limit?: string; 
-  }> 
-};
+const BusinessOwnerProfile = ({ params }: { params: { id: string } }) => {
+    const [businessOwner, setBusinessOwner] = useState<UserSummary | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
 
-const breadcrumbItems = [
-  { title: "Business Owners", link: "/owners" },
-]
+    useEffect(() => {
+        const fetchBusinessOwner = async () => {
+            try {
+                setIsLoading(true);
+                const data = await getBusinessOwnerSummary(params.id as UUID);
+                setBusinessOwner(data);
+            } catch (err) {
+                console.error("Failed to load business owner:", err);
+                setError(err instanceof Error ? err : new Error('Unknown error occurred'));
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-async function Page({ searchParams }: Params) {
-  const resolvedSearchParams = await searchParams;
-  const page = Number(resolvedSearchParams.page) || 0;
-  const size = Number(resolvedSearchParams.limit) || 10;
+        fetchBusinessOwner();
+    }, [params.id]);
 
-  try {
-    const data = await searchBusinessOwners(page,size,undefined,undefined)
+    if (isLoading) {
+        return (
+            <ProtectedComponent
+                requiredPermission="view:owners"
+                fallback={<div className="p-8 text-center text-lg">You are not authorized to view this page</div>}
+            >
+                <div className="container mx-auto p-4 lg:p-6">
+                    <ProfileSkeleton />
+                </div>
+            </ProtectedComponent>
+        );
+    }
 
-    const sortedUsersWithIcomplete = data.content.sort((a:any, b:any) => 
-      new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
-    );
+    if (error || !businessOwner) {
+        return (
+            <ProtectedComponent
+                requiredPermission="view:owners"
+                fallback={<div className="p-8 text-center text-lg">You are not authorized to view this page</div>}
+            >
+                <div className="container mx-auto p-4 lg:p-6">
+                    <ErrorDisplay />
+                </div>
+            </ProtectedComponent>
+        );
+    }
 
     return (
-      <ProtectedComponent
-        requiredPermission="view:owners"
-        loading={
-          <div className="flex items-center justify-center">
-            <Loading />
-          </div>
-        }
-        fallback={<Unauthorized />}
-      >
-        <BusinessOwnerComponent
-          initialBusinessOwners={sortedUsersWithIcomplete}
-          totalElements={data.totalElements}
-          searchParams={resolvedSearchParams}
-          breadcrumbItems={breadcrumbItems}
-        />
-      </ProtectedComponent>
+        <ProtectedComponent
+            requiredPermission="view:owners"
+            fallback={<div className="p-8 text-center text-lg">You are not authorized to view this page</div>}
+        >
+            <div className="container mx-auto p-4 lg:p-6">
+                <ProfileDisplay businessOwner={businessOwner} />
+            </div>
+        </ProtectedComponent>
     );
-  } catch (error) {
-    console.error('Error fetching unverified business owners:', error);
-    throw error;
-  }
-}
+};
 
-export default Page;
+export default BusinessOwnerProfile;

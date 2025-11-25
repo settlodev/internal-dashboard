@@ -23,11 +23,9 @@ async function Page({ searchParams }: Params) {
   const size = Number(resolvedSearchParams.limit) || 10;
 
   try {
-    const data = await businessOwnersWithLastOrderPlacedInXDays(page, size, undefined, undefined, 5)
+    const data = await businessOwnersWithLastOrderPlacedInXDays(page, size,5)
 
-    const sortedUsersWithLastBusinessOrder = data.content.sort((a:any, b:any) => 
-      new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
-    );
+    const sortedUsersWithLastBusinessOrder = data.content
 
     return (
       <ProtectedComponent

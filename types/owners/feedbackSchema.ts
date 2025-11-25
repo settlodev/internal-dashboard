@@ -5,8 +5,9 @@ import { z } from "zod";
 export const FeedbackSchema = z.object({
     nextFollowUpDate: z
         .string()
-        .min(1, "Please select a date")
+        .optional()
         .refine((dateStr) => {
+            if (!dateStr) return true; // Allow empty/undefined
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const selectedDate = new Date(dateStr);
@@ -14,20 +15,22 @@ export const FeedbackSchema = z.object({
             return selectedDate >= today;
         }, {
             message: "Follow-up date must be today or in the future"
-        })
-        .optional(),
-    
+        }),
+
     remarks: z
-        .string({ 
-            message: "Description is required" 
+        .string({
+            message: "Description is required"
         })
         .min(1, "Remarks is required"),
-    
+
     internalFollowUpTypeId: z
-        .string({ 
-            required_error: "Follow-up type is required" 
+        .string({
+            required_error: "Follow-up type is required"
         })
         .min(1, "Please select a follow-up type"),
-    
-    userId: z.string()
+
+    userId: z.string(),
+    archiveAccountOptions: z.object({
+        archiveAccount: z.boolean().default(false)
+    }).optional().default({ archiveAccount: false })
 });

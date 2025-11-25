@@ -38,6 +38,8 @@ interface DataTableProps<TData, TValue> {
     searchKey: string;
     total:number;
     pageSize?:number;
+    showIndex?:boolean
+    onRowClick?: (data: TData) => void;
     searchParams?: {
         [key: string]: string | string[] | undefined
     };
@@ -60,7 +62,9 @@ export function DataTable<TData, TValue>({
     searchKey,
     filters,
     total,
-    pageSize: initialPageSize = 10
+    pageSize: initialPageSize = 10,
+    showIndex = false,
+    onRowClick
 }: DataTableProps<TData, TValue>) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -123,10 +127,31 @@ export function DataTable<TData, TValue>({
     router.push(`?${newSearchParams.toString()}`, { scroll: false });
 }
 
+    // Create index column that doesn't depend on table instance
+    const indexColumn: ColumnDef<TData> = {
+        id: 'index',
+        header: '#',
+        cell: ({ row }) => {
+            // Calculate index based on current page and row index
+            const index = pageIndex * pageSize + row.index + 1;
+            return (
+                <div className="text-center font-medium w-12">
+                    {index}
+                </div>
+            );
+        },
+        size: 60,
+        enableSorting: false,
+    };
+
+    // Combine columns
+    const tableColumns = React.useMemo(() => {
+        return showIndex ? [indexColumn, ...columns] : columns;
+    }, [showIndex, columns, indexColumn]);
 
     const table = useReactTable({
         data,
-        columns,
+        columns:tableColumns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         onRowSelectionChange: setRowSelection,
@@ -222,6 +247,8 @@ export function DataTable<TData, TValue>({
                             <TableRow
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
+                                className={onRowClick ? "cursor-pointer hover:bg-muted/50 transition-colors" : ""}
+                                onClick={() => onRowClick?.(row.original)}
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id} className="max-w-xs">

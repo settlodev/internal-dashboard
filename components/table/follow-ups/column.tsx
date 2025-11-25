@@ -74,7 +74,11 @@ export const columns: ColumnDef<FollowUp>[] = [
         if (!date) return "-";
         
         try {
-          return new Intl.DateTimeFormat('en-US').format(new Date(date));
+          return new Intl.DateTimeFormat('en-US',{
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+          }).format(new Date(date));
         } catch {
           return "Invalid date";
         }
@@ -82,17 +86,25 @@ export const columns: ColumnDef<FollowUp>[] = [
     },
     {
       accessorKey: "nextFollowUpDate",
-      header: "Next Follow Up Date",
+      header: "Next Follow Up",
       cell: ({ row }) => {
         const nextDate = row.original.nextFollowUpDate;
         if (!nextDate) return "-";
         
         try {
-          return new Intl.DateTimeFormat('en-US').format(new Date(nextDate));
+          return new Intl.DateTimeFormat('en-US',{
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+          }).format(new Date(nextDate));
         } catch {
           return "Invalid date";
         }
       }
+    },
+    {
+        accessorKey: "internalFollowUpTypeName",
+        header: "Follow Up Type",
     }
 
 ]

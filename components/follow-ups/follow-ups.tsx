@@ -126,6 +126,7 @@ export function FollowUpFeedback({
               searchKey='' 
               total={total}
               pageSize={size || 10}
+              showIndex={true}
             />
           </CardContent>
         </Card>

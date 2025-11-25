@@ -1,168 +1,160 @@
-"use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useState, useTransition } from "react";
-import { FieldErrors, useForm } from "react-hook-form";
-import { z } from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../ui/form";
-import { Separator } from "../ui/separator";
-import SubmitButton from "../widgets/submit-button";
-import CancelButton from "../widgets/cancel-button";
-import { Textarea } from "../ui/textarea";
-import { Alert, AlertDescription } from "../ui/alert";
-import { FeedbackSchema } from "@/types/owners/feedbackSchema";
-import FollowUpTypeSelector from "../widgets/followUpSelector";
-import { feedbackProp } from "../widgets/feedback_dialog";
-import { recordFeedback } from "@/lib/actions/business-owners";
-import { Input } from "../ui/input";
+'use client'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import {FeedbackSchema} from "@/types/owners/feedbackSchema";
+import {recordFeedback} from "@/lib/actions/business-owners";
+import FollowUpTypeSelector from "@/components/widgets/followUpSelector";
+import CancelButton from "@/components/widgets/cancel-button";
+import {Separator} from "@radix-ui/react-menu";
+import SubmitButton from "@/components/widgets/submit-button";
+import {useRouter} from "next/navigation";
 
-function  RecordFeedbackForm({ ownerId, onSuccess }: feedbackProp & { onSuccess?: () => void }) {
-  const [isPending, startTransition] = useTransition();
-  const [formError, setFormError] = useState<string | null>(null);
+type FeedbackFormData = z.infer<typeof FeedbackSchema>
 
-  const form = useForm<z.infer<typeof FeedbackSchema>>({
-    resolver: zodResolver(FeedbackSchema),
-    defaultValues: {
-      internalFollowUpTypeId: "",
-      remarks: "",
-      nextFollowUpDate: "",
-      userId: ownerId,
-    },
-  });
-
- 
-
-  const onInvalid = useCallback((errors: FieldErrors) => {
-    console.log("Form validation errors:", errors);
-    setFormError(
-      typeof errors.message === "string" && errors.message
-        ? errors.message
-        : "Please correct the errors below before submitting.",
-    );
-  }, []);
-
-  const onSubmitData = useCallback(
-    (values: z.infer<typeof FeedbackSchema>) => {
-      console.log("Form submission values:", values);
-      setFormError(null);
-
-      const submitValues = {
-        ...values,
-        nextFollowUpDate: values.nextFollowUpDate 
-          ? new Date(values.nextFollowUpDate).toISOString() 
-          : undefined
-      };
-
-      startTransition(async () => {
-        try {
-          await recordFeedback(submitValues);
-          onSuccess?.();
-          form.reset()
-        } catch (error) {
-          setFormError("Failed to record feedback. Please try again.");
-        }
-      });
-    },
-    [onSuccess , form],
-  );
-
-  return (
-    <Form {...form}>
-      <div className="w-full max-w-sm mx-auto">
-        {formError && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertDescription className="text-center">
-              {formError}
-            </AlertDescription>
-          </Alert>
-        )}
-        <form onSubmit={form.handleSubmit(onSubmitData, onInvalid)}>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <FormField
-              control={form.control}
-              name="internalFollowUpTypeId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Follow-Up Type</FormLabel>
-                  <FormControl>
-                    <FollowUpTypeSelector
-                      {...field}
-                      placeholder="Select follow up type"
-                      label="FollowUp Type"
-                      value={field.value}
-                      onChange={(selectedValue) => {
-                        // If selectedValue is an object, extract the ID
-                        if (
-                          selectedValue &&
-                          typeof selectedValue === "object" &&
-                          "id" in selectedValue
-                        ) {
-                          field.onChange(selectedValue.id);
-                        } else {
-                          field.onChange(selectedValue);
-                        }
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="nextFollowUpDate"
-              render={({ field }) => {
-                console.log("=== FormField Debug ===");
-    
-                return (
-                  <FormItem>
-                    <FormLabel>Next FollowUp</FormLabel>
-                    <FormControl>
-                      
-                      <Input
-                      {...field}
-                      type="date"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-
-            <FormField
-              control={form.control}
-              name="remarks"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Remark</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Please narrate here..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-      
-          <div className="flex h-5 items-center space-x-4 mt-10">
-            <CancelButton />
-            <Separator orientation="vertical" />
-            <SubmitButton isPending={isPending} label="Record" />
-          </div>
-        </form>
-      </div>
-    </Form>
-  );
+interface RecordFeedbackFormProps {
+    ownerId: string
+    onSuccess: () => void
 }
 
-export default RecordFeedbackForm;
+export function RecordFeedbackForm({ ownerId, onSuccess }: RecordFeedbackFormProps) {
+    const [showArchiveCheckbox, setShowArchiveCheckbox] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const router = useRouter()
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        formState: { errors }
+    } = useForm<FeedbackFormData>({
+        resolver: zodResolver(FeedbackSchema),
+        defaultValues: {
+            userId: ownerId,
+            archiveAccountOptions: { archiveAccount: false }
+        }
+    })
+
+
+    const selectedFollowUpType = watch('internalFollowUpTypeId')
+
+    // Handle follow-up type selection
+    const handleFollowUpTypeChange = (value: string | any) => {
+        const followUpTypeId = typeof value === 'object' ? value.id : value
+        setValue('internalFollowUpTypeId', followUpTypeId)
+
+        const isArchiveAccount = followUpTypeId === 'd27d7cbf-d0f1-42c8-bf89-af03a6813b17'
+        setShowArchiveCheckbox(isArchiveAccount)
+
+        // Auto-check the archive checkbox when Archive Account is selected
+        if (isArchiveAccount) {
+            setValue('archiveAccountOptions.archiveAccount', true)
+        } else {
+            setValue('archiveAccountOptions.archiveAccount', false)
+        }
+    }
+
+    const handleArchiveCheckboxChange = (checked: boolean) => {
+        setValue('archiveAccountOptions.archiveAccount', checked)
+    }
+
+    const onSubmit = async (data: FeedbackFormData) => {
+        setIsSubmitting(true)
+
+        const submitValues = {
+         ...data,
+         nextFollowUpDate: data.nextFollowUpDate
+           ? new Date(data.nextFollowUpDate).toISOString()
+           : undefined
+  };
+        try {
+            const result = await recordFeedback(submitValues)
+
+            if (result ) {
+                onSuccess()
+                router.push('/unverified-emails')
+            } else {
+                // Handle error case
+                console.error('Failed to submit feedback')
+            }
+        } catch (error) {
+            console.error('Error submitting feedback:', error)
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Follow-up Type Selector */}
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Follow-up Type *</label>
+                <FollowUpTypeSelector
+                    placeholder="Select follow up type"
+                    value={selectedFollowUpType}
+                    onChange={handleFollowUpTypeChange}
+                />
+                {errors.internalFollowUpTypeId && (
+                    <p className="text-sm text-red-600">{errors.internalFollowUpTypeId.message}</p>
+                )}
+            </div>
+
+            {/* Archive Account Checkbox - Conditionally Rendered */}
+            {showArchiveCheckbox && (
+                <div className="space-y-2 p-4 border rounded-lg bg-gray-50">
+                    <label className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={watch('archiveAccountOptions.archiveAccount')}
+                            onChange={(e) => handleArchiveCheckboxChange(e.target.checked)}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-medium">Archive this account</span>
+                    </label>
+                    <p className="text-xs text-gray-600">
+                        This account will be archived upon submission
+                    </p>
+                </div>
+            )}
+
+            {/* Next Follow-up Date */}
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Next Follow-up Date</label>
+                <input
+                    type="date"
+                    {...register('nextFollowUpDate')}
+                    className="w-full p-2 border rounded-md text-sm"
+                />
+                {errors.nextFollowUpDate && (
+                    <p className="text-sm text-red-600">{errors.nextFollowUpDate.message}</p>
+                )}
+            </div>
+
+            {/* Remarks */}
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Remarks *</label>
+                <textarea
+                    {...register('remarks')}
+                    rows={4}
+                    className="w-full p-2 border rounded-md text-sm"
+                    placeholder="Enter your remarks..."
+                />
+                {errors.remarks && (
+                    <p className="text-sm text-red-600">{errors.remarks.message}</p>
+                )}
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex h-5 items-center space-x-4 mt-10">
+                <CancelButton />
+                <Separator />
+                <SubmitButton isPending={isSubmitting} label="Record" />
+                </div>
+        </form>
+    )
+}
+
+export default RecordFeedbackForm
