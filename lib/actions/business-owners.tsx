@@ -536,7 +536,7 @@ export const recordFeedback = async (
           }
       })
   }
-
+console.log("payload to record feedback is", payload)
   try {
     const apiClient = new ApiClient();
 
@@ -570,12 +570,7 @@ export const getBusinessOwnerSummary = async (id: string) => {
   try {
     const apiClient = new ApiClient();
 
-    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{},{
-        headers: {
-            "INTERNAL-DASHBOARD-API-KEY":
-                "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
-        },
-    });
+    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{});
     return parseStringify(data);
     console.log("user summary summary",data);
   } catch (error) {
