@@ -56,15 +56,7 @@ const LocationDetailClient = ({ location, activeSubscription, statistics, activi
 
 
 
-  // const handlePageChange = async (page: number) => {
-  //     try {
-  //         const newPayments = await getLocationSubscriptionPayments(location?.id, page, 10);
-  //         setInitialPayments(newPayments);
-  //     } catch (error) {
-  //         console.error("Failed to fetch payments:", error);
-  //         // Handle error state
-  //     }
-  // };
+
 
   const getSubscriptionStatusBadge = (status: string) => {
     switch (status) {
@@ -151,9 +143,7 @@ const LocationDetailClient = ({ location, activeSubscription, statistics, activi
                   )}
                 </div>
               </div>
-              {/* <div className="hidden lg:block p-3 bg-gray-100 rounded-lg">
-            <SubscriptionDialog location={location} activeSubscription={activeSubscription} />
-          </div> */}
+
             </div>
           </div>
         </CardHeader>

@@ -24,16 +24,19 @@ class ApiClient {
                 config.url = this.baseURL + config.url;
             }
 
-            // Set default headers
-            config.headers["Content-Type"] = "application/json";
-            
-            // Add API key headers if available in environment variables
-            if (process.env.INTERNAL_DASHBOARD_API_KEY) {
-                config.headers["INTERNAL-DASHBOARD-API-KEY"] = process.env.INTERNAL_DASHBOARD_API_KEY;
+            // Set default Content-Type if not already set
+            if (!config.headers["Content-Type"]) {
+                config.headers["Content-Type"] = "application/json";
             }
-            
-            // You can add more API keys as needed
-            if (process.env.EXTERNAL_API_KEY) {
+
+            // IMPORTANT: Check if the API key is already in headers
+            // Only add from environment if not already provided in config
+            if (process.env["INTERNAL-DASHBOARD-API-KEY"] && !config.headers["INTERNAL-DASHBOARD-API-KEY"]) {
+                config.headers["INTERNAL-DASHBOARD-API-KEY"] = process.env["INTERNAL-DASHBOARD-API-KEY"];
+            }
+
+            // Only add external API key if not already provided
+            if (process.env.EXTERNAL_API_KEY && !config.headers["EXTERNAL-API-KEY"]) {
                 config.headers["EXTERNAL-API-KEY"] = process.env.EXTERNAL_API_KEY;
             }
 

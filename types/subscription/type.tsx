@@ -5,3 +5,11 @@ export declare interface Subscriptions {
     amount: number
     packageName: string 
 }
+
+export interface SubscriberData {
+    activeSubs: number;
+    newSubs: number;
+    renewedSubs: number;
+    inactiveSubs: number;
+    monthlyChurn: number;
+}

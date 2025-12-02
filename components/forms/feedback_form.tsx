@@ -10,7 +10,6 @@ import FollowUpTypeSelector from "@/components/widgets/followUpSelector";
 import CancelButton from "@/components/widgets/cancel-button";
 import {Separator} from "@radix-ui/react-menu";
 import SubmitButton from "@/components/widgets/submit-button";
-import {useRouter} from "next/navigation";
 
 type FeedbackFormData = z.infer<typeof FeedbackSchema>
 
@@ -22,7 +21,6 @@ interface RecordFeedbackFormProps {
 export function RecordFeedbackForm({ ownerId, onSuccess }: RecordFeedbackFormProps) {
     const [showArchiveCheckbox, setShowArchiveCheckbox] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const router = useRouter()
 
     const {
         register,
@@ -75,7 +73,7 @@ export function RecordFeedbackForm({ ownerId, onSuccess }: RecordFeedbackFormPro
 
             if (result ) {
                 onSuccess()
-                router.push('/unverified-emails')
+                // router.push('/unverified-emails')
             } else {
                 // Handle error case
                 console.error('Failed to submit feedback')
