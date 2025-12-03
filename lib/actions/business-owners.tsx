@@ -326,7 +326,13 @@ export const trialSubscriptionExpiresInXDays = async (
       daysBeforeExpiry: days
     }
 
-    const response = await apiClient.post<any, {}>("/api/internal/users/with-expiring-trial-locations-in-x-days", payload);
+    const response = await apiClient.post<any, {}>("/api/internal/users/with-expiring-trial-locations-in-x-days", payload,
+        {
+            headers: {
+                "INTERNAL-DASHBOARD-API-KEY":
+                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+            },
+        });
 
     const data = response.content || response.data || response;
 
@@ -501,15 +507,7 @@ export const followUpsOnCustomerFeedbacks = async (
     throw error;
   }
 }
-export const getBusinessOwner = async (id: string) => {
-  try {
-    const apiClient = new ApiClient();
-    const data = await apiClient.get(`/api/users/${id}`);
-    return parseStringify(data);
-  } catch (error) {
-    throw error;
-  }
-}
+
 
 export const recordFeedback = async (
   value: z.infer<typeof FeedbackSchema>
@@ -543,7 +541,12 @@ console.log("payload to record feedback is", payload)
 
     await apiClient.post(
       '/api/internal/user-follow-up-feedbacks/create',
-      payload
+      payload,{
+            headers: {
+                "INTERNAL-DASHBOARD-API-KEY":
+                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+            },
+        }
     );
     formResponse = {
       responseType: "success",
@@ -570,7 +573,13 @@ export const getBusinessOwnerSummary = async (id: string) => {
   try {
     const apiClient = new ApiClient();
 
-    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{});
+    const data = await apiClient.post(`/api/internal/users/summary/${id}`,{},
+        {
+            headers: {
+                "INTERNAL-DASHBOARD-API-KEY":
+                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+            },
+        });
     return parseStringify(data);
     console.log("user summary summary",data);
   } catch (error) {

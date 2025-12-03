@@ -28,7 +28,13 @@ export const searchFollowUpTypes = async (
         
       };
   
-      const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-types", query);
+      const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-types", query,
+          {
+              headers: {
+                  "INTERNAL-DASHBOARD-API-KEY":
+                      "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+              },
+          });
   
       const data = response.content || response.data || response;
 
@@ -71,7 +77,12 @@ export const userFollowUpThreads = async (
         };
 
 
-        const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", query);
+        const response = await apiClient.post<any, {}>("/api/internal/user-follow-up-feedbacks", query,{
+            headers: {
+                "INTERNAL-DASHBOARD-API-KEY":
+                    "CbQQHb1GZ2IbVREPp3lNzPFil8pg0eoa",
+            },
+        });
 
         const data = response.content || response.data || response;
 
