@@ -8,21 +8,21 @@ const data = {
       icon: ChartColumn,
       isActive: true,
       items: [
-        {
-          title: "Statistics",
-          url: "/dashboard",
-          requiredPermission: "view:analytics",
-        },
+        // {
+        //   title: "Statistics",
+        //   url: "/dashboard",
+        //   requiredPermission: "view:analytics",
+        // },
           {
               title: "Subscribers",
               url: "/subscribers",
               requiredPermission: "view:analytics",
           },
-          {
-              title: "Finance",
-              url: "/finance",
-              requiredPermission: "view:analytics",
-          },
+          // {
+          //     title: "Finance",
+          //     url: "/finance",
+          //     requiredPermission: "view:analytics",
+          // },
 
       ],
     },
