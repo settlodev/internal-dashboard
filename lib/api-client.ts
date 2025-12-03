@@ -32,7 +32,7 @@ class ApiClient {
             // IMPORTANT: Check if the API key is already in headers
             // Only add from environment if not already provided in config
             if (process.env["INTERNAL-DASHBOARD-API-KEY"] && !config.headers["INTERNAL-DASHBOARD-API-KEY"]) {
-                config.headers["INTERNAL-DASHBOARD-API-KEY"] = process.env["INTERNAL-DASHBOARD-API-KEY"];
+                config.headers["INTERNAL-DASHBOARD-API-KEY"] = process.env["INTERNAL_DASHBOARD_API_KEY"];
             }
 
             // Only add external API key if not already provided
