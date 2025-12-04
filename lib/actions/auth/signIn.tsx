@@ -251,7 +251,7 @@ export const SignIn = async (
             return parseStringify({
                 responseType: "success",
                 message: "Signed in successfully",
-                redirectTo: "/dashboard"
+                redirectTo: "/subscribers"
             });
         }
 
