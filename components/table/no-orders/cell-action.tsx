@@ -1,37 +1,89 @@
-
+//
+//
+// 'use client';
+// import { Button } from "@/components/ui/button";
+// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem,DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+// import { MoreHorizontal} from "lucide-react";
+// import { useRouter } from "next/navigation";
+// import { Owner } from "@/types/owners/type";
+//
+// interface CellActionProps {
+//     data: Owner;
+// }
+//
+// export function CellAction({ data }: CellActionProps) {
+//     const router = useRouter();
+//
+//     return (
+//         <DropdownMenu>
+//           <DropdownMenuTrigger asChild>
+//             <Button variant="ghost" className="h-8 w-8 p-0">
+//               <span className="sr-only">Open menu</span>
+//               <MoreHorizontal className="h-4 w-4" />
+//             </Button>
+//           </DropdownMenuTrigger>
+//           <DropdownMenuContent align="end">
+//             <DropdownMenuItem
+//             onClick={() => {
+//                 router.push(`/owners/${data?.id}`);
+//             }}
+//             >
+//               View details
+//             </DropdownMenuItem>
+//
+//           </DropdownMenuContent>
+//         </DropdownMenu>
+//     );
+// }
 
 'use client';
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem,DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal} from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, Mail, MessageSquare, Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Owner } from "@/types/owners/type";
 
 interface CellActionProps {
     data: Owner;
+    onSendMessage?: (type: 'email' | 'sms' | 'push', customer: Owner) => void;
 }
 
-export function CellAction({ data }: CellActionProps) {
+export function CellAction({ data, onSendMessage }: CellActionProps) {
     const router = useRouter();
 
     return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-            onClick={() => {
-                router.push(`/owners/${data?.id}`);
-            }}
-            >
-              View details
-            </DropdownMenuItem>
-            
-          </DropdownMenuContent>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                    onClick={() => router.push(`/owners/${data?.id}`)}
+                >
+                    View details
+                </DropdownMenuItem>
+
+                {onSendMessage && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => onSendMessage('email', data)}>
+                            <Mail className="w-4 h-4 mr-2" />
+                            Send Email
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onSendMessage('sms', data)}>
+                            <MessageSquare className="w-4 h-4 mr-2" />
+                            Send SMS
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onSendMessage('push', data)}>
+                            <Bell className="w-4 h-4 mr-2" />
+                            Send Push
+                        </DropdownMenuItem>
+                    </>
+                )}
+            </DropdownMenuContent>
         </DropdownMenu>
     );
 }

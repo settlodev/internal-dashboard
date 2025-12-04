@@ -3,7 +3,7 @@ import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { columns } from "@/components/table/users/column";
-import { fetchAllUsers} from "@/lib/actions/user-actions";
+import {searchStaffProfile} from "@/lib/actions/user-actions";
 import { User } from "@/types/users/type";
 import { useEffect, useState } from "react";
 import Loading from "@/components/widgets/loader";
@@ -22,16 +22,14 @@ export default function Page() {
 
   const fetchUserProfile = async () => {
     try {
-      const users = await fetchAllUsers()
-      // console.log(users)
-      setUserProfile(users)
+      const users = await searchStaffProfile()
+      setUserProfile(users.content)
     } catch (error) {
       throw error
     }
     finally {
       setIsLoading(false);
     }
-
   }
   useEffect(() => {
     fetchUserProfile()
@@ -75,7 +73,7 @@ export default function Page() {
           <DataTable
             columns={columns}
             data={userProfile}
-            searchKey="first_name"
+            searchKey="firstName"
             total={100}
             pageSize={10}
           />

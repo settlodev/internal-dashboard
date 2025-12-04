@@ -5,6 +5,8 @@ import { createClient } from "../supabase/server"
 import { parseStringify } from "../utils"
 import { z } from "zod"
 import { RoleSchema } from "@/types/role/schema"
+import {ApiResponse} from "@/types/types";
+import ApiClient from "@/lib/api-client";
 
 export const fetchAllRoles = async (): Promise<Role[]> => {
     const supabase = await createClient()
@@ -178,3 +180,35 @@ export async function getRoleById(id: string): Promise<Role | undefined> {
         };
     }
 }
+
+export const searchRoles = async (
+): Promise<ApiResponse<Role>> => {
+    const page = 0;
+    const pageLimit = 500;
+    try {
+        const apiClient = new ApiClient();
+
+        const query = {
+            filters: [
+            ],
+            sorts: [
+                {
+                    key: "name",
+                    direction: "ASC",
+                },
+            ],
+            page: page ? page - 1 : 0,
+            size: pageLimit ? pageLimit : 10,
+        };
+
+        const rolesData = await apiClient.post(
+            '/api/internal/internal-roles',
+            query,
+        );
+
+        console.log("rolesData", rolesData);
+        return parseStringify(rolesData);
+    } catch (error) {
+        throw error;
+    }
+};

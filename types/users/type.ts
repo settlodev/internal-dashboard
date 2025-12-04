@@ -4,14 +4,16 @@ export declare interface User{
     id:UUID,
     email:string,
     role:role,
+    roleName:string,
     phone:string,
-    first_name:string,
-    last_name:string,
+    referralCode:string,
+    firstName:string,
+    lastName:string,
     password:string,
     status:string,
     canDeleted:boolean,
     isArchived:boolean
-    user_type:string
+    userType:string
 
 }
 export interface role {
@@ -24,7 +26,7 @@ export interface Profile {
     first_name: string;
     last_name: string;
     avatar_url?: string;
-    role:role,
+    role:string,
     businesses_registered?: number;
     commission_earned?: number;
     referral_code?: string;

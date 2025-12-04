@@ -127,7 +127,7 @@ export function UnverifiedEmailsClient({
                             <DataTable
                                 columns={columns}
                                 data={businessOwners}
-                                searchKey=''
+                                searchKey='name'
                                 total={totalElements}
                                 pageSize={size || 10}
                                 showIndex={true}

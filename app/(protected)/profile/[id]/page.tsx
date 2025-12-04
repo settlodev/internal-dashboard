@@ -10,21 +10,21 @@ import { Badge } from '@/components/ui/badge';
 import { Copy, Share, RefreshCw } from 'lucide-react';
 import { fetchBusinessesByReferralCode, fetchProfileDataById, getOwnerDetails } from '@/lib/actions/user-actions';
 import { Business } from '@/types/business/types';
-import { role } from '@/types/users/type';
+import {Profile} from '@/types/users/type';
 
-interface ProfileData {
-  id: string;
-  first_name: string;
-  last_name: string;
-  phone: string;
-  role:role,
-  user_type: string;
-  avatar_url?: string;
-  referral_code?: string;
-  commission_earned?: number;
-  created_at: string;
-  updated_at: string;
-}
+// interface ProfileData {
+//   id: string;
+//   first_name: string;
+//   last_name: string;
+//   phone: string;
+//   role:role,
+//   user_type: string;
+//   avatar_url?: string;
+//   referral_code?: string;
+//   commission_earned?: number;
+//   created_at: string;
+//   updated_at: string;
+// }
 
 interface ProfileError {
   message: string;
@@ -128,7 +128,7 @@ const ProfileSkeleton = () => (
 );
 
 const ProfilePage = ({ params }: { params: { id: string } }) => {
-  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [error, setError] = useState<ProfileError | null>(null);
   const [referredBusinesses, setReferredBusinesses] = useState<Business[] | null>(null);
   const [ownersMap, setOwnersMap] = useState<Record<string, string>>({});

@@ -145,7 +145,7 @@ export function LocationSubscriptionExpiresInXDays({
             <DataTable
               columns={columns}
               data={businessesOwnres}
-              searchKey='' 
+              searchKey='name'
               total={total}
               pageSize={size || 10}
             />

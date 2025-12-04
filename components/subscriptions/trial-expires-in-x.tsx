@@ -151,7 +151,7 @@ export function TrialSubscriptionExpiresInXDays({
             <DataTable
               columns={columns}
               data={businessesOwnres}
-              searchKey='' 
+              searchKey='name'
               total={total}
               pageSize={size || 10}
               onRowClick={handleRowClick}

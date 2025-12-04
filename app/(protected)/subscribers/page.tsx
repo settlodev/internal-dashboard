@@ -7,7 +7,13 @@ import {SubscriberData} from "@/types/subscription/type";
 import Loading from "@/components/widgets/loader";
 
 export default function SubscriberReport() {
-    const [dateRange, setDateRange] = useState('2025-11');
+    const getCurrentMonthYear = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        return `${year}-${month}`;
+    };
+    const [dateRange, setDateRange] = useState(getCurrentMonthYear());
     const [subscriberData, setSubscriberData] = useState<SubscriberData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);

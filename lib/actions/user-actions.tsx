@@ -7,6 +7,8 @@ import { fetchAllBusiness } from "./business"
 import { Business } from "@/types/business/types"
 import { searchBusinessOwners } from "./business-owners"
 import { Owner } from "@/types/owners/type"
+import {ApiResponse} from "@/types/types";
+import ApiClient from "@/lib/api-client";
 
 export const getUserWithProfile = async () => {
   const supabase = await createClient()
@@ -111,7 +113,7 @@ export async function fetchProfileData(): Promise<ProfileData> {
   }
 }
 
-export async function fetchProfileDataById(id: string): Promise<Profile | null> {
+export async function fetchProfileDataById(id: string): Promise<Profile> {
   const supabase = await createClient();
 
   try {
@@ -124,11 +126,11 @@ export async function fetchProfileDataById(id: string): Promise<Profile | null> 
 
     if (profileError) {
       console.error('Supabase error:', profileError);
-      return null;
+      throw profileError;
     }
 
     if (!profile) {
-      return null;
+      throw "Profile not found";
     }
 
     // Fetch role information to include role name
@@ -150,7 +152,7 @@ export async function fetchProfileDataById(id: string): Promise<Profile | null> 
     return parseStringify(profile);
   } catch (error) {
     console.error('Error fetching profile data:', error);
-    return null;
+    throw error;
   }
 }
 
@@ -205,5 +207,34 @@ export const getOwnerDetails = async (ownerId: string): Promise<string> => {
   }
 }
 
+export const searchStaffProfile = async (
+): Promise<ApiResponse<User>> => {
+    const page = 0;
+    const pageLimit = 500;
+    try {
+        const apiClient = new ApiClient();
 
+        const query = {
+            filters: [
+            ],
+            sorts: [
+                {
+                    key: "name",
+                    direction: "ASC",
+                },
+            ],
+            page: page ? page - 1 : 0,
+            size: pageLimit ? pageLimit : 10,
+        };
 
+        const staffProfile = await apiClient.post(
+            '/api/internal/internal-profiles',
+            query,
+        );
+
+        console.log("list of staff profile", staffProfile);
+        return parseStringify(staffProfile);
+    } catch (error) {
+        throw error;
+    }
+};

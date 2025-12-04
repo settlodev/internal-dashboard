@@ -124,7 +124,7 @@ export function IncompleteSetup({
                             <DataTable
                                 columns={columns}
                                 data={businessesOwners}
-                                searchKey=''
+                                searchKey='name'
                                 total={total}
                                 pageSize={size || 10}
                                 showIndex={true}
