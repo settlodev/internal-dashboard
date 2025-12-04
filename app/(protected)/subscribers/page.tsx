@@ -274,8 +274,8 @@ export default function SubscriberReport() {
                         <div className="flex justify-between items-center py-3 pt-4 bg-gray-50 px-4 rounded-lg">
                             <span className="text-gray-900 font-semibold">Net Change</span>
                             <span className={`font-bold text-lg ${netGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {netGrowth >= 0 ? '+' : ''}{formatNumber(netGrowth)}
-              </span>
+                            {netGrowth >= 0 ? '+' : ''}{formatNumber(netGrowth)}
+                            </span>
                         </div>
                     </div>
                 </div>

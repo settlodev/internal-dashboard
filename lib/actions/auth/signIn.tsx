@@ -7,21 +7,20 @@ import { UserSchema } from "@/types/users/schema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-// import { inviteStaff } from "../email/send";
 import { resetPasswordSchema } from "@/types/auth/resetPasswordSchema";
 import { cache } from 'react';
 import { cookies } from "next/headers";
 import ApiClient from "@/lib/api-client";
+import {inviteStaff} from "@/lib/actions/email/send";
 
 export interface CreateProfileData {
-    first_name: string;
-    last_name: string;
+    firstName: string;
+    lastName: string;
     phone: string;
-    // referral_code: string;
     role: string;
-    user_type: string;
+    userType: string;
     email: string;
-    // user_id: string;
+    user_id: string;
 }
 
 export const createAuthUser = async (email: string, password?: string) => {
@@ -78,7 +77,7 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
         };
     }
 
-    const { email, first_name, last_name, phone, role, user_type } = validatedData.data;
+    const { email, firstName, lastName, phone, role, userType } = validatedData.data;
     let authUserId: string | null = null;
 
     try {
@@ -94,16 +93,17 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
         }
 
         authUserId = authResult.user.id;
-        // const generatedPassword = authResult.password;
+        const generatedPassword = authResult.password;
 
         // 3. Create user profile via external API
         const profileData: CreateProfileData = {
-            first_name,
-            last_name,
+            firstName,
+            lastName,
             phone,
             role,
-            user_type,
+            userType,
             email,
+            user_id: authUserId,
         };
 
         const profileResult = await createUserProfile(profileData);
@@ -121,7 +121,7 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
 
 
         // 5. Send invitation email
-        // await inviteStaff(email, first_name, last_name, referralCode, generatedPassword);
+        await inviteStaff(email, firstName, lastName, profileResult.data.referralCode, generatedPassword);
 
         return {
             redirectTo: "/users",
@@ -147,14 +147,13 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
 
 export const createUserProfile = async (profileData: CreateProfileData) => {
     const payload = {
-        first_name: profileData.first_name,
-        last_name: profileData.last_name,
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
         phone: profileData.phone,
-        // referral_code: profileData.referral_code,
         role: profileData.role,
-        user_type: profileData.user_type,
+        user_type: profileData.userType,
         email: profileData.email,
-        // user_id: profileData.user_id
+        id: profileData.user_id
     };
 
     try {

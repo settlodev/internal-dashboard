@@ -232,9 +232,21 @@ export const searchStaffProfile = async (
             query,
         );
 
-        console.log("list of staff profile", staffProfile);
         return parseStringify(staffProfile);
     } catch (error) {
         throw error;
     }
 };
+
+export async function getUserProfileById(id: string): Promise<Profile> {
+    try {
+        const apiClient = new ApiClient();
+
+        const data = await apiClient.get(`/api/internal/internal-profiles/${id}`);
+        return parseStringify(data);
+        console.log("user profile by Id",data);
+    } catch (error) {
+        console.error("Error occurring while getting user profile/details is",error);
+        throw error;
+    }
+}

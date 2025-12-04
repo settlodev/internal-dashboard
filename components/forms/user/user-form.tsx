@@ -65,12 +65,12 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
     resolver: zodResolver(UserSchema),
     defaultValues: {
       ...item,
-      first_name: item?.first_name || "",
-      last_name: item?.last_name || "",
+      firstName: item?.firstName || "",
+      lastName: item?.lastName || "",
       email: userEmail || item?.email || "",
       phone: item?.phone || "",
       role: item?.role || "",
-      user_type: item?.user_type || "",
+      userType: item?.userType || "",
     }
   })
 
@@ -158,7 +158,7 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
-                      name="first_name"
+                      name="firstName"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>First Name</FormLabel>
@@ -177,7 +177,7 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
-                      name="last_name"
+                      name="lastName"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Last Name</FormLabel>
@@ -264,7 +264,7 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
-                      name="user_type"
+                      name="userType"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>User Type</FormLabel>
