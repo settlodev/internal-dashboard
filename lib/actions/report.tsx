@@ -31,3 +31,31 @@ export const subscribersReport = async (month: number, year: number):Promise<Sub
         throw error;
     }
 }
+
+export const financialReconciliationReport = async (startDate: string, endDate: string):Promise<any> => {
+
+    const queryParams = {
+        startDate: startDate,
+        endDate: endDate,
+    }
+
+    try {
+
+        const apiClient = new ApiClient();
+
+        const queryString = new URLSearchParams({
+            startDate: queryParams.startDate.toString(),
+            endDate: queryParams.endDate.toString()
+        }).toString();
+
+
+        const url = `/api/internal/reports/invoice-payments/summary?${queryString}`;
+
+        const data = await apiClient.get(url);
+
+        return parseStringify(data);
+    } catch (error) {
+        console.error("Error in financilaReconcialiationReport:", error);
+        throw error;
+    }
+}

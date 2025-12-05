@@ -3,13 +3,13 @@ import { Html, Button, Head, Preview, Body, Container, Section, Heading, Text } 
 
 interface EmailTemplateProps {
   email: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   code: string;
   password: string;
 }
 
-export default function InvitationEmailTemplate({ email, first_name, last_name, code, password }: EmailTemplateProps) {
+export default function InvitationEmailTemplate({ email, firstName, lastName, code, password }: EmailTemplateProps) {
   return (
     <Html>
       <Head />
@@ -17,9 +17,9 @@ export default function InvitationEmailTemplate({ email, first_name, last_name, 
       <Body style={main}>
         <Container style={container}>
           <Section style={upperSection}>
-            <Heading style={h1}>🌟 {first_name} {last_name}, You're Invited to Join the Internal Dashboard! 🌟</Heading>
+            <Heading style={h1}>🌟 {firstName} {lastName}, You're Invited to Join the Internal Dashboard! 🌟</Heading>
             <Text style={mainText}>
-              Hello {first_name},
+              Hello {firstName},
               <br />
               You have been invited to join a team on Settlo. Below are your credentials to access the dashboard:
             </Text>

@@ -8,23 +8,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Copy, Share, RefreshCw } from 'lucide-react';
-import { fetchBusinessesByReferralCode, fetchProfileDataById, getOwnerDetails } from '@/lib/actions/user-actions';
+import {
+    fetchBusinessesByReferralCode,
+    getOwnerDetails,
+    getUserProfileById
+} from '@/lib/actions/user-actions';
 import { Business } from '@/types/business/types';
-import { role } from '@/types/users/type';
+import {Profile} from '@/types/users/type';
 
-interface ProfileData {
-  id: string;
-  first_name: string;
-  last_name: string;
-  phone: string;
-  role:role,
-  user_type: string;
-  avatar_url?: string;
-  referral_code?: string;
-  commission_earned?: number;
-  created_at: string;
-  updated_at: string;
-}
 
 interface ProfileError {
   message: string;
@@ -128,7 +119,7 @@ const ProfileSkeleton = () => (
 );
 
 const ProfilePage = ({ params }: { params: { id: string } }) => {
-  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [error, setError] = useState<ProfileError | null>(null);
   const [referredBusinesses, setReferredBusinesses] = useState<Business[] | null>(null);
   const [ownersMap, setOwnersMap] = useState<Record<string, string>>({});
@@ -137,7 +128,7 @@ const ProfilePage = ({ params }: { params: { id: string } }) => {
 
   const loadProfileData = async () => {
     try {
-      const profileData = await fetchProfileDataById(params.id);
+      const profileData = await getUserProfileById(params.id);
       
       
       if (!profileData) {
@@ -185,8 +176,8 @@ const ProfilePage = ({ params }: { params: { id: string } }) => {
     try {
       const profileData = await loadProfileData();
       
-      if (profileData?.referral_code) {
-        await loadBusinessData(profileData.referral_code);
+      if (profileData?.referralCode) {
+        await loadBusinessData(profileData.referralCode);
       }
     } finally {
       setLoading(false);
@@ -230,7 +221,7 @@ const ProfilePage = ({ params }: { params: { id: string } }) => {
     );
   }
 
-  const initials = `${profile.first_name?.charAt(0) || ''}${profile.last_name?.charAt(0) || ''}`.toUpperCase();
+  const initials = `${profile.firstName?.charAt(0) || ''}${profile.lastName?.charAt(0) || ''}`.toUpperCase();
   const joinDate = profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -247,18 +238,18 @@ const ProfilePage = ({ params }: { params: { id: string } }) => {
                 {profile.avatar_url && (
                   <AvatarImage
                     src={profile.avatar_url}
-                    alt={`${profile.first_name}'s avatar`}
+                    alt={`${profile.firstName}'s avatar`}
                   />
                 )}
                 <AvatarFallback className="text-xl bg-primary/10">{initials}</AvatarFallback>
               </Avatar>
               <div>
                 <CardTitle className="text-2xl">
-                  {profile.first_name} {profile.last_name}
+                  {profile.firstName} {profile.lastName}
                 </CardTitle>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge variant="outline" className="text-xs">
-                    {profile.user_type?.toUpperCase() || 'STAFF'}
+                    {profile.userType?.toUpperCase() || 'STAFF'}
                   </Badge>
                   <CardDescription className="text-base">
                     {profile?.phone || 'No phone number'}
@@ -280,7 +271,7 @@ const ProfilePage = ({ params }: { params: { id: string } }) => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <ReferralCodeSection referralCode={profile.referral_code || ''} />
+            <ReferralCodeSection referralCode={profile.referralCode || ''} />
             <div className="bg-secondary/20 p-4 rounded-lg">
               <p className="text-sm text-muted-foreground">Businesses Registered</p>
               <p className="text-2xl font-semibold">
@@ -303,12 +294,12 @@ const ProfilePage = ({ params }: { params: { id: string } }) => {
         </CardFooter>
       </Card>
 
-      {profile.referral_code && (
+      {profile.referralCode && (
         <Card>
           <CardHeader>
             <CardTitle>Businesses Using Your Referral Code</CardTitle>
             <CardDescription>
-              These businesses were registered using your referral code ({profile.referral_code})
+              These businesses were registered using your referral code ({profile.referralCode})
             </CardDescription>
           </CardHeader>
           <CardContent>

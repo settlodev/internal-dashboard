@@ -7,7 +7,13 @@ import {SubscriberData} from "@/types/subscription/type";
 import Loading from "@/components/widgets/loader";
 
 export default function SubscriberReport() {
-    const [dateRange, setDateRange] = useState('2025-11');
+    const getCurrentMonthYear = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        return `${year}-${month}`;
+    };
+    const [dateRange, setDateRange] = useState(getCurrentMonthYear());
     const [subscriberData, setSubscriberData] = useState<SubscriberData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -268,8 +274,8 @@ export default function SubscriberReport() {
                         <div className="flex justify-between items-center py-3 pt-4 bg-gray-50 px-4 rounded-lg">
                             <span className="text-gray-900 font-semibold">Net Change</span>
                             <span className={`font-bold text-lg ${netGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {netGrowth >= 0 ? '+' : ''}{formatNumber(netGrowth)}
-              </span>
+                            {netGrowth >= 0 ? '+' : ''}{formatNumber(netGrowth)}
+                            </span>
                         </div>
                     </div>
                 </div>

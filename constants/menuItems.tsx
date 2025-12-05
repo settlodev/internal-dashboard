@@ -1,4 +1,4 @@
-import { BriefcaseBusiness,ChartColumn,Receipt, Settings2,Tablet,Users } from "lucide-react"
+import { BriefcaseBusiness,ChartColumn,Receipt, Settings2,Tablet,Users, MessageSquare } from "lucide-react"
 
 const data = {
   navMain: [
@@ -18,11 +18,11 @@ const data = {
               url: "/subscribers",
               requiredPermission: "view:analytics",
           },
-          // {
-          //     title: "Finance",
-          //     url: "/finance",
-          //     requiredPermission: "view:analytics",
-          // },
+          {
+              title: "Finance",
+              url: "/finance",
+              requiredPermission: "view:analytics",
+          },
 
       ],
     },
@@ -205,6 +205,19 @@ const data = {
         
       ],
     },
+      {
+          title: "Communication",
+          url: "#",
+          icon: MessageSquare,
+          items: [
+              {
+                  title: "Broadcast",
+                  url: "/communications",
+                  requiredPermission: "view:roles",
+              },
+
+          ],
+      },
   ],
 }
 

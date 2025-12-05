@@ -30,7 +30,7 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "first_name",
+    accessorKey: "firstName",
     header: ({ column }) => {
       return (
         <Button
@@ -44,7 +44,7 @@ export const columns: ColumnDef<User>[] = [
     }
   },
   {
-    accessorKey: "last_name",
+    accessorKey: "lastName",
     header: "Last Name",
   },
   {
@@ -52,19 +52,19 @@ export const columns: ColumnDef<User>[] = [
     header: "Phone Number",
   },
   {
-    accessorKey: "user_type",
+    accessorKey: "userType",
     header: "User Type",
   },
   {
-    accessorKey: "role[0].name",
+    accessorKey: "roleName",
     header: "Role",
 
     cell: ({ row }) => {
-      const role = row.original.role
+      const role = row.original.roleName
       console.log(role)
       return (
         <div className="flex flex-col">
-          <div className="font-medium">{role?.name}</div>
+          <div className="font-medium">{role}</div>
         </div>
       )
     }

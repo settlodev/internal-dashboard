@@ -7,159 +7,261 @@ import { UserSchema } from "@/types/users/schema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { inviteStaff } from "../email/send";
 import { resetPasswordSchema } from "@/types/auth/resetPasswordSchema";
 import { cache } from 'react';
 import { cookies } from "next/headers";
+import ApiClient from "@/lib/api-client";
+import {inviteStaff} from "@/lib/actions/email/send";
+
+export interface CreateProfileData {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    role: string;
+    userType: string;
+    email: string;
+    user_id: string;
+}
+
+export const createAuthUser = async (email: string, password?: string) => {
+    try {
+        const supabase = await createClient();
+        const userPassword = password || generatePassword();
+
+        const { data, error } = await supabase.auth.admin.createUser({
+            email,
+            password: userPassword,
+            email_confirm: true
+        });
+
+        if (error) {
+            console.error("Auth user creation error:", error);
+            return { error: error.message, user: null };
+        }
+
+        return {
+            user: data.user,
+            password: userPassword,
+            error: null
+        };
+    } catch (error) {
+        console.error("Unexpected error creating auth user:", error);
+        return { error: "Failed to create user account", user: null };
+    }
+};
+
+export const deleteAuthUser = async (userId: string) => {
+    try {
+        const supabase = await createClient();
+        const { error } = await supabase.auth.admin.deleteUser(userId);
+
+        if (error) {
+            console.error("Failed to delete auth user:", error);
+            return { error: error.message };
+        }
+
+        return { error: null };
+    } catch (error) {
+        console.error("Unexpected error deleting auth user:", error);
+        return { error: "Failed to delete user" };
+    }
+};
+
+export const signUp = async (values: z.infer<typeof UserSchema>) => {
+    const validatedData = UserSchema.safeParse(values);
+    if (!validatedData.success) {
+        return {
+            error: "Invalid data provided",
+            status: 400,
+            success: false
+        };
+    }
+
+    const { email, firstName, lastName, phone, role, userType } = validatedData.data;
+    let authUserId: string | null = null;
+
+    try {
+        // 1. Create auth user in Supabase
+        const authResult = await createAuthUser(email);
+
+        if (authResult.error || !authResult.user) {
+            return {
+                error: authResult.error || "Failed to create user account",
+                status: 500,
+                success: false
+            };
+        }
+
+        authUserId = authResult.user.id;
+        const generatedPassword = authResult.password;
+
+        // 3. Create user profile via external API
+        const profileData: CreateProfileData = {
+            firstName,
+            lastName,
+            phone,
+            role,
+            userType,
+            email,
+            user_id: authUserId,
+        };
+
+        const profileResult = await createUserProfile(profileData);
+        console.log("Profile result:", profileResult);
+
+        if (!profileResult.success) {
+            // Rollback: Delete auth user if profile creation fails
+            await deleteAuthUser(authUserId);
+            return {
+                error: profileResult.error || "Profile creation failed",
+                status: 500,
+                success: false
+            };
+        }
+
+
+        // 5. Send invitation email
+        await inviteStaff(email, firstName, lastName, profileResult.data.referralCode, generatedPassword);
+
+        return {
+            redirectTo: "/users",
+            success: true,
+            message: "User created successfully"
+        };
+
+    } catch (error) {
+        console.error("Unexpected error during sign up:", error);
+
+        // Cleanup on unexpected error
+        if (authUserId) {
+            await deleteAuthUser(authUserId);
+        }
+
+        return {
+            error: "An unexpected error occurred",
+            status: 500,
+            success: false
+        };
+    }
+};
+
+export const createUserProfile = async (profileData: CreateProfileData) => {
+    const payload = {
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        phone: profileData.phone,
+        role: profileData.role,
+        user_type: profileData.userType,
+        email: profileData.email,
+        id: profileData.user_id
+    };
+
+    try {
+        const apiClient = new ApiClient();
+        const response = await apiClient.post(
+            '/api/internal/internal-profiles/create',
+            payload
+        );
+
+        console.log("Response after creating profile:", response);
+        return {
+            success: true,
+            data: parseStringify(response),
+            error: null
+        };
+    } catch (error) {
+        console.error("Error creating user profile:", error);
+        return {
+            success: false,
+            data: null,
+            error: "Failed to create user profile"
+        };
+    }
+};
 
 export const SignIn = async (
-  credentials: z.infer<typeof signInSchema>
+    credentials: z.infer<typeof signInSchema>
 ): Promise<FormResponse> => {
-  const validCredentials = signInSchema.safeParse(credentials)
-  if (!validCredentials.success) {
-    return parseStringify({
-      responseType: "error",
-      message: "Please fill all the fields before submitting",
-      error: new Error(validCredentials.error.message),
-      status: 400
-    })
-  }
-  try {
-    const supabase = await createClient()
-
-    const { error, data } = await supabase.auth.signInWithPassword(credentials)
-    if (error) {
-      console.log("The error occuring while signing is", error)
-
-      return parseStringify({
-        responseType: "error",
-        message: "Invalid email or password",
-        error: new Error(error.message),
-        status: 400
-      })
+    const validCredentials = signInSchema.safeParse(credentials)
+    if (!validCredentials.success) {
+        return parseStringify({
+            responseType: "error",
+            message: "Please fill all the fields before submitting",
+            error: new Error(validCredentials.error.message),
+            status: 400
+        })
     }
-    const user = data.user;
+    try {
+        const supabase = await createClient()
 
-    // console.log("The user", user)
+        const { error, data } = await supabase.auth.signInWithPassword(credentials)
+        if (error) {
+            console.log("The error occuring while signing is", error)
 
-    const { data: internal_profile, error: profileError } = await supabase
-      .from('internal_profiles')
-      .select(`
+            return parseStringify({
+                responseType: "error",
+                message: "Invalid email or password",
+                error: new Error(error.message),
+                status: 400
+            })
+        }
+        const user = data.user;
+
+        // console.log("The user", user)
+
+        const { data: internal_profile, error: profileError } = await supabase
+            .from('internal_profiles')
+            .select(`
         *,
         role:internal_roles!role(name)
       `)
-      .eq('id', user.id)
-      .single();
+            .eq('id', user.id)
+            .single();
 
-      const cookieStore = await cookies()
-      cookieStore.set({
-        name:"authenticatedUser",
-        value:JSON.stringify(internal_profile),
-        httpOnly:true,
-        secure:process.env.NODE_ENV === "production"
-      })
+        const cookieStore = await cookies()
+        cookieStore.set({
+            name:"authenticatedUser",
+            value:JSON.stringify(internal_profile),
+            httpOnly:true,
+            secure:process.env.NODE_ENV === "production"
+        })
 
- 
-      // console.log("The profile", internal_profile)
 
-    if (profileError) {
-      console.log("The error", profileError)
-      return ({
-        responseType: "error",
-        message: profileError.message,
-        error: new Error(profileError.message), status: 400
-      })
+        // console.log("The profile", internal_profile)
+
+        if (profileError) {
+            console.log("The error", profileError)
+            return ({
+                responseType: "error",
+                message: profileError.message,
+                error: new Error(profileError.message), status: 400
+            })
+        }
+
+        const role = internal_profile?.role?.name
+
+        if (role === 'staff') {
+            return parseStringify({
+                responseType: "success",
+                message: "Signed in successfully",
+                redirectTo: `/profile/${internal_profile?.id}`
+            });
+        } else {
+            return parseStringify({
+                responseType: "success",
+                message: "Signed in successfully",
+                redirectTo: "/subscribers"
+            });
+        }
+
+        // return { redirectTo: "/dashboard" };
+
+    } catch (error) {
+        console.log("Failed to sign in", error)
+        throw error
     }
-
-    const role = internal_profile?.role?.name
-
-    if (role === 'staff') {
-      return parseStringify({
-        responseType: "success",
-        message: "Signed in successfully",
-        redirectTo: `/profile/${internal_profile?.id}`
-      });
-    } else {
-      return parseStringify({
-        responseType: "success",
-        message: "Signed in successfully",
-        redirectTo: "/dashboard"
-      });
-    }
-
-    // return { redirectTo: "/dashboard" };
-
-  } catch (error) {
-    console.log("Failed to sign in", error)
-    throw error
-  }
 }
 
-export const signUp = async (values: z.infer<typeof UserSchema>) => {
-  const validatedData = UserSchema.safeParse(values);
-  if (!validatedData.success) {
-    return { error: "Invalid data provided", status: 400 };
-  }
-
-  try {
-    const supabase = await createClient();
-    const { email,first_name, last_name, phone, role, user_type} = validatedData.data;
-    const password = generatePassword();
-
-    // Sign up with email and password
-    const { data, error } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true
-    })
-
-    if (error) {
-      console.error("Sign up error:", error);
-      return { error: error.message };
-    }
-
-    const user = data.user;
-    const code = `${first_name.slice(0, 3).toUpperCase()}${Math.floor(100 + Math.random() * 900)}`; 
-    // console.log("The user code is", code)
-    if (user) {
-      const { error: profileError } = await supabase
-        .from('internal_profiles')
-        .insert([
-          {
-            id: user.id,
-            first_name: first_name,
-            last_name: last_name,
-            phone,
-            role,
-            user_type,
-            referral_code: code
-          },
-        ]);
-
-      if (profileError) {
-        console.error("Error inserting profile:", profileError);
-        // delete the auth user if profile creation fails
-        await supabase.auth.admin.deleteUser(user.id);
-        return { error: "Profile creation failed" };
-      }
-
-      await supabase.from('internal_user_roles').insert([
-        {
-          user_id: user.id,
-          role_id: role,
-        },
-      ]);
-      await inviteStaff(email,first_name, last_name, code, password)
-
-      return { redirectTo: "/users" };
-    }
-  } catch (error) {
-    console.error("Unexpected error during sign up:", error);
-    return { error: "Unexpected error", status: 500 };
-  }
-};
-
-// Using cache to prevent redundant fetches within the same request
 export const getUserEmailById = cache(async (userId: string) => {
   try {
     if (!userId) {

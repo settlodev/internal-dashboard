@@ -10,7 +10,7 @@ import { BreadcrumbNav } from "@/components/layout/breadcrumbs";
 import { UserForm } from "@/components/forms/user/user-form";
 import React from "react";
 import { Profile} from "@/types/users/type";
-import { fetchProfileDataById } from "@/lib/actions/user-actions";
+import {getUserProfileById} from "@/lib/actions/user-actions";
 
 interface UserPageParams {
   params: { id: string };
@@ -22,7 +22,7 @@ export default async function UserPage({ params }: UserPageParams) {
 
   if (!isNewItem) {
     try {
-      item  = await fetchProfileDataById(params.id as UUID);
+      item  = await getUserProfileById(params.id as UUID);
     } catch (error) {
       console.log(error);
       throw new Error("Failed to load user details");

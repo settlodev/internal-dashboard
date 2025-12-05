@@ -34,14 +34,14 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
   const [userEmail, setUserEmail] = useState("")
   const [, setIsLoading] = useState(false);
 
-  // Fetch user email when editing an existing user
+
   useEffect(() => {
     const fetchUserEmail = async () => {
       if (item?.id) {
         setIsLoading(true);
         try {
           const result = await getUserEmailById(item.id);
-          
+
           if (result.email) {
             setUserEmail(result.email);
             form.setValue("email", result.email);
@@ -55,7 +55,7 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
         }
       }
     };
-    
+
     if (item?.id) {
       fetchUserEmail();
     }
@@ -65,16 +65,15 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
     resolver: zodResolver(UserSchema),
     defaultValues: {
       ...item,
-      first_name: item?.first_name || "",
-      last_name: item?.last_name || "",
+      firstName: item?.firstName || "",
+      lastName: item?.lastName || "",
       email: userEmail || item?.email || "",
       phone: item?.phone || "",
-      role: item ? (typeof item.role === 'string' ? item.role : "") : "",
-      user_type: item?.user_type || "",
+      role: item?.role || "",
+      userType: item?.userType || "",
     }
   })
 
-  // This will update the form when email is fetched after initial render
   useEffect(() => {
     if (userEmail && item?.id) {
       form.setValue("email", userEmail);
@@ -86,7 +85,8 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
   }, [])
 
   const onSubmitData = useCallback(async (values: z.infer<typeof UserSchema>) => {
-   
+
+      console.log("the value to creat user are", values)
 
     startTransition(async () => {
       if(item){
@@ -158,7 +158,7 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
-                      name="first_name"
+                      name="firstName"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>First Name</FormLabel>
@@ -177,7 +177,7 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
-                      name="last_name"
+                      name="lastName"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Last Name</FormLabel>
@@ -211,7 +211,7 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
                               // disabled
                               {...field}
                               value={field.value || userEmail}
-                              readOnly={!!item} 
+                              readOnly={!!item}
                             />
                           </FormControl>
                           <FormMessage />
@@ -242,30 +242,29 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
 
                 {/* Third row */}
                 <div className="grid grid-col-1 lg:grid-cols-2 gap-2">
-              
+                    <div className="grid gap-2">
+                        <FormField
+                            control={form.control}
+                            name="role"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>User Role</FormLabel>
+                                    <FormControl>
+                                        <RoleSelect
+                                            {...field}
+                                            placeholder="Select user role"
+                                            label="User Role"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                   <div className="grid gap-2">
                     <FormField
                       control={form.control}
-                      name="role"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>User Role</FormLabel>
-                          <FormControl>
-                            <RoleSelect
-                              {...field}
-                              placeholder="Select user role"
-                              label="User Role"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <FormField
-                      control={form.control}
-                      name="user_type"
+                      name="userType"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>User Type</FormLabel>
@@ -291,8 +290,6 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
                         label={item ? "Update User" : "Add User"}
                     />
                 </div>
-
-
               </div>
             </form>
           </Form>
@@ -301,3 +298,5 @@ export function UserForm({ item }: { item: Profile | null | undefined }) {
     </div>
   )
 }
+
+
