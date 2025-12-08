@@ -45,6 +45,7 @@ export function RecordFeedbackForm({ ownerId, onSuccess }: RecordFeedbackFormPro
         setValue('internalFollowUpTypeId', followUpTypeId)
 
         const isArchiveAccount = followUpTypeId === 'd27d7cbf-d0f1-42c8-bf89-af03a6813b17'
+        // const isArchiveAccount = followUpTypeId === 'a6ae3ebc-359a-4069-b00e-21b1fdb5c467'
         setShowArchiveCheckbox(isArchiveAccount)
 
         // Auto-check the archive checkbox when Archive Account is selected

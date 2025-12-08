@@ -25,6 +25,7 @@ export const subscribersReport = async (month: number, year: number):Promise<Sub
 
         const data = await apiClient.get(url);
 
+        // console.log("The subscriber report is", data);
         return parseStringify(data);
     } catch (error) {
         console.error("Error in subscribersReport:", error);
