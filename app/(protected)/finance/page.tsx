@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { FileText, DollarSign, CreditCard, Wallet, RefreshCw, AlertCircle, Calendar } from 'lucide-react';
-import {financialReconciliationReport} from "@/lib/actions/report";
+import {financialReconciliationReport, packageContributionReport} from "@/lib/actions/report";
 import {InvoicePaymentsSummary} from "@/types/report/type";
 
 
@@ -28,6 +28,7 @@ export default function FinancialPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [apiData, setApiData] = useState<InvoicePaymentsSummary>();
+    const [packageData, setPackageData] = useState<any>();
 
     const fetchFinancialData = async () => {
         setLoading(true);
@@ -54,8 +55,10 @@ export default function FinancialPage() {
             const formattedEnd = formatDateTimeForAPI(end, endT);
 
             const data = await financialReconciliationReport(formattedStart, formattedEnd);
+            const packageDataResult = await packageContributionReport(formattedStart, formattedEnd);
 
             setApiData(data);
+            setPackageData(packageDataResult);
         } catch (err) {
             setError('Failed to load financial data. Please try again.');
             console.error('Error fetching financial data:', err);
@@ -327,6 +330,117 @@ export default function FinancialPage() {
                             </div>
                         </div>
 
+                        {/* Package Contribution Breakdown */}
+                        {packageData && (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                                {/* Location/Branch Packages */}
+                                <div className="bg-white rounded-lg shadow-sm p-6">
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <FileText size={20} />
+                                        Location/Branch Packages
+                                    </h2>
+
+                                    <div className="mb-4 pb-4 border-b border-gray-200">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sm text-gray-600">Total Contribution</span>
+                                            <span className="text-lg font-bold text-black">
+                                                {formatCurrency(packageData.totalLocationSubscriptionPackagesPaymentAmount)}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        {packageData.locationSubscriptionPackagesContributions.map((pkg:any, index:number) => (
+                                            <div key={index} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div>
+                                                        <h3 className="font-semibold text-gray-900">{pkg.packageName}</h3>
+                                                        <p className="text-xs text-gray-500 mt-0.5">Subscription Package</p>
+                                                    </div>
+                                                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded">
+                                                        {pkg.percentage.toFixed(1)}%
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between items-center mt-3">
+                                                    <span className="text-sm text-gray-600">Amount</span>
+                                                    <span className="text-lg font-bold text-gray-900">
+                                                        {formatCurrency(pkg.packageContributionAmount)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Warehouse Packages */}
+                                <div className="bg-white rounded-lg shadow-sm p-6">
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <Wallet size={20} />
+                                        Warehouse Packages
+                                    </h2>
+
+                                    <div className="mb-4 pb-4 border-b border-gray-200">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sm text-gray-600">Total Contribution</span>
+                                            <span className="text-lg font-bold text-black">
+                                                {formatCurrency(packageData.totalWarehouseSubscriptionPackagesPaymentAmount)}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        {packageData.warehouseSubscriptionPackagesContributions.map((pkg:any, index:any) => (
+                                            <div key={index} className="border border-gray-200 rounded-lg p-4 hover:border-purple-300 transition-colors">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div>
+                                                        <h3 className="font-semibold text-gray-900">{pkg.packageName}</h3>
+                                                        <p className="text-xs text-gray-500 mt-0.5">Subscription Package</p>
+                                                    </div>
+                                                    <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-1 rounded">
+                                                        {pkg.percentage.toFixed(1)}%
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between items-center mt-3">
+                                                    <span className="text-sm text-gray-600">Amount</span>
+                                                    <span className="text-lg font-bold text-gray-900">
+                                                        {formatCurrency(pkg.packageContributionAmount)}
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Total Package Summary */}
+                        {packageData && (
+                            <div className=" rounded-lg shadow-sm p-6 mt-6 mb-6 border border-blue-100">
+                                <h2 className="text-xl font-semibold text-gray-900 mb-4">Total Package Contribution Summary</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                                        <p className="text-sm text-gray-600 mb-1">Location/Branch Total</p>
+                                        <p className="text-xl font-bold text-black">
+                                            {formatCurrency(packageData.totalLocationSubscriptionPackagesPaymentAmount)}
+                                        </p>
+                                    </div>
+                                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                                        <p className="text-sm text-gray-600 mb-1">Warehouse Total</p>
+                                        <p className="text-xl font-bold text-black">
+                                            {formatCurrency(packageData.totalWarehouseSubscriptionPackagesPaymentAmount)}
+                                        </p>
+                                    </div>
+                                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                                        <p className="text-sm text-gray-600 mb-1">Grand Total</p>
+                                        <p className="text-xl font-bold text-gray-900">
+                                            {formatCurrency(packageData.totalPaymentAmount)}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Reconciliation Summary */}
                         <div className="bg-white rounded-lg shadow-sm p-6">
                             <h2 className="text-xl font-semibold text-gray-900 mb-4">Reconciliation Summary</h2>
@@ -368,6 +482,8 @@ export default function FinancialPage() {
                                 </div>
                             </div>
                         </div>
+
+
                     </>
                 )}
             </div>

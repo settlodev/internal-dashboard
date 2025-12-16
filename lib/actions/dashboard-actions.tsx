@@ -1,6 +1,7 @@
 'use server'
 import ApiClient from "../api-client";
 
+
 export const getDashboardSummaries = async (startDate?: Date, endDate?: Date) => {
     // Format dates as full ISO strings with time set to midnight UTC
     const formatDateToISO = (date?: Date): string | undefined => {
@@ -33,19 +34,32 @@ export const getDashboardSummaries = async (startDate?: Date, endDate?: Date) =>
     }
 }
 
-// const getDashboardSummaries = async (startDate?: Date, endDate?: Date) => {
-
-//     const apiClient = new ApiClient();
-//     // Example API call with date parameters
-//     const startDateParam = startDate ? `startDate=${startDate.toISOString().split('T')[0]}` : '';
-//     const endDateParam = endDate ? `endDate=${endDate.toISOString().split('T')[0]}` : '';
-//     const queryParams = [startDateParam, endDateParam].filter(Boolean).join('&');
-    
-//     const url = `/api/reports/overview/summary${queryParams ? `?${queryParams}` : ''}`;
-    
-//     const data = await apiClient.get(url);
-//     if (!data.ok) {
-//       throw new Error('Failed to fetch dashboard data');
+// export const getDashboardSummaries = async (startDate: string, endDate: string):Promise<any> => {
+//
+//     const queryParams = {
+//         startDate: startDate,
+//         endDate: endDate,
 //     }
-//     return await data.json();
-//   };
+//
+//     try {
+//
+//         const apiClient = new ApiClient();
+//
+//         const queryString = new URLSearchParams({
+//             startDate: queryParams.startDate.toString(),
+//             endDate: queryParams.endDate.toString()
+//         }).toString();
+//
+//
+//         const url = `/api/reports/overview/summary?${queryString}`;
+//
+//         const data = await apiClient.get(url);
+//         console.log("summary report from api:-",data);
+//
+//         return parseStringify(data);
+//     } catch (error) {
+//         console.error("Error fetching contributions from each package:", error);
+//         throw error;
+//     }
+// }
+

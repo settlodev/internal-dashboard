@@ -95,7 +95,10 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
         authUserId = authResult.user.id;
         const generatedPassword = authResult.password;
 
-        // 3. Create user profile via external API
+        // 2. Add a small delay to ensure auth user is fully committed
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // 3. Create user profile via external API with retry logic
         const profileData: CreateProfileData = {
             firstName,
             lastName,
@@ -119,8 +122,7 @@ export const signUp = async (values: z.infer<typeof UserSchema>) => {
             };
         }
 
-
-        // 5. Send invitation email
+        // 4. Send invitation email
         await inviteStaff(email, firstName, lastName, profileResult.data.referralCode, generatedPassword);
 
         return {
@@ -151,7 +153,7 @@ export const createUserProfile = async (profileData: CreateProfileData) => {
         lastName: profileData.lastName,
         phone: profileData.phone,
         role: profileData.role,
-        user_type: profileData.userType,
+        userType: profileData.userType,
         email: profileData.email,
         id: profileData.user_id
     };

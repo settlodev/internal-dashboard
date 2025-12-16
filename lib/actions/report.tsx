@@ -60,3 +60,29 @@ export const financialReconciliationReport = async (startDate: string, endDate: 
         throw error;
     }
 }
+
+export const packageContributionReport = async (startDate: string, endDate: string):Promise<any> => {
+
+    const queryParams = {
+        startDate: startDate,
+        endDate: endDate,
+    }
+
+    try {
+
+        const apiClient = new ApiClient();
+
+        const queryString = new URLSearchParams({
+            startDate: queryParams.startDate.toString(),
+            endDate: queryParams.endDate.toString()
+        }).toString();
+
+
+        const url = `/api/internal/reports/subscription-packages/payments-contributions?${queryString}`;
+        const data = await apiClient.get(url);
+        return parseStringify(data);
+    } catch (error) {
+        console.error("Error fetching contributions from each package:", error);
+        throw error;
+    }
+}
