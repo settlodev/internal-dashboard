@@ -206,7 +206,6 @@ export const searchRoles = async (
             query,
         );
 
-        console.log("rolesData", rolesData);
         return parseStringify(rolesData);
     } catch (error) {
         throw error;

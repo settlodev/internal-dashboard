@@ -1,8 +1,7 @@
 'use server'
 import ApiClient from "../api-client";
 
-
-export const getDashboardSummaries = async (startDate?: Date, endDate?: Date) => {
+export const getDashboardSummariesx = async (startDate?: Date, endDate?: Date) => {
     // Format dates as full ISO strings with time set to midnight UTC
     const formatDateToISO = (date?: Date): string | undefined => {
         if (!date) return undefined;
@@ -34,32 +33,5 @@ export const getDashboardSummaries = async (startDate?: Date, endDate?: Date) =>
     }
 }
 
-// export const getDashboardSummaries = async (startDate: string, endDate: string):Promise<any> => {
-//
-//     const queryParams = {
-//         startDate: startDate,
-//         endDate: endDate,
-//     }
-//
-//     try {
-//
-//         const apiClient = new ApiClient();
-//
-//         const queryString = new URLSearchParams({
-//             startDate: queryParams.startDate.toString(),
-//             endDate: queryParams.endDate.toString()
-//         }).toString();
-//
-//
-//         const url = `/api/reports/overview/summary?${queryString}`;
-//
-//         const data = await apiClient.get(url);
-//         console.log("summary report from api:-",data);
-//
-//         return parseStringify(data);
-//     } catch (error) {
-//         console.error("Error fetching contributions from each package:", error);
-//         throw error;
-//     }
-// }
+
 

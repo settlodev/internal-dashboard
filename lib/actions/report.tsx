@@ -3,7 +3,35 @@
 import ApiClient from "@/lib/api-client";
 import {parseStringify} from "@/lib/utils";
 import {SubscriberData} from "@/types/subscription/type";
+import {SummaryResponse} from "@/types/dashboard/type";
 
+export const getDashboardSummaries = async (startDate: string, endDate: string):Promise<SummaryResponse> => {
+
+    const queryParams = {
+        startDate: startDate,
+        endDate: endDate,
+    }
+
+    try {
+
+        const apiClient = new ApiClient();
+
+        const queryString = new URLSearchParams({
+            startDate: queryParams.startDate.toString(),
+            endDate: queryParams.endDate.toString()
+        }).toString();
+
+
+        const url = `/api/internal/reports/creation-activity/summary?${queryString}`;
+
+        const data = await apiClient.get(url);
+
+        return parseStringify(data);
+    } catch (error) {
+        console.error("Error fetching contributions from each package:", error);
+        throw error;
+    }
+}
 export const subscribersReport = async (month: number, year: number):Promise<SubscriberData> => {
     const formattedMonth = month.toString().padStart(2, '0');
 
@@ -53,6 +81,7 @@ export const financialReconciliationReport = async (startDate: string, endDate: 
         const url = `/api/internal/reports/invoice-payments/summary?${queryString}`;
 
         const data = await apiClient.get(url);
+        // console.log("financialReconciliationReport:", data);
 
         return parseStringify(data);
     } catch (error) {
@@ -80,6 +109,7 @@ export const packageContributionReport = async (startDate: string, endDate: stri
 
         const url = `/api/internal/reports/subscription-packages/payments-contributions?${queryString}`;
         const data = await apiClient.get(url);
+        // console.log("package contribution:", data);
         return parseStringify(data);
     } catch (error) {
         console.error("Error fetching contributions from each package:", error);
