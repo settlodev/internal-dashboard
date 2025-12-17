@@ -8,11 +8,11 @@ const data = {
       icon: ChartColumn,
       isActive: true,
       items: [
-        // {
-        //   title: "Statistics",
-        //   url: "/dashboard",
-        //   requiredPermission: "view:analytics",
-        // },
+        {
+          title: "Statistics",
+          url: "/dashboard",
+          requiredPermission: "view:analytics",
+        },
           {
               title: "Subscribers",
               url: "/subscribers",
