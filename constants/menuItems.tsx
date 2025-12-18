@@ -23,6 +23,11 @@ const data = {
               url: "/finance",
               requiredPermission: "view:analytics",
           },
+        {
+          title: "Leaderboard",
+          url: "/leaderboard",
+          requiredPermission: "view:analytics",
+        },
 
       ],
     },

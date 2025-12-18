@@ -81,7 +81,7 @@ export default function SubscriberReport() {
     const totalSubscribers = subscriberData.activeSubscribers + subscriberData.inactiveSubscribers;
     const activeRate = calculatePercentage(subscriberData.activeSubscribers, totalSubscribers);
     const inactiveRate = calculatePercentage(subscriberData.inactiveSubscribers, totalSubscribers);
-    const churnRate = calculatePercentage(subscriberData.churnSubscribers, totalSubscribers);
+    const churnRate = calculatePercentage(subscriberData.churnedSubscribers, totalSubscribers);
 
 
     return (
@@ -208,7 +208,7 @@ export default function SubscriberReport() {
                                 <UserX className="text-red-600" size={20} />
                             </div>
                         </div>
-                        <p className="text-3xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.churnSubscribers)}</p>
+                        <p className="text-3xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.churnedSubscribers)}</p>
                         <p className="text-sm text-gray-600">Churn rate: {churnRate}%</p>
                         <div className="mt-4 pt-4 border-t border-gray-100">
                             <div className="flex items-center justify-between text-xs">
@@ -292,7 +292,7 @@ export default function SubscriberReport() {
                                     </div>
                                     <span className="text-gray-700 font-medium">Churned</span>
                                 </div>
-                                <span className="font-bold text-red-600 text-lg">-{formatNumber(subscriberData.churnSubscribers)}</span>
+                                <span className="font-bold text-red-600 text-lg">-{formatNumber(subscriberData.churnedSubscribers)}</span>
                             </div>
                         </div>
                     </div>
