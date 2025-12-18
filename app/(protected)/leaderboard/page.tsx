@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { RefreshCw, AlertCircle,Trophy, Building2, MapPin, ArrowUpRight, Award, Filter, ChevronUp, Star } from 'lucide-react';
 import { locationLeaderBoardReport } from "@/lib/actions/report";
+import Loading from "@/components/widgets/loader";
 
 interface LocationData {
     locationId: string;
@@ -144,8 +145,10 @@ export default function LeaderboardPage() {
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
+                {!loading && leaderboardData && (
                 <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-200">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        {!loading && leaderboardData && (
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <div>
@@ -160,7 +163,7 @@ export default function LeaderboardPage() {
                                 </div>
                             )}
                         </div>
-
+                        )}
                         {/* Stats Summary */}
                         {!loading && leaderboardData && (
                             <div className="rounded-xl p-4 text-black min-w-[200px]">
@@ -178,99 +181,103 @@ export default function LeaderboardPage() {
                     </div>
 
                     {/* Date Range Filter */}
-                    <div className="border-t border-gray-200 mt-6 pt-6">
-                        <div className="flex flex-col lg:flex-row gap-4 items-end">
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Start Date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={startDate}
-                                        onChange={(e) => setStartDate(e.target.value)}
-                                        max={endDate || formatDateForInput(currentDate)}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                    {
+                        loading && leaderboardData && (
+                            <div className="border-t border-gray-200 mt-6 pt-6">
+                                <div className="flex flex-col lg:flex-row gap-4 items-end">
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Start Date
+                                            </label>
+                                            <input
+                                                type="date"
+                                                value={startDate}
+                                                onChange={(e) => setStartDate(e.target.value)}
+                                                max={endDate || formatDateForInput(currentDate)}
+                                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                                disabled={loading}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Start Time
+                                            </label>
+                                            <input
+                                                type="time"
+                                                value={startTime}
+                                                onChange={(e) => setStartTime(e.target.value)}
+                                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                                disabled={loading}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                End Date
+                                            </label>
+                                            <input
+                                                type="date"
+                                                value={endDate}
+                                                onChange={(e) => setEndDate(e.target.value)}
+                                                min={startDate}
+                                                max={formatDateForInput(currentDate)}
+                                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                                disabled={loading}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                End Time
+                                            </label>
+                                            <input
+                                                type="time"
+                                                value={endTime}
+                                                onChange={(e) => setEndTime(e.target.value)}
+                                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                                disabled={loading}
+                                            />
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={fetchLeaderboardData}
                                         disabled={loading}
-                                    />
+                                        className=" text-black px-8 py-2.5 rounded-lg  disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center gap-2 whitespace-nowrap font-medium shadow-lg hover:shadow-xl"
+                                    >
+                                        <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+                                        {loading ? 'Loading...' : 'Filter Report'}
+                                    </button>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Start Time
-                                    </label>
-                                    <input
-                                        type="time"
-                                        value={startTime}
-                                        onChange={(e) => setStartTime(e.target.value)}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                        disabled={loading}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        End Date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={endDate}
-                                        onChange={(e) => setEndDate(e.target.value)}
-                                        min={startDate}
-                                        max={formatDateForInput(currentDate)}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                        disabled={loading}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        End Time
-                                    </label>
-                                    <input
-                                        type="time"
-                                        value={endTime}
-                                        onChange={(e) => setEndTime(e.target.value)}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                        disabled={loading}
-                                    />
-                                </div>
-                            </div>
-                            <button
-                                onClick={fetchLeaderboardData}
-                                disabled={loading}
-                                className=" text-black px-8 py-2.5 rounded-lg  disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center gap-2 whitespace-nowrap font-medium shadow-lg hover:shadow-xl"
-                            >
-                                <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-                                {loading ? 'Loading...' : 'Filter Report'}
-                            </button>
-                        </div>
 
-                        {/* Sort Options */}
-                        {!loading && leaderboardData && (
-                            <div className="mt-6 flex items-center gap-4">
-                                <div className="flex items-center gap-2">
-                                    <Filter size={18} className="text-gray-500" />
-                                    <span className="text-sm font-medium text-gray-700">Sort by:</span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setSortBy('ordersCount')}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${sortBy === 'ordersCount'
-                                            ? 'bg-blue-600 text-white shadow-md'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                                    >
-                                        Order Count
-                                    </button>
-                                    <button
-                                        onClick={() => setSortBy('businessName')}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${sortBy === 'businessName'
-                                            ? 'bg-blue-600 text-white shadow-md'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                                    >
-                                        Business Name
-                                    </button>
-                                </div>
+                                {/* Sort Options */}
+                                {!loading && leaderboardData && (
+                                    <div className="mt-6 flex items-center gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <Filter size={18} className="text-gray-500" />
+                                            <span className="text-sm font-medium text-gray-700">Sort by:</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => setSortBy('ordersCount')}
+                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${sortBy === 'ordersCount'
+                                                    ? 'bg-blue-600 text-white shadow-md'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                            >
+                                                Order Count
+                                            </button>
+                                            <button
+                                                onClick={() => setSortBy('businessName')}
+                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${sortBy === 'businessName'
+                                                    ? 'bg-blue-600 text-white shadow-md'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                            >
+                                                Business Name
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
+                        )
+                    }
 
                     {error && (
                         <div className="mt-6 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
@@ -282,14 +289,10 @@ export default function LeaderboardPage() {
                         </div>
                     )}
                 </div>
-
+                )}
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-20">
-                        <div className="relative">
-                            <div className="w-16 h-16 border-4 border-blue-200 rounded-full"></div>
-                            <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute top-0"></div>
-                        </div>
-                        <p className="mt-4 text-gray-600 font-medium">Loading leaderboard data...</p>
+                        <Loading/>
                     </div>
                 ) : !leaderboardData ? (
                     <div className="bg-white rounded-2xl shadow-lg p-12 text-center border border-gray-200">

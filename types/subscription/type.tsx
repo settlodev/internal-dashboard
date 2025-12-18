@@ -12,6 +12,6 @@ export interface SubscriberData {
     newSubscribers: number;
     renewedSubscribers: number;
     inactiveSubscribers: number;
-    churnSubscribers: number;
+    churnedSubscribers: number;
     newTotalUsers:number;
 }
