@@ -7,10 +7,11 @@ export declare interface Subscriptions {
 }
 
 export interface SubscriberData {
-    activeSubs: number;
-    newSubs: number;
-    renewedSubs: number;
-    inactiveSubs: number;
-    monthlyChurn: number;
+    totalSubscribers: number;
+    activeSubscribers: number;
+    newSubscribers: number;
+    renewedSubscribers: number;
+    inactiveSubscribers: number;
+    churnSubscribers: number;
     newTotalUsers:number;
 }

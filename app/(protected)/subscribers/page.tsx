@@ -78,10 +78,10 @@ export default function SubscriberReport() {
 
     if (!subscriberData) return null;
 
-    const totalSubscribers = subscriberData.activeSubs + subscriberData.inactiveSubs;
-    const activeRate = calculatePercentage(subscriberData.activeSubs, totalSubscribers);
-    const inactiveRate = calculatePercentage(subscriberData.inactiveSubs, totalSubscribers);
-    const churnRate = calculatePercentage(subscriberData.monthlyChurn, totalSubscribers);
+    const totalSubscribers = subscriberData.activeSubscribers + subscriberData.inactiveSubscribers;
+    const activeRate = calculatePercentage(subscriberData.activeSubscribers, totalSubscribers);
+    const inactiveRate = calculatePercentage(subscriberData.inactiveSubscribers, totalSubscribers);
+    const churnRate = calculatePercentage(subscriberData.churnSubscribers, totalSubscribers);
 
 
     return (
@@ -144,7 +144,7 @@ export default function SubscriberReport() {
                             </span>
                         </div>
                         <p className="text-gray-600 text-sm font-semibold mb-1">Active Subscribers</p>
-                        <p className="text-4xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.activeSubs)}</p>
+                        <p className="text-4xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.activeSubscribers)}</p>
                         <p className="text-xs text-gray-500">Currently subscribed</p>
                     </div>
 
@@ -159,7 +159,7 @@ export default function SubscriberReport() {
                             </span>
                         </div>
                         <p className="text-gray-600 text-sm font-semibold mb-1">Inactive Subscribers</p>
-                        <p className="text-4xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.inactiveSubs)}</p>
+                        <p className="text-4xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.inactiveSubscribers)}</p>
                         <p className="text-xs text-gray-500">Subscription expired</p>
                     </div>
 
@@ -174,7 +174,7 @@ export default function SubscriberReport() {
                             </span>
                         </div>
                         <p className="text-gray-600 text-sm font-semibold mb-1">New This Month</p>
-                        <p className="text-4xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.newSubs)}</p>
+                        <p className="text-4xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.newSubscribers)}</p>
                         <p className="text-xs text-gray-500">First-time subscribers</p>
                     </div>
                 </div>
@@ -190,7 +190,7 @@ export default function SubscriberReport() {
                                 <TrendingUp className="text-blue-600" size={20} />
                             </div>
                         </div>
-                        <p className="text-3xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.renewedSubs)}</p>
+                        <p className="text-3xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.renewedSubscribers)}</p>
                         <p className="text-sm text-gray-600">Subscribers renewed</p>
                         <div className="mt-4 pt-4 border-t border-gray-100">
                             <div className="flex items-center justify-between text-xs">
@@ -208,7 +208,7 @@ export default function SubscriberReport() {
                                 <UserX className="text-red-600" size={20} />
                             </div>
                         </div>
-                        <p className="text-3xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.monthlyChurn)}</p>
+                        <p className="text-3xl font-bold text-gray-900 mb-2">{formatNumber(subscriberData.churnSubscribers)}</p>
                         <p className="text-sm text-gray-600">Churn rate: {churnRate}%</p>
                         <div className="mt-4 pt-4 border-t border-gray-100">
                             <div className="flex items-center justify-between text-xs">
@@ -236,7 +236,7 @@ export default function SubscriberReport() {
                                     <span className="text-gray-900 font-semibold">Active</span>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-2xl font-bold text-gray-900">{formatNumber(subscriberData.activeSubs)}</p>
+                                    <p className="text-2xl font-bold text-gray-900">{formatNumber(subscriberData.activeSubscribers)}</p>
                                     <p className="text-sm text-green-600 font-semibold">{activeRate}%</p>
                                 </div>
                             </div>
@@ -246,7 +246,7 @@ export default function SubscriberReport() {
                                     <span className="text-gray-900 font-semibold">Inactive</span>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-2xl font-bold text-gray-900">{formatNumber(subscriberData.inactiveSubs)}</p>
+                                    <p className="text-2xl font-bold text-gray-900">{formatNumber(subscriberData.inactiveSubscribers)}</p>
                                     <p className="text-sm text-orange-600 font-semibold">{inactiveRate}%</p>
                                 </div>
                             </div>
@@ -274,7 +274,7 @@ export default function SubscriberReport() {
                                     </div>
                                     <span className="text-gray-700 font-medium">New Subscribers</span>
                                 </div>
-                                <span className="font-bold text-green-600 text-lg">+{formatNumber(subscriberData.newSubs)}</span>
+                                <span className="font-bold text-green-600 text-lg">+{formatNumber(subscriberData.newSubscribers)}</span>
                             </div>
                             <div className="flex justify-between items-center p-4 rounded-lg hover:bg-gray-50 transition-colors">
                                 <div className="flex items-center gap-3">
@@ -283,7 +283,7 @@ export default function SubscriberReport() {
                                     </div>
                                     <span className="text-gray-700 font-medium">Renewals</span>
                                 </div>
-                                <span className="font-bold text-blue-600 text-lg">{formatNumber(subscriberData.renewedSubs)}</span>
+                                <span className="font-bold text-blue-600 text-lg">{formatNumber(subscriberData.renewedSubscribers)}</span>
                             </div>
                             <div className="flex justify-between items-center p-4 rounded-lg hover:bg-gray-50 transition-colors">
                                 <div className="flex items-center gap-3">
@@ -292,7 +292,7 @@ export default function SubscriberReport() {
                                     </div>
                                     <span className="text-gray-700 font-medium">Churned</span>
                                 </div>
-                                <span className="font-bold text-red-600 text-lg">-{formatNumber(subscriberData.monthlyChurn)}</span>
+                                <span className="font-bold text-red-600 text-lg">-{formatNumber(subscriberData.churnSubscribers)}</span>
                             </div>
                         </div>
                     </div>
