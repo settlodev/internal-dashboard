@@ -116,3 +116,32 @@ export const packageContributionReport = async (startDate: string, endDate: stri
         throw error;
     }
 }
+
+export const locationLeaderBoardReport = async (startDate: string, endDate: string):Promise<any> => {
+
+    const queryParams = {
+        startDate: startDate,
+        endDate: endDate,
+    }
+
+    try {
+
+        const apiClient = new ApiClient();
+
+        const queryString = new URLSearchParams({
+            startDate: queryParams.startDate.toString(),
+            endDate: queryParams.endDate.toString()
+        }).toString();
+
+
+        const url = `/api/internal/reports/locations/orders-leaderboard?${queryString}`;
+
+        const data = await apiClient.get(url);
+        console.log("leaderboard of location/branches performance:", data);
+
+        return parseStringify(data);
+    } catch (error) {
+        console.error("Error fetching leaderboard report:", error);
+        throw error;
+    }
+}
