@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { RefreshCw, AlertCircle, Trophy, Building2, MapPin, ArrowUpRight, Award, Filter, ChevronUp, Star, DollarSign, CheckCircle, XCircle, CreditCard } from 'lucide-react';
+import { RefreshCw, AlertCircle, Trophy, Building2, MapPin, ArrowUpRight, Award, Filter, ChevronUp,DollarSign, CheckCircle,CreditCard } from 'lucide-react';
 import { locationLeaderBoardReport } from "@/lib/actions/report";
 import Loading from "@/components/widgets/loader";
 
@@ -23,11 +23,7 @@ interface LeaderboardResponse {
     locations: LocationData[];
 }
 
-// Add this interface for processed location data
-interface ProcessedLocationData extends LocationData {
-    rank: number;
-    growth: number;
-}
+
 
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
