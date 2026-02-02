@@ -209,7 +209,7 @@ export const SignIn = async (
         }
         const user = data.user;
 
-        // console.log("The user", user)
+        console.log("The user", user)
 
         const { data: internal_profile, error: profileError } = await supabase
             .from('internal_profiles')
@@ -229,7 +229,7 @@ export const SignIn = async (
         })
 
 
-        // console.log("The profile", internal_profile)
+        console.log("The profile", internal_profile)
 
         if (profileError) {
             console.log("The error", profileError)
