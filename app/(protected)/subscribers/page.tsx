@@ -13,6 +13,15 @@ export default function SubscriberReport() {
         return `${year}-${month}`;
     };
 
+    const navigateMonth = (direction: 'prev' | 'next') => {
+        const [year, month] = dateRange.split('-').map(Number);
+        const date = new Date(year, month - 1);
+        date.setMonth(date.getMonth() + (direction === 'next' ? 1 : -1));
+        const newYear = date.getFullYear();
+        const newMonth = String(date.getMonth() + 1).padStart(2, '0');
+        setDateRange(`${newYear}-${newMonth}`);
+    };
+
     const [dateRange, setDateRange] = useState(getCurrentMonthYear());
     const [subscriberData, setSubscriberData] = useState<SubscriberData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -105,15 +114,28 @@ export default function SubscriberReport() {
                         </div>
                         <div className="relative">
                             <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                                <Calendar size={16} />
+                                <Calendar size={16}/>
                                 Reporting Period
                             </label>
-                            <input
-                                type="month"
-                                value={dateRange}
-                                onChange={(e) => setDateRange(e.target.value)}
-                                className="border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white shadow-sm"
-                            />
+                            <div className="flex items-center gap-2">
+                                <button onClick={() => navigateMonth('prev')}
+                                        className="p-2 rounded-lg border hover:bg-gray-100">‹
+                                </button>
+                                {/* Add min/max to restrict range if needed */}
+                                <input
+                                    type="month"
+                                    value={dateRange}
+                                    onChange={(e) => setDateRange(e.target.value)}
+                                    max={getCurrentMonthYear()}
+                                    min="2020-01"
+                                    className="border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white shadow-sm"
+                                />
+                                <button
+                                    onClick={() => navigateMonth('next')}
+                                    disabled={dateRange >= getCurrentMonthYear()}
+                                    className="p-2 rounded-lg border hover:bg-gray-100 disabled:opacity-40"
+                                >›</button>
+                            </div>
                         </div>
                     </div>
                 </div>
